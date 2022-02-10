@@ -1,0 +1,129 @@
+import 'dart:io';
+
+import 'package:cbl/cbl.dart';
+import 'package:hive/hive.dart';
+import 'package:realm_dart/realm.dart';
+import 'package:realm_document/realm_document.dart';
+
+import '../async_benchmark_base.dart';
+import '../fixture/document_utils.dart';
+
+const batchSize = 100;
+
+late final List<DocumentMap> documents;
+
+String benchmarkName(String db) => '$db -> Read Document';
+
+class CblReadDocument extends AsyncBenchmarkBase {
+  CblReadDocument() : super(benchmarkName('CBL'));
+
+  late final SyncDatabase db;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    db = Database.openSync(
+      'db',
+      DatabaseConfiguration(directory: tmpDir.path),
+    );
+
+    for (final document in documents) {
+      db.saveDocument(
+          MutableDocument.withId(createDocumentId(document), document));
+    }
+  }
+
+  @override
+  Future<void> run() async {
+    for (final document in documents) {
+      final doc = db.document(getDocumentId(document));
+      doc!.toPlainMap();
+    }
+  }
+
+  @override
+  Future<void> teardown() async {
+    await db.close();
+  }
+}
+
+class HiveReadDocument extends AsyncBenchmarkBase {
+  HiveReadDocument() : super(benchmarkName('Hive'));
+
+  late final Box<DocumentMap> box;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    box = await Hive.openBox('db', path: tmpDir.path);
+
+    for (final document in documents) {
+      await box.put(createDocumentId(document), document);
+    }
+  }
+
+  @override
+  Future<void> run() async {
+    for (final document in documents) {
+      box.get(getDocumentId(document));
+    }
+  }
+
+  @override
+  Future<void> teardown() {
+    return box.close();
+  }
+}
+
+class RealmReadDocument extends AsyncBenchmarkBase {
+  RealmReadDocument() : super(benchmarkName('Realm'));
+
+  late final Realm realm;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    final config = Configuration([
+      RealmDoc.schema,
+      RealmName.schema,
+      RealmFriend.schema,
+      SimpleRealmDoc.schema,
+    ]);
+    config.path = '${tmpDir.path}${Platform.pathSeparator}db.realm';
+    realm = Realm(config);
+
+    realm.write(() {
+      for (final document in documents) {
+        realm.add(realmDocFromJson(createDocumentId(document), document));
+      }
+    });
+  }
+
+  @override
+  Future<void> run() async {
+    for (final document in documents) {
+      final doc = realm.find<RealmDoc>(getDocumentId(document));
+      doc!.toJson();
+    }
+  }
+
+  @override
+  Future<void> teardown() async {
+    realm.close();
+  }
+}
+
+Future<void> runBenchmarks() async {
+  documents = await loadDocuments()
+      .then((documents) => documents.take(batchSize).toList());
+
+  final benchmarks = [
+    CblReadDocument(),
+    HiveReadDocument(),
+    RealmReadDocument(),
+  ];
+
+  for (final benchmark in benchmarks) {
+    await benchmark.report(repeatsPerRun: batchSize);
+  }
+}

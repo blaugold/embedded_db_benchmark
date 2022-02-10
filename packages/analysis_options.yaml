@@ -1,0 +1,14 @@
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - '**.g.dart'
+  strong-mode:
+    implicit-dynamic: false
+    implicit-casts: false
+
+linter:
+  rules:
+    - prefer_relative_imports
+    - sort_pub_dependencies

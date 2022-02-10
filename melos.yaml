@@ -1,0 +1,11 @@
+name: embedded_db_benchmark
+repository: https://github.com/blaugold/embedded_db_benchmark
+
+packages:
+  - packages/**
+
+scripts:
+  format: dart format .
+  format:check: dart format --set-exit-if-changed .
+  analyze:
+    run: melos exec -c 1 -- dart analyze --fatal-infos

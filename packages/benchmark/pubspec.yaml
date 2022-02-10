@@ -1,0 +1,20 @@
+name: benchmark
+publish_to: none
+
+environment:
+  sdk: '>=2.16.0 <3.0.0'
+
+dependencies:
+  benchmark_harness: ^2.0.0
+  cbl: ^1.0.0-beta.15
+  cbl_dart: ^1.0.0-beta.6
+  hive: ^2.0.5
+  isar: ^2.2.0+1
+  isar_document:
+    path: ../isar_document
+  realm_dart: ^0.2.0+alpha
+  realm_document:
+    path: ../realm_document
+
+dev_dependencies:
+  flutter_lints: ^1.0.4
