@@ -40,11 +40,8 @@ jobs:
   run-benchmark-dart:
     strategy:
       matrix:
-        os: [
-          ubuntu-latest,
-          macos-latest,
-          windows-latest,
-        ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        compilation: [jit, aot]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -61,7 +58,14 @@ jobs:
       - name: Install Objectbox binaries
         working-directory: packages/runner_dart
         shell: bash
-        run: eval "$(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)"
-      - name: Run benchmark
+        run:
+          eval "$(curl -s
+          https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)"
+      - name: Run benchmark (JIT)
+        if: ${{ matrix.compilation == 'jit' }}
         working-directory: packages/runner_dart
         run: dart run
+      - name: Run benchmark (AOT)
+        if: ${{ matrix.compilation == 'aot' }}
+        working-directory: packages/runner_dart
+        run: bin/runner_dart_aot.sh
