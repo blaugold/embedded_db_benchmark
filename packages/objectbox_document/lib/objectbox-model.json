@@ -1,0 +1,191 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:110508833524735892",
+      "lastPropertyId": "23:3961540835188943383",
+      "name": "ObjectboxDoc",
+      "properties": [
+        {
+          "id": "1:2756476576729890188",
+          "name": "id",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "2:4984996048941082833"
+        },
+        {
+          "id": "2:1803984718397515963",
+          "name": "index",
+          "type": 6
+        },
+        {
+          "id": "3:456765814606734479",
+          "name": "guid",
+          "type": 9
+        },
+        {
+          "id": "4:302027292187508492",
+          "name": "isActive",
+          "type": 1
+        },
+        {
+          "id": "5:1191233812433334458",
+          "name": "balance",
+          "type": 9
+        },
+        {
+          "id": "6:3099099690824981750",
+          "name": "picture",
+          "type": 9
+        },
+        {
+          "id": "7:7953884654089440513",
+          "name": "age",
+          "type": 6
+        },
+        {
+          "id": "8:6235868881030615646",
+          "name": "eyeColor",
+          "type": 9
+        },
+        {
+          "id": "9:1167247666618880382",
+          "name": "nameId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "1:7428278450406228165",
+          "relationTarget": "ObjectboxName"
+        },
+        {
+          "id": "10:204460225648943795",
+          "name": "company",
+          "type": 9
+        },
+        {
+          "id": "11:6946925352944923873",
+          "name": "email",
+          "type": 9
+        },
+        {
+          "id": "12:947663455830537931",
+          "name": "phone",
+          "type": 9
+        },
+        {
+          "id": "13:6518746044648241766",
+          "name": "address",
+          "type": 9
+        },
+        {
+          "id": "14:3776573471784835142",
+          "name": "about",
+          "type": 9
+        },
+        {
+          "id": "15:3496852478087686881",
+          "name": "registered",
+          "type": 9
+        },
+        {
+          "id": "16:666970885414060636",
+          "name": "latitude",
+          "type": 9
+        },
+        {
+          "id": "17:4312645177577161725",
+          "name": "longitude",
+          "type": 9
+        },
+        {
+          "id": "18:5799165882936424372",
+          "name": "tags",
+          "type": 30
+        },
+        {
+          "id": "19:4643702838393377346",
+          "name": "greeting",
+          "type": 9
+        },
+        {
+          "id": "20:4785659561339604838",
+          "name": "favoriteFruit",
+          "type": 9
+        },
+        {
+          "id": "22:5193248094615037014",
+          "name": "dbRange",
+          "type": 30
+        },
+        {
+          "id": "23:3961540835188943383",
+          "name": "dbId",
+          "type": 6,
+          "flags": 1
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:8804691660091051136",
+          "name": "friends",
+          "targetId": "3:8278041067566766108"
+        }
+      ]
+    },
+    {
+      "id": "2:8564006045192440331",
+      "lastPropertyId": "3:3282042645606389258",
+      "name": "ObjectboxName",
+      "properties": [
+        {
+          "id": "1:9131136361258168339",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6528529618981580335",
+          "name": "first",
+          "type": 9
+        },
+        {
+          "id": "3:3282042645606389258",
+          "name": "last",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:8278041067566766108",
+      "lastPropertyId": "2:7815945799659295841",
+      "name": "ObjectboxFriend",
+      "properties": [
+        {
+          "id": "1:291722160156892971",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7815945799659295841",
+          "name": "name",
+          "type": 9
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "3:8278041067566766108",
+  "lastIndexId": "2:4984996048941082833",
+  "lastRelationId": "1:8804691660091051136",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [3886440479243237754],
+  "retiredRelationUids": [],
+  "version": 1
+}

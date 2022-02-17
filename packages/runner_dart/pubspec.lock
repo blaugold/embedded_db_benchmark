@@ -35,7 +35,7 @@ packages:
       path: "../benchmark"
       relative: true
     source: path
-    version: "0.0.0"
+    version: "1.0.0"
   benchmark_harness:
     dependency: transitive
     description:
@@ -344,6 +344,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  objectbox:
+    dependency: transitive
+    description:
+      name: objectbox
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.0"
+  objectbox_document:
+    dependency: transitive
+    description:
+      path: "../objectbox_document"
+      relative: true
+    source: path
+    version: "1.0.0"
   package_config:
     dependency: transitive
     description:

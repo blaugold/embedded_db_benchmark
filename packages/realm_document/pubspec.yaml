@@ -1,5 +1,6 @@
 name: realm_document
 version: 1.0.0
+publish_to: none
 
 environment:
   sdk: '>=2.16.1 <3.0.0'

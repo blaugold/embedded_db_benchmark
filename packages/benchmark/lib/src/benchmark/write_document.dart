@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:cbl/cbl.dart';
-import 'package:hive/hive.dart';
+import 'package:hive/hive.dart' as hive;
 import 'package:isar/isar.dart';
 import 'package:isar_document/isar_document.dart';
+import 'package:objectbox/objectbox.dart' as objectbox;
+import 'package:objectbox_document/objectbox.g.dart';
+import 'package:objectbox_document/objectbox_document.dart';
 import 'package:realm_dart/realm.dart';
 import 'package:realm_document/realm_document.dart';
 
@@ -104,12 +107,12 @@ class CblWriteDocumentAsync extends AsyncBenchmarkBase {
 class HiveWriteDocument extends AsyncBenchmarkBase {
   HiveWriteDocument() : super(benchmarkName('Hive', batched: false));
 
-  late final Box<DocumentMap> box;
+  late final hive.Box<DocumentMap> box;
 
   @override
   Future<void> setup() async {
     final tmpDir = Directory.systemTemp.createTempSync();
-    box = await Hive.openBox('db', path: tmpDir.path);
+    box = await hive.Hive.openBox('db', path: tmpDir.path);
   }
 
   @override
@@ -176,17 +179,43 @@ class IsarWriteDocument extends AsyncBenchmarkBase {
   @override
   Future<void> run() async {
     isar.writeTxnSync((isar) {
-      isar.isarDocs.putAllSync(documents
-          .map(
-            (document) => isarDocFromJson(createDocumentId(document), document),
-          )
-          .toList());
+      isar.isarDocs.putAllSync([
+        for (final document in documents)
+          isarDocFromJson(createDocumentId(document), document)
+      ]);
     });
   }
 
   @override
   Future<void> teardown() async {
     await isar.close();
+  }
+}
+
+class ObjectboxWriteDocument extends AsyncBenchmarkBase {
+  ObjectboxWriteDocument() : super(benchmarkName('Objectbox', batched: true));
+
+  late final Store store;
+  late final objectbox.Box box;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    store = openStore(directory: tmpDir.path);
+    box = store.box<ObjectboxDoc>();
+  }
+
+  @override
+  Future<void> run() async {
+    box.putMany(<ObjectboxDoc>[
+      for (final document in documents)
+        ObjectboxDoc.fromJson(createDocumentId(document), document)
+    ]);
+  }
+
+  @override
+  Future<void> teardown() async {
+    store.close();
   }
 }
 
@@ -202,6 +231,7 @@ Future<void> runBenchmarks({bool withIsar = true}) async {
     HiveWriteDocument(),
     RealmWriteDocument(),
     if (withIsar) IsarWriteDocument(),
+    ObjectboxWriteDocument(),
   ];
 
   // debugger();

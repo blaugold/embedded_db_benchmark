@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:cbl/cbl.dart';
-import 'package:hive/hive.dart';
+import 'package:hive/hive.dart' as hive;
+import 'package:objectbox/objectbox.dart' as objectbox;
+import 'package:objectbox_document/objectbox.g.dart';
+import 'package:objectbox_document/objectbox_document.dart';
 import 'package:realm_dart/realm.dart';
 import 'package:realm_document/realm_document.dart';
 
@@ -50,12 +53,12 @@ class CblReadDocument extends AsyncBenchmarkBase {
 class HiveReadDocument extends AsyncBenchmarkBase {
   HiveReadDocument() : super(benchmarkName('Hive'));
 
-  late final Box<DocumentMap> box;
+  late final hive.Box<DocumentMap> box;
 
   @override
   Future<void> setup() async {
     final tmpDir = Directory.systemTemp.createTempSync();
-    box = await Hive.openBox('db', path: tmpDir.path);
+    box = await hive.Hive.openBox('db', path: tmpDir.path);
 
     for (final document in documents) {
       await box.put(createDocumentId(document), document);
@@ -113,6 +116,42 @@ class RealmReadDocument extends AsyncBenchmarkBase {
   }
 }
 
+class ObjectboxReadDocument extends AsyncBenchmarkBase {
+  ObjectboxReadDocument() : super(benchmarkName('Objectbox'));
+
+  late final Store store;
+  late final objectbox.Box<ObjectboxDoc> box;
+  late final objectbox.Query<ObjectboxDoc> query;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    store = openStore(directory: tmpDir.path);
+    box = store.box<ObjectboxDoc>();
+
+    box.putMany(<ObjectboxDoc>[
+      for (final document in documents)
+        ObjectboxDoc.fromJson(createDocumentId(document), document)
+    ]);
+
+    query = box.query(ObjectboxDoc_.id.equals('')).build();
+  }
+
+  @override
+  Future<void> run() async {
+    for (final document in documents) {
+      query.param(ObjectboxDoc_.id).value = getDocumentId(document);
+      final doc = query.findFirst();
+      doc!.toJson();
+    }
+  }
+
+  @override
+  Future<void> teardown() async {
+    store.close();
+  }
+}
+
 Future<void> runBenchmarks() async {
   documents = await loadDocuments()
       .then((documents) => documents.take(batchSize).toList());
@@ -121,6 +160,7 @@ Future<void> runBenchmarks() async {
     CblReadDocument(),
     HiveReadDocument(),
     RealmReadDocument(),
+    ObjectboxReadDocument(),
   ];
 
   for (final benchmark in benchmarks) {

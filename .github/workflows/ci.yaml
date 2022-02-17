@@ -58,6 +58,10 @@ jobs:
       - name: Install Realm binaries
         working-directory: packages/runner_dart
         run: dart run realm_dart install
+      - name: Install Objectbox binaries
+        working-directory: packages/runner_dart
+        shell: bash
+        run: eval "$(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)"
       - name: Run benchmark
         working-directory: packages/runner_dart
         run: dart run
