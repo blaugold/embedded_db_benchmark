@@ -100,4 +100,16 @@ jobs:
         run: melos bs --scope runner_flutter
       - name: Run benchmark
         working-directory: packages/runner_flutter
-        run: flutter test integration_test/benchmark_test.dart
+        run: |
+          case ${{ runner.os }} in
+            Linux)
+              device=linux
+              ;;
+            MacOS)
+              device=macos
+              ;;
+            Windows)
+              device=windows
+              ;;
+          esac
+          flutter test -d $device integration_test/benchmark_test.dart
