@@ -237,7 +237,11 @@ class ObjectboxReadDocument extends AsyncBenchmarkBase {
   }
 }
 
-Future<void> runBenchmarks({bool withIsar = true}) async {
+Future<void> runBenchmarks({
+  bool withRealm = true,
+  bool withIsar = true,
+  bool withObjectBox = true,
+}) async {
   documents = await loadDocuments()
       .then((documents) => documents.take(batchSize).toList());
 
@@ -245,9 +249,9 @@ Future<void> runBenchmarks({bool withIsar = true}) async {
     CblReadDocument(),
     CblReadDocumentAsync(),
     HiveReadDocument(),
-    RealmReadDocument(),
+    if (withRealm) RealmReadDocument(),
     if (withIsar) IsarReadDocument(),
-    ObjectboxReadDocument(),
+    if (withObjectBox) ObjectboxReadDocument(),
   ];
 
   for (final benchmark in benchmarks) {

@@ -227,7 +227,11 @@ class ObjectboxWriteDocument extends AsyncBenchmarkBase {
   }
 }
 
-Future<void> runBenchmarks({bool withIsar = true}) async {
+Future<void> runBenchmarks({
+  bool withRealm = true,
+  bool withIsar = true,
+  bool withObjectBox = true,
+}) async {
   documents = await loadDocuments()
       .then((documents) => documents.take(batchSize).toList());
 
@@ -237,9 +241,9 @@ Future<void> runBenchmarks({bool withIsar = true}) async {
     CblWriteDocumentAsync(inBatch: false),
     CblWriteDocumentAsync(inBatch: true),
     HiveWriteDocument(),
-    RealmWriteDocument(),
+    if (withRealm) RealmWriteDocument(),
     if (withIsar) IsarWriteDocument(),
-    ObjectboxWriteDocument(),
+    if (withObjectBox) ObjectboxWriteDocument(),
   ];
 
   // debugger();
