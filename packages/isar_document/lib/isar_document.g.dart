@@ -17,7 +17,7 @@ extension GetIsarDocCollection on Isar {
 final IsarDocSchema = CollectionSchema(
   name: 'IsarDoc',
   schema:
-      '{"name":"IsarDoc","idName":"id_","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[],"links":[]}',
+      '{"name":"IsarDoc","idName":"id_","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[{"name":"id","unique":false,"properties":[{"name":"id","type":"Hash","caseSensitive":true}]}],"links":[{"name":"friends","target":"IsarFriend"},{"name":"name","target":"IsarName"}]}',
   nativeAdapter: const _IsarDocNativeAdapter(),
   webAdapter: const _IsarDocWebAdapter(),
   idName: 'id_',
@@ -44,11 +44,15 @@ final IsarDocSchema = CollectionSchema(
     'tags': 19
   },
   listProperties: {'range', 'tags'},
-  indexIds: {},
-  indexTypes: {},
-  linkIds: {},
+  indexIds: {'id': 0},
+  indexTypes: {
+    'id': [
+      NativeIndexType.stringHash,
+    ]
+  },
+  linkIds: {'friends': 0, 'name': 1},
   backlinkIds: {},
-  linkedCollections: [],
+  linkedCollections: ['IsarFriend', 'IsarName'],
   getId: (obj) {
     if (obj.id_ == Isar.autoIncrement) {
       return null;
@@ -57,7 +61,7 @@ final IsarDocSchema = CollectionSchema(
     }
   },
   setId: null,
-  getLinks: (obj) => [],
+  getLinks: (obj) => [obj.friends, obj.name],
   version: 2,
 );
 
@@ -124,6 +128,10 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
             .toList()
             .cast<String>() ??
         [];
+    attachLinks(
+        collection.isar,
+        IsarNative.jsObjectGet(jsObj, 'id_') ?? double.negativeInfinity,
+        object);
     return object;
   }
 
@@ -189,7 +197,22 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
   }
 
   @override
-  void attachLinks(Isar isar, int id, IsarDoc object) {}
+  void attachLinks(Isar isar, int id, IsarDoc object) {
+    object.friends.attach(
+      id,
+      isar.isarDocs,
+      isar.getCollection<IsarFriend>('IsarFriend'),
+      'friends',
+      false,
+    );
+    object.name.attach(
+      id,
+      isar.isarDocs,
+      isar.getCollection<IsarName>('IsarName'),
+      'name',
+      false,
+    );
+  }
 }
 
 class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
@@ -314,6 +337,7 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
     object.range = reader.readLongList(offsets[17]) ?? [];
     object.registered = reader.readString(offsets[18]);
     object.tags = reader.readStringList(offsets[19]) ?? [];
+    attachLinks(collection.isar, id, object);
     return object;
   }
 
@@ -369,12 +393,31 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
   }
 
   @override
-  void attachLinks(Isar isar, int id, IsarDoc object) {}
+  void attachLinks(Isar isar, int id, IsarDoc object) {
+    object.friends.attach(
+      id,
+      isar.isarDocs,
+      isar.getCollection<IsarFriend>('IsarFriend'),
+      'friends',
+      false,
+    );
+    object.name.attach(
+      id,
+      isar.isarDocs,
+      isar.getCollection<IsarName>('IsarName'),
+      'name',
+      false,
+    );
+  }
 }
 
 extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyId_() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyId() {
+    return addWhereClauseInternal(const WhereClause(indexName: 'id'));
   }
 }
 
@@ -448,6 +491,40 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
       upper: [upperId_],
       includeUpper: includeUpper,
     ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idEqualTo(String id) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: 'id',
+      lower: [id],
+      includeLower: true,
+      upper: [id],
+      includeUpper: true,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idNotEqualTo(String id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(WhereClause(
+        indexName: 'id',
+        upper: [id],
+        includeUpper: false,
+      )).addWhereClauseInternal(WhereClause(
+        indexName: 'id',
+        lower: [id],
+        includeLower: false,
+      ));
+    } else {
+      return addWhereClauseInternal(WhereClause(
+        indexName: 'id',
+        lower: [id],
+        includeLower: false,
+      )).addWhereClauseInternal(WhereClause(
+        indexName: 'id',
+        upper: [id],
+        includeUpper: false,
+      ));
+    }
   }
 }
 
@@ -2788,5 +2865,976 @@ extension IsarDocQueryProperty
 
   QueryBuilder<IsarDoc, List<String>, QQueryOperations> tagsProperty() {
     return addPropertyNameInternal('tags');
+  }
+}
+
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+
+extension GetIsarNameCollection on Isar {
+  IsarCollection<IsarName> get isarNames {
+    return getCollection('IsarName');
+  }
+}
+
+final IsarNameSchema = CollectionSchema(
+  name: 'IsarName',
+  schema:
+      '{"name":"IsarName","idName":"id","properties":[{"name":"first","type":"String"},{"name":"last","type":"String"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _IsarNameNativeAdapter(),
+  webAdapter: const _IsarNameWebAdapter(),
+  idName: 'id',
+  propertyIds: {'first': 0, 'last': 1},
+  listProperties: {},
+  indexIds: {},
+  indexTypes: {},
+  linkIds: {},
+  backlinkIds: {},
+  linkedCollections: [],
+  getId: (obj) {
+    if (obj.id == Isar.autoIncrement) {
+      return null;
+    } else {
+      return obj.id;
+    }
+  },
+  setId: (obj, id) => obj.id = id,
+  getLinks: (obj) => [],
+  version: 2,
+);
+
+class _IsarNameWebAdapter extends IsarWebTypeAdapter<IsarName> {
+  const _IsarNameWebAdapter();
+
+  @override
+  Object serialize(IsarCollection<IsarName> collection, IsarName object) {
+    final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'first', object.first);
+    IsarNative.jsObjectSet(jsObj, 'id', object.id);
+    IsarNative.jsObjectSet(jsObj, 'last', object.last);
+    return jsObj;
+  }
+
+  @override
+  IsarName deserialize(IsarCollection<IsarName> collection, dynamic jsObj) {
+    final object = IsarName();
+    object.first = IsarNative.jsObjectGet(jsObj, 'first') ?? '';
+    object.id = IsarNative.jsObjectGet(jsObj, 'id');
+    object.last = IsarNative.jsObjectGet(jsObj, 'last') ?? '';
+    return object;
+  }
+
+  @override
+  P deserializeProperty<P>(Object jsObj, String propertyName) {
+    switch (propertyName) {
+      case 'first':
+        return (IsarNative.jsObjectGet(jsObj, 'first') ?? '') as P;
+      case 'id':
+        return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
+      case 'last':
+        return (IsarNative.jsObjectGet(jsObj, 'last') ?? '') as P;
+      default:
+        throw 'Illegal propertyName';
+    }
+  }
+
+  @override
+  void attachLinks(Isar isar, int id, IsarName object) {}
+}
+
+class _IsarNameNativeAdapter extends IsarNativeTypeAdapter<IsarName> {
+  const _IsarNameNativeAdapter();
+
+  @override
+  void serialize(IsarCollection<IsarName> collection, IsarRawObject rawObj,
+      IsarName object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
+    var dynamicSize = 0;
+    final value0 = object.first;
+    final _first = IsarBinaryWriter.utf8Encoder.convert(value0);
+    dynamicSize += (_first.length) as int;
+    final value1 = object.last;
+    final _last = IsarBinaryWriter.utf8Encoder.convert(value1);
+    dynamicSize += (_last.length) as int;
+    final size = staticSize + dynamicSize;
+
+    rawObj.buffer = alloc(size);
+    rawObj.buffer_length = size;
+    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+    final writer = IsarBinaryWriter(buffer, staticSize);
+    writer.writeBytes(offsets[0], _first);
+    writer.writeBytes(offsets[1], _last);
+  }
+
+  @override
+  IsarName deserialize(IsarCollection<IsarName> collection, int id,
+      IsarBinaryReader reader, List<int> offsets) {
+    final object = IsarName();
+    object.first = reader.readString(offsets[0]);
+    object.id = id;
+    object.last = reader.readString(offsets[1]);
+    return object;
+  }
+
+  @override
+  P deserializeProperty<P>(
+      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+    switch (propertyIndex) {
+      case -1:
+        return id as P;
+      case 0:
+        return (reader.readString(offset)) as P;
+      case 1:
+        return (reader.readString(offset)) as P;
+      default:
+        throw 'Illegal propertyIndex';
+    }
+  }
+
+  @override
+  void attachLinks(Isar isar, int id, IsarName object) {}
+}
+
+extension IsarNameQueryWhereSort on QueryBuilder<IsarName, IsarName, QWhere> {
+  QueryBuilder<IsarName, IsarName, QAfterWhere> anyId() {
+    return addWhereClauseInternal(const WhereClause(indexName: null));
+  }
+}
+
+extension IsarNameQueryWhere on QueryBuilder<IsarName, IsarName, QWhereClause> {
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idEqualTo(int? id) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [id],
+      includeLower: true,
+      upper: [id],
+      includeUpper: true,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idNotEqualTo(int? id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(WhereClause(
+        indexName: null,
+        upper: [id],
+        includeUpper: false,
+      )).addWhereClauseInternal(WhereClause(
+        indexName: null,
+        lower: [id],
+        includeLower: false,
+      ));
+    } else {
+      return addWhereClauseInternal(WhereClause(
+        indexName: null,
+        lower: [id],
+        includeLower: false,
+      )).addWhereClauseInternal(WhereClause(
+        indexName: null,
+        upper: [id],
+        includeUpper: false,
+      ));
+    }
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idGreaterThan(
+    int? id, {
+    bool include = false,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [id],
+      includeLower: include,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idLessThan(
+    int? id, {
+    bool include = false,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      upper: [id],
+      includeUpper: include,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idBetween(
+    int? lowerId,
+    int? upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [lowerId],
+      includeLower: includeLower,
+      upper: [upperId],
+      includeUpper: includeUpper,
+    ));
+  }
+}
+
+extension IsarNameQueryFilter
+    on QueryBuilder<IsarName, IsarName, QFilterCondition> {
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'first',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstGreaterThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'first',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstLessThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'first',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstBetween(
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'first',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'first',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'first',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'first',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'first',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'id',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idEqualTo(
+      int? value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'id',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'id',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'last',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastGreaterThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'last',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastLessThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'last',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastBetween(
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'last',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'last',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'last',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'last',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> lastMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'last',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
+}
+
+extension IsarNameQueryWhereSortBy
+    on QueryBuilder<IsarName, IsarName, QSortBy> {
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByFirst() {
+    return addSortByInternal('first', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByFirstDesc() {
+    return addSortByInternal('first', Sort.desc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByLast() {
+    return addSortByInternal('last', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByLastDesc() {
+    return addSortByInternal('last', Sort.desc);
+  }
+}
+
+extension IsarNameQueryWhereSortThenBy
+    on QueryBuilder<IsarName, IsarName, QSortThenBy> {
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByFirst() {
+    return addSortByInternal('first', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByFirstDesc() {
+    return addSortByInternal('first', Sort.desc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByLast() {
+    return addSortByInternal('last', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByLastDesc() {
+    return addSortByInternal('last', Sort.desc);
+  }
+}
+
+extension IsarNameQueryWhereDistinct
+    on QueryBuilder<IsarName, IsarName, QDistinct> {
+  QueryBuilder<IsarName, IsarName, QDistinct> distinctByFirst(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('first', caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<IsarName, IsarName, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
+  }
+
+  QueryBuilder<IsarName, IsarName, QDistinct> distinctByLast(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('last', caseSensitive: caseSensitive);
+  }
+}
+
+extension IsarNameQueryProperty
+    on QueryBuilder<IsarName, IsarName, QQueryProperty> {
+  QueryBuilder<IsarName, String, QQueryOperations> firstProperty() {
+    return addPropertyNameInternal('first');
+  }
+
+  QueryBuilder<IsarName, int?, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
+  }
+
+  QueryBuilder<IsarName, String, QQueryOperations> lastProperty() {
+    return addPropertyNameInternal('last');
+  }
+}
+
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+
+extension GetIsarFriendCollection on Isar {
+  IsarCollection<IsarFriend> get isarFriends {
+    return getCollection('IsarFriend');
+  }
+}
+
+final IsarFriendSchema = CollectionSchema(
+  name: 'IsarFriend',
+  schema:
+      '{"name":"IsarFriend","idName":"id","properties":[{"name":"name","type":"String"}],"indexes":[],"links":[]}',
+  nativeAdapter: const _IsarFriendNativeAdapter(),
+  webAdapter: const _IsarFriendWebAdapter(),
+  idName: 'id',
+  propertyIds: {'name': 0},
+  listProperties: {},
+  indexIds: {},
+  indexTypes: {},
+  linkIds: {},
+  backlinkIds: {},
+  linkedCollections: [],
+  getId: (obj) {
+    if (obj.id == Isar.autoIncrement) {
+      return null;
+    } else {
+      return obj.id;
+    }
+  },
+  setId: (obj, id) => obj.id = id,
+  getLinks: (obj) => [],
+  version: 2,
+);
+
+class _IsarFriendWebAdapter extends IsarWebTypeAdapter<IsarFriend> {
+  const _IsarFriendWebAdapter();
+
+  @override
+  Object serialize(IsarCollection<IsarFriend> collection, IsarFriend object) {
+    final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'id', object.id);
+    IsarNative.jsObjectSet(jsObj, 'name', object.name);
+    return jsObj;
+  }
+
+  @override
+  IsarFriend deserialize(IsarCollection<IsarFriend> collection, dynamic jsObj) {
+    final object = IsarFriend();
+    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+    object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
+    return object;
+  }
+
+  @override
+  P deserializeProperty<P>(Object jsObj, String propertyName) {
+    switch (propertyName) {
+      case 'id':
+        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+            as P;
+      case 'name':
+        return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
+      default:
+        throw 'Illegal propertyName';
+    }
+  }
+
+  @override
+  void attachLinks(Isar isar, int id, IsarFriend object) {}
+}
+
+class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
+  const _IsarFriendNativeAdapter();
+
+  @override
+  void serialize(
+      IsarCollection<IsarFriend> collection,
+      IsarRawObject rawObj,
+      IsarFriend object,
+      int staticSize,
+      List<int> offsets,
+      AdapterAlloc alloc) {
+    var dynamicSize = 0;
+    final value0 = object.name;
+    final _name = IsarBinaryWriter.utf8Encoder.convert(value0);
+    dynamicSize += (_name.length) as int;
+    final size = staticSize + dynamicSize;
+
+    rawObj.buffer = alloc(size);
+    rawObj.buffer_length = size;
+    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+    final writer = IsarBinaryWriter(buffer, staticSize);
+    writer.writeBytes(offsets[0], _name);
+  }
+
+  @override
+  IsarFriend deserialize(IsarCollection<IsarFriend> collection, int id,
+      IsarBinaryReader reader, List<int> offsets) {
+    final object = IsarFriend();
+    object.id = id;
+    object.name = reader.readString(offsets[0]);
+    return object;
+  }
+
+  @override
+  P deserializeProperty<P>(
+      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+    switch (propertyIndex) {
+      case -1:
+        return id as P;
+      case 0:
+        return (reader.readString(offset)) as P;
+      default:
+        throw 'Illegal propertyIndex';
+    }
+  }
+
+  @override
+  void attachLinks(Isar isar, int id, IsarFriend object) {}
+}
+
+extension IsarFriendQueryWhereSort
+    on QueryBuilder<IsarFriend, IsarFriend, QWhere> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhere> anyId() {
+    return addWhereClauseInternal(const WhereClause(indexName: null));
+  }
+}
+
+extension IsarFriendQueryWhere
+    on QueryBuilder<IsarFriend, IsarFriend, QWhereClause> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idEqualTo(int id) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [id],
+      includeLower: true,
+      upper: [id],
+      includeUpper: true,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idNotEqualTo(int id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(WhereClause(
+        indexName: null,
+        upper: [id],
+        includeUpper: false,
+      )).addWhereClauseInternal(WhereClause(
+        indexName: null,
+        lower: [id],
+        includeLower: false,
+      ));
+    } else {
+      return addWhereClauseInternal(WhereClause(
+        indexName: null,
+        lower: [id],
+        includeLower: false,
+      )).addWhereClauseInternal(WhereClause(
+        indexName: null,
+        upper: [id],
+        includeUpper: false,
+      ));
+    }
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idGreaterThan(
+    int id, {
+    bool include = false,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [id],
+      includeLower: include,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idLessThan(
+    int id, {
+    bool include = false,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      upper: [id],
+      includeUpper: include,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idBetween(
+    int lowerId,
+    int upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [lowerId],
+      includeLower: includeLower,
+      upper: [upperId],
+      includeUpper: includeUpper,
+    ));
+  }
+}
+
+extension IsarFriendQueryFilter
+    on QueryBuilder<IsarFriend, IsarFriend, QFilterCondition> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> idEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'id',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> idGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> idLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> idBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'id',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'name',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameGreaterThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'name',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameLessThan(
+    String value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'name',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameBetween(
+    String lower,
+    String upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'name',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'name',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'name',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'name',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> nameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'name',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
+}
+
+extension IsarFriendQueryWhereSortBy
+    on QueryBuilder<IsarFriend, IsarFriend, QSortBy> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByName() {
+    return addSortByInternal('name', Sort.asc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByNameDesc() {
+    return addSortByInternal('name', Sort.desc);
+  }
+}
+
+extension IsarFriendQueryWhereSortThenBy
+    on QueryBuilder<IsarFriend, IsarFriend, QSortThenBy> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByName() {
+    return addSortByInternal('name', Sort.asc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByNameDesc() {
+    return addSortByInternal('name', Sort.desc);
+  }
+}
+
+extension IsarFriendQueryWhereDistinct
+    on QueryBuilder<IsarFriend, IsarFriend, QDistinct> {
+  QueryBuilder<IsarFriend, IsarFriend, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QDistinct> distinctByName(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('name', caseSensitive: caseSensitive);
+  }
+}
+
+extension IsarFriendQueryProperty
+    on QueryBuilder<IsarFriend, IsarFriend, QQueryProperty> {
+  QueryBuilder<IsarFriend, int, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
+  }
+
+  QueryBuilder<IsarFriend, String, QQueryOperations> nameProperty() {
+    return addPropertyNameInternal('name');
   }
 }

@@ -170,7 +170,11 @@ class IsarWriteDocument extends AsyncBenchmarkBase {
   Future<void> setup() async {
     final tmpDir = Directory.systemTemp.createTempSync();
     isar = await Isar.open(
-      schemas: [IsarDocSchema],
+      schemas: [
+        IsarDocSchema,
+        IsarNameSchema,
+        IsarFriendSchema,
+      ],
       directory: tmpDir.path,
       relaxedDurability: false,
     );
@@ -179,10 +183,14 @@ class IsarWriteDocument extends AsyncBenchmarkBase {
   @override
   Future<void> run() async {
     isar.writeTxnSync((isar) {
-      isar.isarDocs.putAllSync([
-        for (final document in documents)
-          isarDocFromJson(createDocumentId(document), document)
-      ]);
+      for (final document in documents) {
+        final doc = IsarDoc.fromJson(createDocumentId(document), document);
+        isar.isarNames.putSync(doc.name.value!);
+        isar.isarFriends.putAllSync(doc.friends.toList());
+        isar.isarDocs.putSync(doc);
+        doc.name.saveSync();
+        doc.friends.saveSync();
+      }
     });
   }
 

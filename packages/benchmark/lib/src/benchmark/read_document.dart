@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:cbl/cbl.dart';
 import 'package:hive/hive.dart' as hive;
+import 'package:isar/isar.dart';
+import 'package:isar_document/isar_document.dart';
 import 'package:objectbox/objectbox.dart' as objectbox;
 import 'package:objectbox_document/objectbox.g.dart';
 import 'package:objectbox_document/objectbox_document.dart';
@@ -116,6 +118,55 @@ class RealmReadDocument extends AsyncBenchmarkBase {
   }
 }
 
+class IsarReadDocument extends AsyncBenchmarkBase {
+  IsarReadDocument() : super(benchmarkName('Isar'));
+
+  late final Isar isar;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    isar = await Isar.open(
+      schemas: [
+        IsarDocSchema,
+        IsarNameSchema,
+        IsarFriendSchema,
+      ],
+      directory: tmpDir.path,
+      relaxedDurability: false,
+    );
+
+    isar.writeTxnSync((isar) {
+      for (final document in documents) {
+        final doc = IsarDoc.fromJson(createDocumentId(document), document);
+        isar.isarNames.putSync(doc.name.value!);
+        isar.isarFriends.putAllSync(doc.friends.toList());
+        isar.isarDocs.putSync(doc);
+        doc.name.saveSync();
+        doc.friends.saveSync();
+      }
+    });
+  }
+
+  @override
+  Future<void> run() async {
+    isar.writeTxnSync((isar) {
+      for (final document in documents) {
+        final doc = isar.isarDocs
+            .where()
+            .idEqualTo(getDocumentId(document))
+            .findFirstSync();
+        doc!.toJson();
+      }
+    });
+  }
+
+  @override
+  Future<void> teardown() async {
+    await isar.close();
+  }
+}
+
 class ObjectboxReadDocument extends AsyncBenchmarkBase {
   ObjectboxReadDocument() : super(benchmarkName('Objectbox'));
 
@@ -152,7 +203,7 @@ class ObjectboxReadDocument extends AsyncBenchmarkBase {
   }
 }
 
-Future<void> runBenchmarks() async {
+Future<void> runBenchmarks({bool withIsar = true}) async {
   documents = await loadDocuments()
       .then((documents) => documents.take(batchSize).toList());
 
@@ -160,6 +211,7 @@ Future<void> runBenchmarks() async {
     CblReadDocument(),
     HiveReadDocument(),
     RealmReadDocument(),
+    if (withIsar) IsarReadDocument(),
     ObjectboxReadDocument(),
   ];
 

@@ -6,5 +6,5 @@ Future<void> main() async {
   await setup();
 
   await writeDocument(withIsar: false);
-  await readDocument();
+  await readDocument(withIsar: false);
 }
