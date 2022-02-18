@@ -100,12 +100,13 @@ jobs:
         run: melos bs --scope runner_flutter
       - name: Run benchmark
         working-directory: packages/runner_flutter
+        shell: bash
         run: |
           case ${{ runner.os }} in
             Linux)
               device=linux
               ;;
-            MacOS)
+            macOS)
               device=macos
               ;;
             Windows)
