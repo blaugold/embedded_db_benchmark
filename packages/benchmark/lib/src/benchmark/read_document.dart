@@ -52,6 +52,40 @@ class CblReadDocument extends AsyncBenchmarkBase {
   }
 }
 
+class CblReadDocumentAsync extends AsyncBenchmarkBase {
+  CblReadDocumentAsync() : super(benchmarkName('CBL Async'));
+
+  late final AsyncDatabase db;
+
+  @override
+  Future<void> setup() async {
+    final tmpDir = Directory.systemTemp.createTempSync();
+    db = await Database.openAsync(
+      'db',
+      DatabaseConfiguration(directory: tmpDir.path),
+    );
+
+    for (final document in documents) {
+      await db.saveDocument(
+        MutableDocument.withId(createDocumentId(document), document),
+      );
+    }
+  }
+
+  @override
+  Future<void> run() async {
+    for (final document in documents) {
+      final doc = await db.document(getDocumentId(document));
+      doc!.toPlainMap();
+    }
+  }
+
+  @override
+  Future<void> teardown() async {
+    await db.close();
+  }
+}
+
 class HiveReadDocument extends AsyncBenchmarkBase {
   HiveReadDocument() : super(benchmarkName('Hive'));
 
@@ -209,6 +243,7 @@ Future<void> runBenchmarks({bool withIsar = true}) async {
 
   final benchmarks = [
     CblReadDocument(),
+    CblReadDocumentAsync(),
     HiveReadDocument(),
     RealmReadDocument(),
     if (withIsar) IsarReadDocument(),
