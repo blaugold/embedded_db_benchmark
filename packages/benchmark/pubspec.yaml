@@ -7,8 +7,8 @@ environment:
 
 dependencies:
   benchmark_harness: ^2.0.0
-  cbl: ^1.0.0-beta.15
-  cbl_dart: ^1.0.0-beta.6
+  cbl: ^1.0.0
+  cbl_dart: ^1.0.0
   hive: ^2.0.5
   isar: ^2.2.0+1
   isar_document:
