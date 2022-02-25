@@ -9,7 +9,7 @@ Future<void> setup() async {
   loadDocumentsJson = _loadDocumentsFromFile;
 
   // await TracingDelegate.install(DevToolsTracing());
-  // await _initCouchbaseLiteWithLocalLibs();
+  // await _initCblWithLocalLibs();
   await _initCblWithHostedLibs();
   Database.log.console.level = LogLevel.error;
 }
