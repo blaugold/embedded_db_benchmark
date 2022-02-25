@@ -72,6 +72,9 @@ jobs:
         run: bin/runner_dart_aot.sh
 
   run-benchmark-flutter:
+    # For some reason when running the benchmark in Flutter there are random crashes.
+    # For now we don't count these as failures.
+    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
