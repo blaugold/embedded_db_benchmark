@@ -21,7 +21,9 @@ Future<void> main() async {
     ],
     databasesProviders: [
       CblProvider(),
-      RealmProvider(),
+      // Requires App-Group in sandboxed apps which applies to the current
+      // Flutter setup.
+      // RealmProvider(),
       HiveProvider(),
       IsarProvider(),
       ObjectBoxProvider(),
