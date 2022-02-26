@@ -11,3 +11,4 @@ linter:
   rules:
     - prefer_relative_imports
     - sort_pub_dependencies
+    - prefer_single_quotes

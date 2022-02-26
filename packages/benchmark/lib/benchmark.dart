@@ -1,7 +1,12 @@
-import 'src/benchmark/read_document.dart' as read_document;
-import 'src/benchmark/write_document.dart' as write_document;
-
-export 'src/fixture/document_utils.dart' show loadDocumentsJson;
-
-const writeDocument = write_document.runBenchmarks;
-const readDocument = read_document.runBenchmarks;
+export 'src/benchmark.dart'
+    show BenchmarkRun, BenchmarkResult, Benchmark, runBenchmarks;
+export 'src/benchmark/read_document_benchmark.dart' show ReadDocumentBenchmark;
+export 'src/benchmark/write_document_benchmark.dart'
+    show WriteDocumentBenchmark;
+export 'src/database_provider/cbl_provider.dart' show CblProvider;
+export 'src/database_provider/database_provider.dart' show DatabaseProvider;
+export 'src/database_provider/hive_provider.dart' show HiveProvider;
+export 'src/database_provider/isar_provider.dart' show IsarProvider;
+export 'src/database_provider/objectbox_provider.dart' show ObjectBoxProvider;
+export 'src/database_provider/realm_provider.dart' show RealmProvider;
+export 'src/fixture/document.dart' show loadDocumentsJson;

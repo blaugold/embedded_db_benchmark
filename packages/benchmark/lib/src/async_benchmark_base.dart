@@ -63,3 +63,13 @@ class AsyncBenchmarkBase {
     emitter.emit(name, (await measure()) / repeatsPerRun);
   }
 }
+
+/// Write Document Benchmark
+/// - insert a document with fixed structure into the database
+/// - every document has a unique id
+/// - 100 different document bodies are used
+/// - 100ms warmup
+/// - repeat operation for 2s
+/// - variant: batched or unbatched (what batch size?)
+/// - verify that documents are correctly inserted
+

@@ -9,13 +9,19 @@ dependencies:
   benchmark_harness: ^2.0.0
   cbl: ^1.0.0
   cbl_dart: ^1.0.0
+  collection: ^1.15.0
   hive: ^2.0.5
+  hive_document:
+    path: ../hive_document
   isar: ^2.2.0+1
   isar_document:
     path: ../isar_document
+  logging: ^1.0.2
+  meta: ^1.7.0
   objectbox: ^1.3.0
   objectbox_document:
     path: ../objectbox_document
+  path: ^1.8.0
   realm_dart: ^0.2.0+alpha
   realm_document:
     path: ../realm_document

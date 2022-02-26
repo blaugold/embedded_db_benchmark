@@ -1,9 +1,30 @@
-import 'package:flutter/material.dart';
+import 'package:benchmark/benchmark.dart';
+import 'package:flutter/widgets.dart';
+import 'package:logging/logging.dart';
 
-import 'run_benchmarks.dart';
+import 'setup.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await runBenchmarks();
+  await setup();
+
+  Logger.root.onRecord.listen((LogRecord rec) {
+    // ignore: avoid_print
+    print(rec.message);
+  });
+
+  await runBenchmarks(
+    benchmarks: [
+      WriteDocumentBenchmark(),
+      // ReadDocumentBenchmark(),
+    ],
+    databasesProviders: [
+      CblProvider(),
+      RealmProvider(),
+      HiveProvider(),
+      IsarProvider(),
+      ObjectBoxProvider(),
+    ],
+  );
 }
