@@ -48,6 +48,7 @@ class _SyncReadOneDocumentBenchmark extends BenchmarkRunner
   Future<void> setup() async {
     await super.setup();
 
+    // ignore: unused_element
     Future<void> insertDoc(BenchmarkDoc doc) {
       throw UnimplementedError();
     }
@@ -69,6 +70,7 @@ class _AsyncReadOneDocumentBenchmark extends BenchmarkRunner
   }
 }
 
+// ignore: unused_element
 const _batchSize = 50;
 
 class _SyncReadManyDocumentBenchmark extends BenchmarkRunner

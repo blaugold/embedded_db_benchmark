@@ -15,4 +15,3 @@ enum DataModel {
 final dataModel = EnumParameter(DataModel.values);
 
 final writeBatching = FlagParameter('write-batching');
-

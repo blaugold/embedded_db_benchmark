@@ -185,7 +185,9 @@
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [3886440479243237754],
+  "retiredPropertyUids": [
+    3886440479243237754
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

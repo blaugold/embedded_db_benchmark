@@ -65,6 +65,7 @@ class _FixedTimedDuration extends _BenchmarkDuration {
   int? maxAdditionalOperations(BenchmarkRunner benchmark) => null;
 }
 
+// ignore: unused_element
 class _FixedOperationsDuration extends _BenchmarkDuration {
   const _FixedOperationsDuration(this.operations);
 
