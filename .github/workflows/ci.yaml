@@ -117,4 +117,4 @@ jobs:
               device=windows
               ;;
           esac
-          flutter test -d $device integration_test/benchmark_test.dart
+          flutter test -v -d $device integration_test/benchmark_test.dart
