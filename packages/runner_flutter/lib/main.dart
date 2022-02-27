@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:benchmark/benchmark.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -21,7 +23,8 @@ Future<void> main() async {
     ],
     databasesProviders: [
       CblProvider(),
-      RealmProvider(),
+      // Realm is not supported on Linux.
+      if (!Platform.isLinux) RealmProvider(),
       HiveProvider(),
       IsarProvider(),
       // Requires Application Group in sandboxed apps, which macOS Flutter apps
