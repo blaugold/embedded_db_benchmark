@@ -68,6 +68,7 @@ jobs:
         run: dart run
       - name: Run benchmark (AOT)
         if: ${{ matrix.compilation == 'aot' }}
+        shell: bash
         working-directory: packages/runner_dart
         run: bin/runner_dart_aot.sh
 
