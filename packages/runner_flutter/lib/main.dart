@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:benchmark/benchmark.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logging/logging.dart';
@@ -29,4 +31,8 @@ Future<void> main() async {
       // ObjectBoxProvider(),
     ],
   );
+
+  if (const bool.fromEnvironment('exitAfterBenchmark')) {
+    exit(0);
+  }
 }

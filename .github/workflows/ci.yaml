@@ -115,4 +115,4 @@ jobs:
               device=windows
               ;;
           esac
-          flutter test -v -d $device integration_test/benchmark_test.dart
+          flutter run -v -d $device --dart-define exitAfterBenchmark=true

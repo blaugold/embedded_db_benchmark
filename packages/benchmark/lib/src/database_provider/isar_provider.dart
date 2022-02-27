@@ -106,7 +106,9 @@ class _IsarDatabase extends BenchmarkDatabase
       // For some reason a write transaction is necessary here.
       isar.writeTxnSync((isar) {
         final doc = isar.isarDocs.where().idEqualTo(id).findFirstSync();
-        return doc!.toBenchmarkDoc();
+        doc!.name.loadSync();
+        doc.friends.loadSync();
+        return doc.toBenchmarkDoc();
       });
 
   @override
@@ -114,7 +116,9 @@ class _IsarDatabase extends BenchmarkDatabase
       // For some reason a write transaction is necessary here.
       isar.writeTxn((isar) async {
         final doc = await isar.isarDocs.where().idEqualTo(id).findFirst();
-        return doc!.toBenchmarkDoc();
+        await doc!.name.load();
+        await doc.friends.load();
+        return doc.toBenchmarkDoc();
       });
 }
 
@@ -157,35 +161,31 @@ extension on BenchmarkFriend {
 }
 
 extension on IsarDoc {
-  BenchmarkDoc toBenchmarkDoc() {
-    name.loadSync();
-    friends.loadSync();
-    return BenchmarkDoc(
-      id: id,
-      index: index,
-      guid: guid,
-      isActive: isActive,
-      balance: balance,
-      picture: picture,
-      age: age,
-      eyeColor: eyeColor,
-      name: BenchmarkName(first: name.value!.first, last: name.value!.last),
-      company: company,
-      email: email,
-      phone: phone,
-      address: address,
-      about: about,
-      registered: registered,
-      latitude: latitude,
-      longitude: longitude,
-      tags: tags,
-      range: range,
-      friends: friends
-          .map((friend) => BenchmarkFriend(id: friend.id, name: friend.name))
-          .toList()
-        ..sort((a, b) => a.id - b.id),
-      greeting: greeting,
-      favoriteFruit: favoriteFruit,
-    );
-  }
+  BenchmarkDoc toBenchmarkDoc() => BenchmarkDoc(
+        id: id,
+        index: index,
+        guid: guid,
+        isActive: isActive,
+        balance: balance,
+        picture: picture,
+        age: age,
+        eyeColor: eyeColor,
+        name: BenchmarkName(first: name.value!.first, last: name.value!.last),
+        company: company,
+        email: email,
+        phone: phone,
+        address: address,
+        about: about,
+        registered: registered,
+        latitude: latitude,
+        longitude: longitude,
+        tags: tags,
+        range: range,
+        friends: friends
+            .map((friend) => BenchmarkFriend(id: friend.id, name: friend.name))
+            .toList()
+          ..sort((a, b) => a.id - b.id),
+        greeting: greeting,
+        favoriteFruit: favoriteFruit,
+      );
 }
