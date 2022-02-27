@@ -3,11 +3,6 @@ import 'package:realm_dart/realm.dart';
 part 'realm_document.g.dart';
 
 @RealmModel()
-class _SimpleRealmDoc {
-  late final String name;
-}
-
-@RealmModel()
 class _RealmDoc {
   @PrimaryKey()
   late final String id;

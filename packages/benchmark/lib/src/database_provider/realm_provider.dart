@@ -31,7 +31,6 @@ class RealmProvider extends DatabaseProvider {
       RealmDoc.schema,
       RealmName.schema,
       RealmFriend.schema,
-      SimpleRealmDoc.schema,
     ]);
     config.path = p.join(directory, 'db.realm');
 
