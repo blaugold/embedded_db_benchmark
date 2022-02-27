@@ -143,14 +143,9 @@ final _entities = <ModelEntity>[
   ModelEntity(
       id: const IdUid(2, 8564006045192440331),
       name: 'ObjectboxName',
-      lastPropertyId: const IdUid(3, 3282042645606389258),
+      lastPropertyId: const IdUid(4, 2804765736740573573),
       flags: 0,
       properties: <ModelProperty>[
-        ModelProperty(
-            id: const IdUid(1, 9131136361258168339),
-            name: 'id',
-            type: 6,
-            flags: 1),
         ModelProperty(
             id: const IdUid(2, 6528529618981580335),
             name: 'first',
@@ -160,26 +155,36 @@ final _entities = <ModelEntity>[
             id: const IdUid(3, 3282042645606389258),
             name: 'last',
             type: 9,
-            flags: 0)
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(4, 2804765736740573573),
+            name: 'dbId',
+            type: 6,
+            flags: 1)
       ],
       relations: <ModelRelation>[],
       backlinks: <ModelBacklink>[]),
   ModelEntity(
       id: const IdUid(3, 8278041067566766108),
       name: 'ObjectboxFriend',
-      lastPropertyId: const IdUid(2, 7815945799659295841),
+      lastPropertyId: const IdUid(3, 4725725023579620220),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
             id: const IdUid(1, 291722160156892971),
             name: 'id',
             type: 6,
-            flags: 1),
+            flags: 0),
         ModelProperty(
             id: const IdUid(2, 7815945799659295841),
             name: 'name',
             type: 9,
-            flags: 0)
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(3, 4725725023579620220),
+            name: 'dbId',
+            type: 6,
+            flags: 1)
       ],
       relations: <ModelRelation>[],
       backlinks: <ModelBacklink>[])
@@ -211,7 +216,7 @@ ModelDefinition getObjectBoxModel() {
       lastSequenceId: const IdUid(0, 0),
       retiredEntityUids: const [],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [3886440479243237754],
+      retiredPropertyUids: const [3886440479243237754, 9131136361258168339],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
@@ -331,26 +336,26 @@ ModelDefinition getObjectBoxModel() {
         model: _entities[1],
         toOneRelations: (ObjectboxName object) => [],
         toManyRelations: (ObjectboxName object) => {},
-        getId: (ObjectboxName object) => object.id,
+        getId: (ObjectboxName object) => object.dbId,
         setId: (ObjectboxName object, int id) {
-          object.id = id;
+          object.dbId = id;
         },
         objectToFB: (ObjectboxName object, fb.Builder fbb) {
           final firstOffset = fbb.writeString(object.first);
           final lastOffset = fbb.writeString(object.last);
-          fbb.startTable(4);
-          fbb.addInt64(0, object.id);
+          fbb.startTable(5);
           fbb.addOffset(1, firstOffset);
           fbb.addOffset(2, lastOffset);
+          fbb.addInt64(3, object.dbId);
           fbb.finish(fbb.endTable());
-          return object.id;
+          return object.dbId;
         },
         objectFromFB: (Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
 
           final object = ObjectboxName(
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
+              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0),
               first:
                   const fb.StringReader().vTableGet(buffer, rootOffset, 6, ''),
               last:
@@ -362,23 +367,25 @@ ModelDefinition getObjectBoxModel() {
         model: _entities[2],
         toOneRelations: (ObjectboxFriend object) => [],
         toManyRelations: (ObjectboxFriend object) => {},
-        getId: (ObjectboxFriend object) => object.id,
+        getId: (ObjectboxFriend object) => object.dbId,
         setId: (ObjectboxFriend object, int id) {
-          object.id = id;
+          object.dbId = id;
         },
         objectToFB: (ObjectboxFriend object, fb.Builder fbb) {
           final nameOffset = fbb.writeString(object.name);
-          fbb.startTable(3);
+          fbb.startTable(4);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, nameOffset);
+          fbb.addInt64(2, object.dbId);
           fbb.finish(fbb.endTable());
-          return object.id;
+          return object.dbId;
         },
         objectFromFB: (Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
 
           final object = ObjectboxFriend(
+              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 8, 0),
               id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
               name:
                   const fb.StringReader().vTableGet(buffer, rootOffset, 6, ''));
@@ -487,17 +494,17 @@ class ObjectboxDoc_ {
 
 /// [ObjectboxName] entity fields to define ObjectBox queries.
 class ObjectboxName_ {
-  /// see [ObjectboxName.id]
-  static final id =
-      QueryIntegerProperty<ObjectboxName>(_entities[1].properties[0]);
-
   /// see [ObjectboxName.first]
   static final first =
-      QueryStringProperty<ObjectboxName>(_entities[1].properties[1]);
+      QueryStringProperty<ObjectboxName>(_entities[1].properties[0]);
 
   /// see [ObjectboxName.last]
   static final last =
-      QueryStringProperty<ObjectboxName>(_entities[1].properties[2]);
+      QueryStringProperty<ObjectboxName>(_entities[1].properties[1]);
+
+  /// see [ObjectboxName.dbId]
+  static final dbId =
+      QueryIntegerProperty<ObjectboxName>(_entities[1].properties[2]);
 }
 
 /// [ObjectboxFriend] entity fields to define ObjectBox queries.
@@ -509,4 +516,8 @@ class ObjectboxFriend_ {
   /// see [ObjectboxFriend.name]
   static final name =
       QueryStringProperty<ObjectboxFriend>(_entities[2].properties[1]);
+
+  /// see [ObjectboxFriend.dbId]
+  static final dbId =
+      QueryIntegerProperty<ObjectboxFriend>(_entities[2].properties[2]);
 }

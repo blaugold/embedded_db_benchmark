@@ -1,9 +1,35 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import 'run_benchmarks.dart';
+import 'package:benchmark/benchmark.dart';
+import 'package:flutter/widgets.dart';
+import 'package:logging/logging.dart';
 
-void main() async {
+import 'setup.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await runBenchmarks();
+  await setup();
+
+  Logger.root.onRecord.listen((LogRecord rec) {
+    // ignore: avoid_print
+    print(rec.message);
+  });
+
+  await runBenchmarks(
+    benchmarks: [
+      WriteDocumentBenchmark(),
+      ReadDocumentBenchmark(),
+    ],
+    databasesProviders: [
+      CblProvider(),
+      // Realm is not supported on Linux.
+      if (!Platform.isLinux) RealmProvider(),
+      HiveProvider(),
+      IsarProvider(),
+      // Requires Application Group in sandboxed apps, which macOS Flutter apps
+      // are.
+      // ObjectBoxProvider(),
+    ],
+  );
 }

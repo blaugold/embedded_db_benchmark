@@ -17,10 +17,10 @@ extension GetIsarDocCollection on Isar {
 final IsarDocSchema = CollectionSchema(
   name: 'IsarDoc',
   schema:
-      '{"name":"IsarDoc","idName":"id_","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[{"name":"id","unique":false,"properties":[{"name":"id","type":"Hash","caseSensitive":true}]}],"links":[{"name":"friends","target":"IsarFriend"},{"name":"name","target":"IsarName"}]}',
+      '{"name":"IsarDoc","idName":"dbId","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[{"name":"id","unique":false,"properties":[{"name":"id","type":"Hash","caseSensitive":true}]}],"links":[{"name":"friends","target":"IsarFriend"},{"name":"name","target":"IsarName"}]}',
   nativeAdapter: const _IsarDocNativeAdapter(),
   webAdapter: const _IsarDocWebAdapter(),
-  idName: 'id_',
+  idName: 'dbId',
   propertyIds: {
     'about': 0,
     'address': 1,
@@ -54,13 +54,13 @@ final IsarDocSchema = CollectionSchema(
   backlinkIds: {},
   linkedCollections: ['IsarFriend', 'IsarName'],
   getId: (obj) {
-    if (obj.id_ == Isar.autoIncrement) {
+    if (obj.dbId == Isar.autoIncrement) {
       return null;
     } else {
-      return obj.id_;
+      return obj.dbId;
     }
   },
-  setId: null,
+  setId: (obj, id) => obj.dbId = id,
   getLinks: (obj) => [obj.friends, obj.name],
   version: 2,
 );
@@ -76,13 +76,13 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
     IsarNative.jsObjectSet(jsObj, 'age', object.age);
     IsarNative.jsObjectSet(jsObj, 'balance', object.balance);
     IsarNative.jsObjectSet(jsObj, 'company', object.company);
+    IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
     IsarNative.jsObjectSet(jsObj, 'email', object.email);
     IsarNative.jsObjectSet(jsObj, 'eyeColor', object.eyeColor);
     IsarNative.jsObjectSet(jsObj, 'favoriteFruit', object.favoriteFruit);
     IsarNative.jsObjectSet(jsObj, 'greeting', object.greeting);
     IsarNative.jsObjectSet(jsObj, 'guid', object.guid);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'id_', object.id_);
     IsarNative.jsObjectSet(jsObj, 'index', object.index);
     IsarNative.jsObjectSet(jsObj, 'isActive', object.isActive);
     IsarNative.jsObjectSet(jsObj, 'latitude', object.latitude);
@@ -104,6 +104,8 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity;
     object.balance = IsarNative.jsObjectGet(jsObj, 'balance') ?? '';
     object.company = IsarNative.jsObjectGet(jsObj, 'company') ?? '';
+    object.dbId =
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.email = IsarNative.jsObjectGet(jsObj, 'email') ?? '';
     object.eyeColor = IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '';
     object.favoriteFruit = IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '';
@@ -130,7 +132,7 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         [];
     attachLinks(
         collection.isar,
-        IsarNative.jsObjectGet(jsObj, 'id_') ?? double.negativeInfinity,
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity,
         object);
     return object;
   }
@@ -149,6 +151,9 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         return (IsarNative.jsObjectGet(jsObj, 'balance') ?? '') as P;
       case 'company':
         return (IsarNative.jsObjectGet(jsObj, 'company') ?? '') as P;
+      case 'dbId':
+        return (IsarNative.jsObjectGet(jsObj, 'dbId') ??
+            double.negativeInfinity) as P;
       case 'email':
         return (IsarNative.jsObjectGet(jsObj, 'email') ?? '') as P;
       case 'eyeColor':
@@ -161,9 +166,6 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         return (IsarNative.jsObjectGet(jsObj, 'guid') ?? '') as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? '') as P;
-      case 'id_':
-        return (IsarNative.jsObjectGet(jsObj, 'id_') ?? double.negativeInfinity)
-            as P;
       case 'index':
         return (IsarNative.jsObjectGet(jsObj, 'index') ??
             double.negativeInfinity) as P;
@@ -322,6 +324,7 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
     object.age = reader.readLong(offsets[2]);
     object.balance = reader.readString(offsets[3]);
     object.company = reader.readString(offsets[4]);
+    object.dbId = id;
     object.email = reader.readString(offsets[5]);
     object.eyeColor = reader.readString(offsets[6]);
     object.favoriteFruit = reader.readString(offsets[7]);
@@ -412,7 +415,7 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
 }
 
 extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyId_() {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyDbId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 
@@ -422,73 +425,73 @@ extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
 }
 
 extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> id_EqualTo(int id_) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdEqualTo(int dbId) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [id_],
+      lower: [dbId],
       includeLower: true,
-      upper: [id_],
+      upper: [dbId],
       includeUpper: true,
     ));
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> id_NotEqualTo(int id_) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdNotEqualTo(int dbId) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
-        upper: [id_],
+        upper: [dbId],
         includeUpper: false,
       )).addWhereClauseInternal(WhereClause(
         indexName: null,
-        lower: [id_],
+        lower: [dbId],
         includeLower: false,
       ));
     } else {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
-        lower: [id_],
+        lower: [dbId],
         includeLower: false,
       )).addWhereClauseInternal(WhereClause(
         indexName: null,
-        upper: [id_],
+        upper: [dbId],
         includeUpper: false,
       ));
     }
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> id_GreaterThan(
-    int id_, {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdGreaterThan(
+    int dbId, {
     bool include = false,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [id_],
+      lower: [dbId],
       includeLower: include,
     ));
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> id_LessThan(
-    int id_, {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdLessThan(
+    int dbId, {
     bool include = false,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      upper: [id_],
+      upper: [dbId],
       includeUpper: include,
     ));
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> id_Between(
-    int lowerId_,
-    int upperId_, {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdBetween(
+    int lowerDbId,
+    int upperDbId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [lowerId_],
+      lower: [lowerDbId],
       includeLower: includeLower,
-      upper: [upperId_],
+      upper: [upperDbId],
       includeUpper: includeUpper,
     ));
   }
@@ -986,6 +989,53 @@ extension IsarDocQueryFilter
       property: 'company',
       value: pattern,
       caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdEqualTo(int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'dbId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
     ));
   }
 
@@ -1604,53 +1654,6 @@ extension IsarDocQueryFilter
       property: 'id',
       value: pattern,
       caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> id_EqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id_',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> id_GreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id_',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> id_LessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id_',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> id_Between(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id_',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
     ));
   }
 
@@ -2419,6 +2422,14 @@ extension IsarDocQueryWhereSortBy on QueryBuilder<IsarDoc, IsarDoc, QSortBy> {
     return addSortByInternal('company', Sort.desc);
   }
 
+  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByDbId() {
+    return addSortByInternal('dbId', Sort.asc);
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByDbIdDesc() {
+    return addSortByInternal('dbId', Sort.desc);
+  }
+
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByEmail() {
     return addSortByInternal('email', Sort.asc);
   }
@@ -2465,14 +2476,6 @@ extension IsarDocQueryWhereSortBy on QueryBuilder<IsarDoc, IsarDoc, QSortBy> {
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByIdDesc() {
     return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortById_() {
-    return addSortByInternal('id_', Sort.asc);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortById_Desc() {
-    return addSortByInternal('id_', Sort.desc);
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByIndex() {
@@ -2574,6 +2577,14 @@ extension IsarDocQueryWhereSortThenBy
     return addSortByInternal('company', Sort.desc);
   }
 
+  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByDbId() {
+    return addSortByInternal('dbId', Sort.asc);
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByDbIdDesc() {
+    return addSortByInternal('dbId', Sort.desc);
+  }
+
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByEmail() {
     return addSortByInternal('email', Sort.asc);
   }
@@ -2620,14 +2631,6 @@ extension IsarDocQueryWhereSortThenBy
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByIdDesc() {
     return addSortByInternal('id', Sort.desc);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenById_() {
-    return addSortByInternal('id_', Sort.asc);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenById_Desc() {
-    return addSortByInternal('id_', Sort.desc);
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByIndex() {
@@ -2713,6 +2716,10 @@ extension IsarDocQueryWhereDistinct
     return addDistinctByInternal('company', caseSensitive: caseSensitive);
   }
 
+  QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctByDbId() {
+    return addDistinctByInternal('dbId');
+  }
+
   QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctByEmail(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('email', caseSensitive: caseSensitive);
@@ -2741,10 +2748,6 @@ extension IsarDocQueryWhereDistinct
   QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctById(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('id', caseSensitive: caseSensitive);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctById_() {
-    return addDistinctByInternal('id_');
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctByIndex() {
@@ -2803,6 +2806,10 @@ extension IsarDocQueryProperty
     return addPropertyNameInternal('company');
   }
 
+  QueryBuilder<IsarDoc, int, QQueryOperations> dbIdProperty() {
+    return addPropertyNameInternal('dbId');
+  }
+
   QueryBuilder<IsarDoc, String, QQueryOperations> emailProperty() {
     return addPropertyNameInternal('email');
   }
@@ -2825,10 +2832,6 @@ extension IsarDocQueryProperty
 
   QueryBuilder<IsarDoc, String, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
-  }
-
-  QueryBuilder<IsarDoc, int, QQueryOperations> id_Property() {
-    return addPropertyNameInternal('id_');
   }
 
   QueryBuilder<IsarDoc, int, QQueryOperations> indexProperty() {
@@ -2879,10 +2882,10 @@ extension GetIsarNameCollection on Isar {
 final IsarNameSchema = CollectionSchema(
   name: 'IsarName',
   schema:
-      '{"name":"IsarName","idName":"id","properties":[{"name":"first","type":"String"},{"name":"last","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"IsarName","idName":"dbId","properties":[{"name":"first","type":"String"},{"name":"last","type":"String"}],"indexes":[],"links":[]}',
   nativeAdapter: const _IsarNameNativeAdapter(),
   webAdapter: const _IsarNameWebAdapter(),
-  idName: 'id',
+  idName: 'dbId',
   propertyIds: {'first': 0, 'last': 1},
   listProperties: {},
   indexIds: {},
@@ -2891,13 +2894,13 @@ final IsarNameSchema = CollectionSchema(
   backlinkIds: {},
   linkedCollections: [],
   getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
+    if (obj.dbId == Isar.autoIncrement) {
       return null;
     } else {
-      return obj.id;
+      return obj.dbId;
     }
   },
-  setId: (obj, id) => obj.id = id,
+  setId: (obj, id) => obj.dbId = id,
   getLinks: (obj) => [],
   version: 2,
 );
@@ -2908,8 +2911,8 @@ class _IsarNameWebAdapter extends IsarWebTypeAdapter<IsarName> {
   @override
   Object serialize(IsarCollection<IsarName> collection, IsarName object) {
     final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
     IsarNative.jsObjectSet(jsObj, 'first', object.first);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'last', object.last);
     return jsObj;
   }
@@ -2917,8 +2920,9 @@ class _IsarNameWebAdapter extends IsarWebTypeAdapter<IsarName> {
   @override
   IsarName deserialize(IsarCollection<IsarName> collection, dynamic jsObj) {
     final object = IsarName();
+    object.dbId =
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.first = IsarNative.jsObjectGet(jsObj, 'first') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id');
     object.last = IsarNative.jsObjectGet(jsObj, 'last') ?? '';
     return object;
   }
@@ -2926,10 +2930,11 @@ class _IsarNameWebAdapter extends IsarWebTypeAdapter<IsarName> {
   @override
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
+      case 'dbId':
+        return (IsarNative.jsObjectGet(jsObj, 'dbId') ??
+            double.negativeInfinity) as P;
       case 'first':
         return (IsarNative.jsObjectGet(jsObj, 'first') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id')) as P;
       case 'last':
         return (IsarNative.jsObjectGet(jsObj, 'last') ?? '') as P;
       default:
@@ -2968,8 +2973,8 @@ class _IsarNameNativeAdapter extends IsarNativeTypeAdapter<IsarName> {
   IsarName deserialize(IsarCollection<IsarName> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = IsarName();
+    object.dbId = id;
     object.first = reader.readString(offsets[0]);
-    object.id = id;
     object.last = reader.readString(offsets[1]);
     return object;
   }
@@ -2994,79 +2999,79 @@ class _IsarNameNativeAdapter extends IsarNativeTypeAdapter<IsarName> {
 }
 
 extension IsarNameQueryWhereSort on QueryBuilder<IsarName, IsarName, QWhere> {
-  QueryBuilder<IsarName, IsarName, QAfterWhere> anyId() {
+  QueryBuilder<IsarName, IsarName, QAfterWhere> anyDbId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
 extension IsarNameQueryWhere on QueryBuilder<IsarName, IsarName, QWhereClause> {
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idEqualTo(int? id) {
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdEqualTo(int dbId) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [id],
+      lower: [dbId],
       includeLower: true,
-      upper: [id],
+      upper: [dbId],
       includeUpper: true,
     ));
   }
 
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idNotEqualTo(int? id) {
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdNotEqualTo(int dbId) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
-        upper: [id],
+        upper: [dbId],
         includeUpper: false,
       )).addWhereClauseInternal(WhereClause(
         indexName: null,
-        lower: [id],
+        lower: [dbId],
         includeLower: false,
       ));
     } else {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
-        lower: [id],
+        lower: [dbId],
         includeLower: false,
       )).addWhereClauseInternal(WhereClause(
         indexName: null,
-        upper: [id],
+        upper: [dbId],
         includeUpper: false,
       ));
     }
   }
 
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idGreaterThan(
-    int? id, {
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdGreaterThan(
+    int dbId, {
     bool include = false,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [id],
+      lower: [dbId],
       includeLower: include,
     ));
   }
 
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idLessThan(
-    int? id, {
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdLessThan(
+    int dbId, {
     bool include = false,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      upper: [id],
+      upper: [dbId],
       includeUpper: include,
     ));
   }
 
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> idBetween(
-    int? lowerId,
-    int? upperId, {
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdBetween(
+    int lowerDbId,
+    int upperDbId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [lowerId],
+      lower: [lowerDbId],
       includeLower: includeLower,
-      upper: [upperId],
+      upper: [upperDbId],
       includeUpper: includeUpper,
     ));
   }
@@ -3074,6 +3079,54 @@ extension IsarNameQueryWhere on QueryBuilder<IsarName, IsarName, QWhereClause> {
 
 extension IsarNameQueryFilter
     on QueryBuilder<IsarName, IsarName, QFilterCondition> {
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'dbId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -3174,62 +3227,6 @@ extension IsarNameQueryFilter
       property: 'first',
       value: pattern,
       caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idIsNull() {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.isNull,
-      property: 'id',
-      value: null,
-    ));
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idEqualTo(
-      int? value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'id',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'id',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> idBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'id',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
     ));
   }
 
@@ -3339,20 +3336,20 @@ extension IsarNameQueryFilter
 
 extension IsarNameQueryWhereSortBy
     on QueryBuilder<IsarName, IsarName, QSortBy> {
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByDbId() {
+    return addSortByInternal('dbId', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByDbIdDesc() {
+    return addSortByInternal('dbId', Sort.desc);
+  }
+
   QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByFirst() {
     return addSortByInternal('first', Sort.asc);
   }
 
   QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByFirstDesc() {
     return addSortByInternal('first', Sort.desc);
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByLast() {
@@ -3366,20 +3363,20 @@ extension IsarNameQueryWhereSortBy
 
 extension IsarNameQueryWhereSortThenBy
     on QueryBuilder<IsarName, IsarName, QSortThenBy> {
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByDbId() {
+    return addSortByInternal('dbId', Sort.asc);
+  }
+
+  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByDbIdDesc() {
+    return addSortByInternal('dbId', Sort.desc);
+  }
+
   QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByFirst() {
     return addSortByInternal('first', Sort.asc);
   }
 
   QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByFirstDesc() {
     return addSortByInternal('first', Sort.desc);
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenById() {
-    return addSortByInternal('id', Sort.asc);
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByIdDesc() {
-    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByLast() {
@@ -3393,13 +3390,13 @@ extension IsarNameQueryWhereSortThenBy
 
 extension IsarNameQueryWhereDistinct
     on QueryBuilder<IsarName, IsarName, QDistinct> {
+  QueryBuilder<IsarName, IsarName, QDistinct> distinctByDbId() {
+    return addDistinctByInternal('dbId');
+  }
+
   QueryBuilder<IsarName, IsarName, QDistinct> distinctByFirst(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('first', caseSensitive: caseSensitive);
-  }
-
-  QueryBuilder<IsarName, IsarName, QDistinct> distinctById() {
-    return addDistinctByInternal('id');
   }
 
   QueryBuilder<IsarName, IsarName, QDistinct> distinctByLast(
@@ -3410,12 +3407,12 @@ extension IsarNameQueryWhereDistinct
 
 extension IsarNameQueryProperty
     on QueryBuilder<IsarName, IsarName, QQueryProperty> {
-  QueryBuilder<IsarName, String, QQueryOperations> firstProperty() {
-    return addPropertyNameInternal('first');
+  QueryBuilder<IsarName, int, QQueryOperations> dbIdProperty() {
+    return addPropertyNameInternal('dbId');
   }
 
-  QueryBuilder<IsarName, int?, QQueryOperations> idProperty() {
-    return addPropertyNameInternal('id');
+  QueryBuilder<IsarName, String, QQueryOperations> firstProperty() {
+    return addPropertyNameInternal('first');
   }
 
   QueryBuilder<IsarName, String, QQueryOperations> lastProperty() {
@@ -3434,11 +3431,11 @@ extension GetIsarFriendCollection on Isar {
 final IsarFriendSchema = CollectionSchema(
   name: 'IsarFriend',
   schema:
-      '{"name":"IsarFriend","idName":"id","properties":[{"name":"name","type":"String"}],"indexes":[],"links":[]}',
+      '{"name":"IsarFriend","idName":"dbId","properties":[{"name":"id","type":"Long"},{"name":"name","type":"String"}],"indexes":[],"links":[]}',
   nativeAdapter: const _IsarFriendNativeAdapter(),
   webAdapter: const _IsarFriendWebAdapter(),
-  idName: 'id',
-  propertyIds: {'name': 0},
+  idName: 'dbId',
+  propertyIds: {'id': 0, 'name': 1},
   listProperties: {},
   indexIds: {},
   indexTypes: {},
@@ -3446,13 +3443,13 @@ final IsarFriendSchema = CollectionSchema(
   backlinkIds: {},
   linkedCollections: [],
   getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
+    if (obj.dbId == Isar.autoIncrement) {
       return null;
     } else {
-      return obj.id;
+      return obj.dbId;
     }
   },
-  setId: (obj, id) => obj.id = id,
+  setId: (obj, id) => obj.dbId = id,
   getLinks: (obj) => [],
   version: 2,
 );
@@ -3463,6 +3460,7 @@ class _IsarFriendWebAdapter extends IsarWebTypeAdapter<IsarFriend> {
   @override
   Object serialize(IsarCollection<IsarFriend> collection, IsarFriend object) {
     final jsObj = IsarNative.newJsObject();
+    IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
     IsarNative.jsObjectSet(jsObj, 'id', object.id);
     IsarNative.jsObjectSet(jsObj, 'name', object.name);
     return jsObj;
@@ -3471,6 +3469,8 @@ class _IsarFriendWebAdapter extends IsarWebTypeAdapter<IsarFriend> {
   @override
   IsarFriend deserialize(IsarCollection<IsarFriend> collection, dynamic jsObj) {
     final object = IsarFriend();
+    object.dbId =
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
     return object;
@@ -3479,6 +3479,9 @@ class _IsarFriendWebAdapter extends IsarWebTypeAdapter<IsarFriend> {
   @override
   P deserializeProperty<P>(Object jsObj, String propertyName) {
     switch (propertyName) {
+      case 'dbId':
+        return (IsarNative.jsObjectGet(jsObj, 'dbId') ??
+            double.negativeInfinity) as P;
       case 'id':
         return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
             as P;
@@ -3505,8 +3508,10 @@ class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
       List<int> offsets,
       AdapterAlloc alloc) {
     var dynamicSize = 0;
-    final value0 = object.name;
-    final _name = IsarBinaryWriter.utf8Encoder.convert(value0);
+    final value0 = object.id;
+    final _id = value0;
+    final value1 = object.name;
+    final _name = IsarBinaryWriter.utf8Encoder.convert(value1);
     dynamicSize += (_name.length) as int;
     final size = staticSize + dynamicSize;
 
@@ -3514,15 +3519,17 @@ class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
     rawObj.buffer_length = size;
     final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
     final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _name);
+    writer.writeLong(offsets[0], _id);
+    writer.writeBytes(offsets[1], _name);
   }
 
   @override
   IsarFriend deserialize(IsarCollection<IsarFriend> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = IsarFriend();
-    object.id = id;
-    object.name = reader.readString(offsets[0]);
+    object.dbId = id;
+    object.id = reader.readLong(offsets[0]);
+    object.name = reader.readString(offsets[1]);
     return object;
   }
 
@@ -3533,6 +3540,8 @@ class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
       case -1:
         return id as P;
       case 0:
+        return (reader.readLong(offset)) as P;
+      case 1:
         return (reader.readString(offset)) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -3545,80 +3554,82 @@ class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
 
 extension IsarFriendQueryWhereSort
     on QueryBuilder<IsarFriend, IsarFriend, QWhere> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhere> anyId() {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhere> anyDbId() {
     return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
 extension IsarFriendQueryWhere
     on QueryBuilder<IsarFriend, IsarFriend, QWhereClause> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idEqualTo(int id) {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdEqualTo(
+      int dbId) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [id],
+      lower: [dbId],
       includeLower: true,
-      upper: [id],
+      upper: [dbId],
       includeUpper: true,
     ));
   }
 
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idNotEqualTo(int id) {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdNotEqualTo(
+      int dbId) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
-        upper: [id],
+        upper: [dbId],
         includeUpper: false,
       )).addWhereClauseInternal(WhereClause(
         indexName: null,
-        lower: [id],
+        lower: [dbId],
         includeLower: false,
       ));
     } else {
       return addWhereClauseInternal(WhereClause(
         indexName: null,
-        lower: [id],
+        lower: [dbId],
         includeLower: false,
       )).addWhereClauseInternal(WhereClause(
         indexName: null,
-        upper: [id],
+        upper: [dbId],
         includeUpper: false,
       ));
     }
   }
 
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idGreaterThan(
-    int id, {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdGreaterThan(
+    int dbId, {
     bool include = false,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [id],
+      lower: [dbId],
       includeLower: include,
     ));
   }
 
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idLessThan(
-    int id, {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdLessThan(
+    int dbId, {
     bool include = false,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      upper: [id],
+      upper: [dbId],
       includeUpper: include,
     ));
   }
 
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> idBetween(
-    int lowerId,
-    int upperId, {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdBetween(
+    int lowerDbId,
+    int upperDbId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [lowerId],
+      lower: [lowerDbId],
       includeLower: includeLower,
-      upper: [upperId],
+      upper: [upperDbId],
       includeUpper: includeUpper,
     ));
   }
@@ -3626,6 +3637,54 @@ extension IsarFriendQueryWhere
 
 extension IsarFriendQueryFilter
     on QueryBuilder<IsarFriend, IsarFriend, QFilterCondition> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdEqualTo(
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'dbId',
+      value: value,
+    ));
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'dbId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
+  }
+
   QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> idEqualTo(
       int value) {
     return addFilterConditionInternal(FilterCondition(
@@ -3780,6 +3839,14 @@ extension IsarFriendQueryFilter
 
 extension IsarFriendQueryWhereSortBy
     on QueryBuilder<IsarFriend, IsarFriend, QSortBy> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByDbId() {
+    return addSortByInternal('dbId', Sort.asc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByDbIdDesc() {
+    return addSortByInternal('dbId', Sort.desc);
+  }
+
   QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -3799,6 +3866,14 @@ extension IsarFriendQueryWhereSortBy
 
 extension IsarFriendQueryWhereSortThenBy
     on QueryBuilder<IsarFriend, IsarFriend, QSortThenBy> {
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByDbId() {
+    return addSortByInternal('dbId', Sort.asc);
+  }
+
+  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByDbIdDesc() {
+    return addSortByInternal('dbId', Sort.desc);
+  }
+
   QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenById() {
     return addSortByInternal('id', Sort.asc);
   }
@@ -3818,6 +3893,10 @@ extension IsarFriendQueryWhereSortThenBy
 
 extension IsarFriendQueryWhereDistinct
     on QueryBuilder<IsarFriend, IsarFriend, QDistinct> {
+  QueryBuilder<IsarFriend, IsarFriend, QDistinct> distinctByDbId() {
+    return addDistinctByInternal('dbId');
+  }
+
   QueryBuilder<IsarFriend, IsarFriend, QDistinct> distinctById() {
     return addDistinctByInternal('id');
   }
@@ -3830,6 +3909,10 @@ extension IsarFriendQueryWhereDistinct
 
 extension IsarFriendQueryProperty
     on QueryBuilder<IsarFriend, IsarFriend, QQueryProperty> {
+  QueryBuilder<IsarFriend, int, QQueryOperations> dbIdProperty() {
+    return addPropertyNameInternal('dbId');
+  }
+
   QueryBuilder<IsarFriend, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }

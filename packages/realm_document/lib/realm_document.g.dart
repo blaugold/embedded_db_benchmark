@@ -6,30 +6,6 @@ part of 'realm_document.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class SimpleRealmDoc extends _SimpleRealmDoc with RealmObject {
-  SimpleRealmDoc(
-    String name,
-  ) {
-    RealmObject.set(this, 'name', name);
-  }
-
-  SimpleRealmDoc._();
-
-  @override
-  String get name => RealmObject.get<String>(this, 'name') as String;
-  @override
-  set name(String value) => throw RealmUnsupportedSetError();
-
-  static SchemaObject get schema => _schema ??= _initSchema();
-  static SchemaObject? _schema;
-  static SchemaObject _initSchema() {
-    RealmObject.registerFactory(SimpleRealmDoc._);
-    return const SchemaObject(SimpleRealmDoc, [
-      SchemaProperty('name', RealmPropertyType.string),
-    ]);
-  }
-}
-
 class RealmDoc extends _RealmDoc with RealmObject {
   RealmDoc(
     String id,
