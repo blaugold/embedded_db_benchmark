@@ -25,6 +25,7 @@ dependencies:
   realm_dart: ^0.2.0+alpha
   realm_document:
     path: ../realm_document
+  test: ^1.20.1
 
 dev_dependencies:
   flutter_lints: ^1.0.4

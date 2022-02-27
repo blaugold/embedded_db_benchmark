@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:test/expect.dart';
 
 import '../benchmark.dart';
+import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
@@ -14,7 +18,6 @@ class ReadDocumentBenchmark extends Benchmark {
       ParameterCombination.allCombinations([
         ParameterRange.all(execution),
         ParameterRange.all(dataModel),
-        ParameterRange.all(writeBatching),
       ]);
 
   @override
@@ -23,18 +26,10 @@ class ReadDocumentBenchmark extends Benchmark {
 
     switch (parameterCombination.get(execution)!) {
       case Execution.sync:
-        if (parameterCombination.get(writeBatching)!) {
-          benchmark = _SyncReadManyDocumentBenchmark();
-        } else {
-          benchmark = _SyncReadOneDocumentBenchmark();
-        }
+        benchmark = _SyncReadOneDocumentBenchmark();
         break;
       case Execution.async:
-        if (parameterCombination.get(writeBatching)!) {
-          benchmark = _AsyncReadManyDocumentBenchmark();
-        } else {
-          benchmark = _AsyncReadOneDocumentBenchmark();
-        }
+        benchmark = _AsyncReadOneDocumentBenchmark();
         break;
     }
 
@@ -42,49 +37,98 @@ class ReadDocumentBenchmark extends Benchmark {
   }
 }
 
-class _SyncReadOneDocumentBenchmark extends BenchmarkRunner
+abstract class _ReadDocumentBase extends BenchmarkRunner
     with BenchmarkDocumentMixin {
+  late final List<BenchmarkDoc> documents;
+
+  BenchmarkDoc get currentDocument =>
+      documents[executedOperations % documents.length];
+
+  FutureOr<void> insertDocument(BenchmarkDoc document);
+
+  FutureOr<BenchmarkDoc> loadDocument(String id);
+
   @override
   Future<void> setup() async {
     await super.setup();
 
-    // ignore: unused_element
-    Future<void> insertDoc(BenchmarkDoc doc) {
-      throw UnimplementedError();
+    documents = createDocuments(100);
+
+    // Insert documents.
+    for (final document in documents) {
+      await insertDocument(document);
     }
 
-    // Insert benchmark documents.
+    // Verify that document can be persisted and loaded correctly.
+    for (final document in documents) {
+      final loadedDocument = await loadDocument(document.id);
+
+      var documentJson = document.toJson();
+      var loadedDocumentJson = loadedDocument.toJson();
+
+      var matcher = equals(documentJson);
+      final matchState = <Object?, Object?>{};
+
+      if (!matcher.matches(loadedDocumentJson, matchState)) {
+        Description mismatchDescription = StringDescription();
+        mismatchDescription = matcher.describeMismatch(
+          loadedDocumentJson,
+          mismatchDescription,
+          matchState,
+          true,
+        );
+
+        const jsonEncoder = JsonEncoder.withIndent('  ');
+
+        throw Exception(
+          'The database did not persisted document correctly:\n'
+          '$mismatchDescription\n'
+          'Expected: ${jsonEncoder.convert(documentJson)}\n'
+          'Actual: ${jsonEncoder.convert(loadedDocumentJson)}',
+        );
+      }
+    }
+  }
+}
+
+class _SyncReadOneDocumentBenchmark extends _ReadDocumentBase {
+  @override
+  void insertDocument(BenchmarkDoc document) {
+    final database = this.database as InsertOneDocumentSync;
+    database.insertOneDocumentSync(document);
+  }
+
+  @override
+  BenchmarkDoc loadDocument(String id) {
+    final database = this.database as LoadDocumentSync;
+    return database.loadDocumentSync(id);
   }
 
   @override
   void executeOperations() {
-    throw UnimplementedError();
+    final document = currentDocument;
+    final database = this.database as LoadDocumentSync;
+    measureOperationsSync(() => database.loadDocumentSync(document.id));
   }
 }
 
-class _AsyncReadOneDocumentBenchmark extends BenchmarkRunner
-    with BenchmarkDocumentMixin {
+class _AsyncReadOneDocumentBenchmark extends _ReadDocumentBase {
+  @override
+  Future<void> insertDocument(BenchmarkDoc document) async {
+    final database = this.database as InsertOneDocumentAsync;
+    await database.insertOneDocumentAsync(document);
+  }
+
+  @override
+  Future<BenchmarkDoc> loadDocument(String id) {
+    final database = this.database as LoadDocumentAsync;
+    return database.loadDocumentAsync(id);
+  }
+
   @override
   Future<void> executeOperations() async {
-    throw UnimplementedError();
-  }
-}
-
-// ignore: unused_element
-const _batchSize = 50;
-
-class _SyncReadManyDocumentBenchmark extends BenchmarkRunner
-    with BenchmarkDocumentMixin {
-  @override
-  void executeOperations() {
-    throw UnimplementedError();
-  }
-}
-
-class _AsyncReadManyDocumentBenchmark extends BenchmarkRunner
-    with BenchmarkDocumentMixin {
-  @override
-  Future<void> executeOperations() async {
-    throw UnimplementedError();
+    final document = currentDocument;
+    final database = this.database as LoadDocumentAsync;
+    await measureOperationsAsync(() => database.loadDocumentAsync(document.id));
   }
 }

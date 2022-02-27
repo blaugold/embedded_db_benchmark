@@ -114,6 +114,7 @@ extension on BenchmarkDoc {
     ..setValue(latitude, key: 'latitude')
     ..setValue(longitude, key: 'longitude')
     ..setValue(tags, key: 'tags')
+    ..setValue(range, key: 'range')
     ..setValue(
       friends.map((friend) => friend.toMutableDictionary()),
       key: 'friends',
@@ -153,8 +154,8 @@ extension on Document {
         registered: value('registered')!,
         latitude: value('latitude')!,
         longitude: value('longitude')!,
-        tags: value('tags')!,
-        range: value('range')!,
+        tags: array('tags')!.cast<String>().toList(),
+        range: array('range')!.cast<int>().toList(),
         friends: array('friends')!
             .cast<Dictionary>()
             .map((dict) => dict.toBenchmarkFriend())

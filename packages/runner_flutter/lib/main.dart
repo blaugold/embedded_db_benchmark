@@ -17,7 +17,7 @@ Future<void> main() async {
   await runBenchmarks(
     benchmarks: [
       WriteDocumentBenchmark(),
-      // ReadDocumentBenchmark(),
+      ReadDocumentBenchmark(),
     ],
     databasesProviders: [
       CblProvider(),

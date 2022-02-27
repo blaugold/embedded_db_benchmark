@@ -91,6 +91,7 @@ extension on BenchmarkDoc {
         greeting,
         favoriteFruit,
         name: name.toRealmName(),
+        tags: tags,
         range: range,
         friends: friends.map((friend) => friend.toRealmFriend()),
       );

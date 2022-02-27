@@ -14,12 +14,14 @@ Future<void> main() async {
   await runBenchmarks(
     benchmarks: [
       WriteDocumentBenchmark(),
-      // ReadDocumentBenchmark(),
+      ReadDocumentBenchmark(),
     ],
     databasesProviders: [
       CblProvider(),
       RealmProvider(),
       HiveProvider(),
+      // Isar is currently not easy to use with standalone Dart.
+      // IsarProvider(),
       ObjectBoxProvider(),
     ],
   );

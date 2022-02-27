@@ -110,7 +110,7 @@ extension on ObjectboxDoc {
         eyeColor: eyeColor,
         name: BenchmarkName(
           first: name.target!.first,
-          last: name.target!.first,
+          last: name.target!.last,
         ),
         company: company,
         email: email,

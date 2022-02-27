@@ -267,18 +267,18 @@ var _documentNumber = 0;
 
 final _documentNumbers = <Object?, int>{};
 
-String createDocumentId(DocumentMap document) =>
-    '${document['id']}_${_documentNumbers[document] = _documentNumber++}';
+String createDocumentId(DocumentMap rawDocument) =>
+    '${rawDocument['id']}_${_documentNumbers[rawDocument] = _documentNumber++}';
 
-String getDocumentId(DocumentMap document) =>
-    '${document['id']}_${_documentNumbers[document]!}';
+String getDocumentId(DocumentMap rawDocument) =>
+    '${rawDocument['id']}_${_documentNumbers[rawDocument]!}';
 
 mixin BenchmarkDocumentMixin on BenchmarkRunner {
-  late final List<DocumentMap> documents;
+  late final List<DocumentMap> rawDocuments;
 
   @override
   Future<void> setup() async {
-    documents = await loadDocuments();
+    rawDocuments = await loadDocuments();
     return super.setup();
   }
 
@@ -288,11 +288,11 @@ mixin BenchmarkDocumentMixin on BenchmarkRunner {
       List.generate(count, _createDocument);
 
   BenchmarkDoc _createDocument([int index = 0]) {
-    final documentMap =
-        documents[(executedOperations + index) % documents.length];
+    final rawDocument =
+        rawDocuments[(executedOperations + index) % rawDocuments.length];
     return BenchmarkDoc.fromJson(
-      documentMap,
-      id: createDocumentId(documentMap),
+      rawDocument,
+      id: createDocumentId(rawDocument),
     );
   }
 }

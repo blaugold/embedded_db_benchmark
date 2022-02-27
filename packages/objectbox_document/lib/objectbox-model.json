@@ -135,15 +135,9 @@
     },
     {
       "id": "2:8564006045192440331",
-      "lastPropertyId": "3:3282042645606389258",
+      "lastPropertyId": "4:2804765736740573573",
       "name": "ObjectboxName",
       "properties": [
-        {
-          "id": "1:9131136361258168339",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
         {
           "id": "2:6528529618981580335",
           "name": "first",
@@ -153,25 +147,36 @@
           "id": "3:3282042645606389258",
           "name": "last",
           "type": 9
+        },
+        {
+          "id": "4:2804765736740573573",
+          "name": "dbId",
+          "type": 6,
+          "flags": 1
         }
       ],
       "relations": []
     },
     {
       "id": "3:8278041067566766108",
-      "lastPropertyId": "2:7815945799659295841",
+      "lastPropertyId": "3:4725725023579620220",
       "name": "ObjectboxFriend",
       "properties": [
         {
           "id": "1:291722160156892971",
           "name": "id",
-          "type": 6,
-          "flags": 1
+          "type": 6
         },
         {
           "id": "2:7815945799659295841",
           "name": "name",
           "type": 9
+        },
+        {
+          "id": "3:4725725023579620220",
+          "name": "dbId",
+          "type": 6,
+          "flags": 1
         }
       ],
       "relations": []
@@ -186,7 +191,8 @@
   "retiredEntityUids": [],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
-    3886440479243237754
+    3886440479243237754,
+    9131136361258168339
   ],
   "retiredRelationUids": [],
   "version": 1

@@ -58,17 +58,20 @@ class ObjectboxDoc {
 
 @Entity()
 class ObjectboxName {
-  int id;
+  @Id()
+  int dbId;
   final String first;
   final String last;
 
-  ObjectboxName({this.id = 0, required this.first, required this.last});
+  ObjectboxName({this.dbId = 0, required this.first, required this.last});
 }
 
 @Entity()
 class ObjectboxFriend {
+  @Id()
+  int dbId;
   int id;
   String name;
 
-  ObjectboxFriend({this.id = 0, required this.name});
+  ObjectboxFriend({this.dbId = 0, required this.id, required this.name});
 }
