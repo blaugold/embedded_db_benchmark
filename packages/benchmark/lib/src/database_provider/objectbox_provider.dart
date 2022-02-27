@@ -124,7 +124,8 @@ extension on ObjectboxDoc {
         range: range,
         friends: friends
             .map((friend) => BenchmarkFriend(id: friend.id, name: friend.name))
-            .toList(),
+            .toList()
+          ..sort((a, b) => a.id - b.id),
         greeting: greeting,
         favoriteFruit: favoriteFruit,
       );

@@ -5,7 +5,7 @@ part 'isar_document.g.dart';
 @Collection()
 class IsarDoc {
   @Id()
-  late final dbId = Isar.autoIncrement;
+  late int dbId = Isar.autoIncrement;
   @Index()
   late final String id;
   late final int index;
@@ -36,7 +36,7 @@ class IsarDoc {
 @Collection()
 class IsarName {
   @Id()
-  late final int dbId = Isar.autoIncrement;
+  late int dbId = Isar.autoIncrement;
   late final String first;
   late final String last;
 
@@ -46,7 +46,7 @@ class IsarName {
 @Collection()
 class IsarFriend {
   @Id()
-  late final int dbId = Isar.autoIncrement;
+  late int dbId = Isar.autoIncrement;
   late final int id;
   late final String name;
 

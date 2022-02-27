@@ -344,7 +344,7 @@ packages:
     source: hosted
     version: "2.0.6"
   hive_document:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../hive_document"
       relative: true
@@ -384,7 +384,7 @@ packages:
     source: hosted
     version: "2.2.0+1"
   isar_document:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../isar_document"
       relative: true
@@ -468,7 +468,7 @@ packages:
     source: hosted
     version: "1.3.0"
   objectbox_document:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../objectbox_document"
       relative: true
@@ -608,7 +608,7 @@ packages:
     source: hosted
     version: "0.2.0+alpha"
   realm_document:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "../realm_document"
       relative: true

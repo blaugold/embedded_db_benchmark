@@ -60,7 +60,7 @@ final IsarDocSchema = CollectionSchema(
       return obj.dbId;
     }
   },
-  setId: null,
+  setId: (obj, id) => obj.dbId = id,
   getLinks: (obj) => [obj.friends, obj.name],
   version: 2,
 );
@@ -104,6 +104,8 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity;
     object.balance = IsarNative.jsObjectGet(jsObj, 'balance') ?? '';
     object.company = IsarNative.jsObjectGet(jsObj, 'company') ?? '';
+    object.dbId =
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.email = IsarNative.jsObjectGet(jsObj, 'email') ?? '';
     object.eyeColor = IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '';
     object.favoriteFruit = IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '';
@@ -322,6 +324,7 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
     object.age = reader.readLong(offsets[2]);
     object.balance = reader.readString(offsets[3]);
     object.company = reader.readString(offsets[4]);
+    object.dbId = id;
     object.email = reader.readString(offsets[5]);
     object.eyeColor = reader.readString(offsets[6]);
     object.favoriteFruit = reader.readString(offsets[7]);
@@ -2897,7 +2900,7 @@ final IsarNameSchema = CollectionSchema(
       return obj.dbId;
     }
   },
-  setId: null,
+  setId: (obj, id) => obj.dbId = id,
   getLinks: (obj) => [],
   version: 2,
 );
@@ -2917,6 +2920,8 @@ class _IsarNameWebAdapter extends IsarWebTypeAdapter<IsarName> {
   @override
   IsarName deserialize(IsarCollection<IsarName> collection, dynamic jsObj) {
     final object = IsarName();
+    object.dbId =
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.first = IsarNative.jsObjectGet(jsObj, 'first') ?? '';
     object.last = IsarNative.jsObjectGet(jsObj, 'last') ?? '';
     return object;
@@ -2968,6 +2973,7 @@ class _IsarNameNativeAdapter extends IsarNativeTypeAdapter<IsarName> {
   IsarName deserialize(IsarCollection<IsarName> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = IsarName();
+    object.dbId = id;
     object.first = reader.readString(offsets[0]);
     object.last = reader.readString(offsets[1]);
     return object;
@@ -3443,7 +3449,7 @@ final IsarFriendSchema = CollectionSchema(
       return obj.dbId;
     }
   },
-  setId: null,
+  setId: (obj, id) => obj.dbId = id,
   getLinks: (obj) => [],
   version: 2,
 );
@@ -3463,6 +3469,8 @@ class _IsarFriendWebAdapter extends IsarWebTypeAdapter<IsarFriend> {
   @override
   IsarFriend deserialize(IsarCollection<IsarFriend> collection, dynamic jsObj) {
     final object = IsarFriend();
+    object.dbId =
+        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
     return object;
@@ -3519,6 +3527,7 @@ class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
   IsarFriend deserialize(IsarCollection<IsarFriend> collection, int id,
       IsarBinaryReader reader, List<int> offsets) {
     final object = IsarFriend();
+    object.dbId = id;
     object.id = reader.readLong(offsets[0]);
     object.name = reader.readString(offsets[1]);
     return object;

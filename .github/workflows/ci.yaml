@@ -49,10 +49,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
-      - name: Setup Melos
-        run: dart pub global activate melos
-      - name: Bootstrap package
-        run: melos bs --scope runner_dart
+      - name: Run pub get
+        working-directory: packages/runner_dart
+        run: dart pub get
       - name: Install Realm binaries
         working-directory: packages/runner_dart
         run: dart run realm_dart install
@@ -95,13 +94,12 @@ jobs:
         run: |
           flutter config --enable-linux-desktop
           flutter config --enable-macos-desktop
-      - name: Setup Melos
-        run: dart pub global activate melos
       - name: Ensure Flutter generated files exist
         working-directory: packages/runner_flutter
         run: flutter pub get
-      - name: Bootstrap package
-        run: melos bs --scope runner_flutter
+      - name: Run pub get
+        working-directory: packages/runner_flutter
+        run: flutter pub get
       - name: Run benchmark
         working-directory: packages/runner_flutter
         shell: bash
