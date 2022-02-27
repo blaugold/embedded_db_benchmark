@@ -21,11 +21,11 @@ Future<void> main() async {
     ],
     databasesProviders: [
       CblProvider(),
-      // Requires App-Group in sandboxed apps which applies to the current
-      // Flutter setup.
-      // RealmProvider(),
+      RealmProvider(),
       HiveProvider(),
       IsarProvider(),
+      // Requires Application Group in sandboxed apps, which macOS Flutter apps
+      // are.
       ObjectBoxProvider(),
     ],
   );
