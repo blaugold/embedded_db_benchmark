@@ -29,7 +29,7 @@ Future<void> main() async {
       IsarProvider(),
       // Requires Application Group in sandboxed apps, which macOS Flutter apps
       // are.
-      // ObjectBoxProvider(),
+      if (!Platform.isMacOS) ObjectBoxProvider(),
     ],
   );
 }
