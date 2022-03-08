@@ -6,10 +6,10 @@ PODS:
     - Flutter
   - isar_flutter_libs (1.0.0):
     - Flutter
-  - ObjectBox (1.6.0)
+  - ObjectBox (1.7.0)
   - objectbox_flutter_libs (0.0.1):
     - Flutter
-    - ObjectBox (= 1.6.0)
+    - ObjectBox (= 1.7.0)
   - path_provider_ios (0.0.1):
     - Flutter
   - "realm (0.2.0+alpha)":
@@ -49,8 +49,8 @@ SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   isar_flutter_libs: 5a34aebdd82e388db81dad8dd26786a642bb5b90
-  ObjectBox: a181cc5fb47e0a6ec60754d34dc49f40dc17829e
-  objectbox_flutter_libs: 511c59b863bc45abc7f6f338499e4a50e9aa5f1d
+  ObjectBox: 6410cda891ee71682ea1b0330a9544c52b2ba988
+  objectbox_flutter_libs: e414a78ffda0a6418a7b41359dda7b7cfc6cd8fe
   path_provider_ios: 7d7ce634493af4477d156294792024ec3485acd5
   realm: a89a9315a38261549e21a283586db1e9692d2e56
 
