@@ -2381,6 +2381,27 @@ extension IsarDocQueryFilter
   }
 }
 
+extension IsarDocQueryLinks
+    on QueryBuilder<IsarDoc, IsarDoc, QFilterCondition> {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friends(
+      FilterQuery<IsarFriend> q) {
+    return linkInternal(
+      isar.isarFriends,
+      q,
+      'friends',
+    );
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> name(
+      FilterQuery<IsarName> q) {
+    return linkInternal(
+      isar.isarNames,
+      q,
+      'name',
+    );
+  }
+}
+
 extension IsarDocQueryWhereSortBy on QueryBuilder<IsarDoc, IsarDoc, QSortBy> {
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByAbout() {
     return addSortByInternal('about', Sort.asc);
@@ -3334,6 +3355,9 @@ extension IsarNameQueryFilter
   }
 }
 
+extension IsarNameQueryLinks
+    on QueryBuilder<IsarName, IsarName, QFilterCondition> {}
+
 extension IsarNameQueryWhereSortBy
     on QueryBuilder<IsarName, IsarName, QSortBy> {
   QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByDbId() {
@@ -3836,6 +3860,9 @@ extension IsarFriendQueryFilter
     ));
   }
 }
+
+extension IsarFriendQueryLinks
+    on QueryBuilder<IsarFriend, IsarFriend, QFilterCondition> {}
 
 extension IsarFriendQueryWhereSortBy
     on QueryBuilder<IsarFriend, IsarFriend, QSortBy> {
