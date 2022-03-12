@@ -16,7 +16,7 @@ Future<void> main() async {
     print(rec.message);
   });
 
-  await runBenchmarks(
+  final runs = await runBenchmarks(
     benchmarks: [
       WriteDocumentBenchmark(),
       ReadDocumentBenchmark(),
@@ -26,10 +26,14 @@ Future<void> main() async {
       // Realm is not supported on Linux.
       if (!Platform.isLinux) RealmProvider(),
       HiveProvider(),
-      IsarProvider(),
+      // Isar is broken on iOS currently.
+      // https://github.com/isar/isar/issues/187
+      if (!Platform.isIOS) IsarProvider(),
       // Requires Application Group in sandboxed apps, which macOS Flutter apps
       // are.
       if (!Platform.isMacOS) ObjectBoxProvider(),
     ],
   );
+
+  printRuns(runs).split('\n').forEach(Logger.root.info);
 }

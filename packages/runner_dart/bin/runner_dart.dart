@@ -11,7 +11,7 @@ Future<void> main() async {
     print(rec.message);
   });
 
-  await runBenchmarks(
+  final runs = await runBenchmarks(
     benchmarks: [
       WriteDocumentBenchmark(),
       ReadDocumentBenchmark(),
@@ -25,4 +25,6 @@ Future<void> main() async {
       ObjectBoxProvider(),
     ],
   );
+
+  Logger.root.info(printRuns(runs));
 }

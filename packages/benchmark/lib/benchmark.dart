@@ -1,5 +1,5 @@
 export 'src/benchmark.dart'
-    show BenchmarkRun, BenchmarkResult, Benchmark, runBenchmarks;
+    show BenchmarkRun, BenchmarkResult, Benchmark, runBenchmarks, printRuns;
 export 'src/benchmark/read_document_benchmark.dart' show ReadDocumentBenchmark;
 export 'src/benchmark/write_document_benchmark.dart'
     show WriteDocumentBenchmark;

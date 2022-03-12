@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
+import 'package:tabular/tabular.dart';
 
 import 'benchmark_database.dart';
+import 'benchmark_parameter.dart';
 import 'database_provider/database_provider.dart';
 import 'parameter.dart';
 
@@ -182,16 +184,16 @@ Future<List<BenchmarkRun>> runBenchmarks({
 }) async {
   logger ??= Logger('BenchmarkRunner');
 
-  logger.info([
+  [
     'Running the following benchmarks:',
     for (final benchmark in benchmarks) ' - ${benchmark.name}'
-  ].join('\n'));
+  ].forEach(logger.info);
 
-  logger.info([
+  [
     'Benchmarking the following databases:',
     for (final databaseProvider in databasesProviders)
       ' - ${databaseProvider.name}'
-  ].join('\n'));
+  ].forEach(logger.info);
 
   final runs = <BenchmarkRun>[];
 
@@ -217,14 +219,12 @@ Future<List<BenchmarkRun>> runBenchmarks({
           parameterCombination: parameterCombination,
         );
 
-        logger.info(
-          [
-            '        Ops:     ${result.operations}',
-            '        Ops/s:   ${result.operationsPerSecond.floor()}',
-            '        Time:    ${result.duration.inMicroseconds / 10e5}s',
-            '        Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
-          ].join('\n'),
-        );
+        [
+          '        Ops:     ${result.operations}',
+          '        Ops/s:   ${result.operationsPerSecond.floor()}',
+          '        Time:    ${result.duration.inMicroseconds / 10e5}s',
+          '        Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
+        ].forEach(logger.info);
 
         runs.add(BenchmarkRun(
           benchmark: benchmark.name,
@@ -237,4 +237,61 @@ Future<List<BenchmarkRun>> runBenchmarks({
   }
 
   return runs;
+}
+
+String printRuns(List<BenchmarkRun> runs) {
+  final allParameters = runs
+      .expand((run) => run.parameterCombination.parameters)
+      .toSet()
+      .toList()
+    ..sort((a, b) => a.name.compareTo(b.name));
+
+  final header = [
+    'Benchmark',
+    'Database',
+    'Ops',
+    'Ops/s',
+    'Time',
+    'Time/Op',
+    ...allParameters.map((p) => p.name)
+  ];
+
+  Object? _formatParameterValue(Object? value) {
+    if (value is Enum) {
+      return value.name;
+    }
+    return value;
+  }
+
+  final rows = runs.map((run) => <Object?>[
+        run.benchmark,
+        run.database,
+        run.result.operations,
+        run.result.operationsPerSecond.floor(),
+        '${(run.result.duration.inMicroseconds / 10e5).toStringAsFixed(3)}s',
+        '${run.result.timePerOperationInMicroseconds.ceil()}us',
+        for (final parameter in allParameters)
+          _formatParameterValue(
+                run.parameterCombination.get<Object?>(parameter),
+              ) ??
+              '',
+      ]);
+
+  return tabular(
+    [header, ...rows],
+    align: <String, Side>{
+      'Ops': Side.end,
+      'Ops/s': Side.end,
+      'Time': Side.end,
+      'Time/Op': Side.end,
+      for (final parameter in allParameters) parameter.name: Side.end,
+    },
+    sort: [
+      Sort('Benchmark'),
+      Sort('Database'),
+      Sort(execution.name),
+      Sort(dataModel.name),
+      Sort(batchSize.name),
+    ],
+  );
 }

@@ -428,6 +428,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1+1"
   realm_common:
     dependency: transitive
     description:
@@ -547,6 +554,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  tabular:
+    dependency: transitive
+    description:
+      name: tabular
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.3+1"
   tar:
     dependency: transitive
     description:
