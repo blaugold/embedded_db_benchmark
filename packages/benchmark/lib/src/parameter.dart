@@ -1,5 +1,3 @@
-import 'utils.dart';
-
 abstract class Parameter<T> {
   Parameter(this.name);
 
@@ -11,9 +9,9 @@ abstract class Parameter<T> {
 }
 
 class EnumParameter<T extends Enum> extends Parameter<T> {
-  EnumParameter(this.values)
+  EnumParameter(String name, this.values)
       : assert(values.isNotEmpty),
-        super(values.first.runtimeType.toString().kebabCase);
+        super(name);
 
   @override
   final List<T> values;
@@ -36,6 +34,19 @@ class FlagParameter extends Parameter<bool> {
 
   @override
   String toString() => 'FlagParameter($name)';
+}
+
+class ListParameter<T> extends Parameter<T> {
+  ListParameter(String name, this.values) : super(name);
+
+  @override
+  final List<T> values;
+
+  @override
+  bool isValidValue(T value) => values.contains(value);
+
+  @override
+  String toString() => 'ListParameter($name, $values)';
 }
 
 abstract class ParameterRange<T> {
@@ -125,6 +136,8 @@ class ParameterCombination {
   bool contains(Parameter parameter) {
     return _values.containsKey(parameter);
   }
+
+  List<Parameter> get parameters => _values.keys.toList();
 
   bool containsCombination(ParameterCombination combination) =>
       combination._values.keys.every(

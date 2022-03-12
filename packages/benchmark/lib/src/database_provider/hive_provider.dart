@@ -32,7 +32,7 @@ class HiveProvider extends DatabaseProvider {
       ParameterCombination.allCombinations([
         ParameterRange.single(execution, Execution.async),
         ParameterRange.single(dataModel, DataModel.static),
-        ParameterRange.all(writeBatching),
+        ParameterRange.all(batchSize),
       ]);
 
   @override

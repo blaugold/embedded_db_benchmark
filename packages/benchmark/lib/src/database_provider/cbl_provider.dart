@@ -18,7 +18,7 @@ class CblProvider extends DatabaseProvider {
       ParameterCombination.allCombinations([
         ParameterRange.all(execution),
         ParameterRange.single(dataModel, DataModel.dynamic),
-        ParameterRange.all(writeBatching),
+        ParameterRange.all(batchSize),
       ]);
 
   @override

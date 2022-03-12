@@ -5,13 +5,13 @@ enum Execution {
   async,
 }
 
-final execution = EnumParameter(Execution.values);
+final execution = EnumParameter('execution', Execution.values);
 
 enum DataModel {
   static,
   dynamic,
 }
 
-final dataModel = EnumParameter(DataModel.values);
+final dataModel = EnumParameter('data-model', DataModel.values);
 
-final writeBatching = FlagParameter('write-batching');
+final batchSize = ListParameter('batch-size', [1, 100, 1000]);

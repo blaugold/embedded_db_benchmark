@@ -18,7 +18,7 @@ class ObjectBoxProvider extends DatabaseProvider {
       ParameterCombination.allCombinations([
         ParameterRange.single(execution, Execution.sync),
         ParameterRange.single(dataModel, DataModel.static),
-        ParameterRange.all(writeBatching),
+        ParameterRange.all(batchSize),
       ]);
 
   @override

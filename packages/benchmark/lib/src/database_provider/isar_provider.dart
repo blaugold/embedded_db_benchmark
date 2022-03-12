@@ -18,7 +18,7 @@ class IsarProvider extends DatabaseProvider {
       ParameterCombination.allCombinations([
         ParameterRange.all(execution),
         ParameterRange.single(dataModel, DataModel.static),
-        ParameterRange.all(writeBatching),
+        ParameterRange.all(batchSize),
       ]);
 
   @override

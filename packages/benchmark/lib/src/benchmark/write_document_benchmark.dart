@@ -15,26 +15,27 @@ class WriteDocumentBenchmark extends Benchmark {
       ParameterCombination.allCombinations([
         ParameterRange.all(execution),
         ParameterRange.all(dataModel),
-        ParameterRange.all(writeBatching),
+        ParameterRange.all(batchSize),
       ]);
 
   @override
   BenchmarkRunner createRunner(ParameterCombination parameterCombination) {
     final BenchmarkRunner benchmark;
+    final batchSizeValue = parameterCombination.get(batchSize)!;
 
     switch (parameterCombination.get(execution)!) {
       case Execution.sync:
-        if (parameterCombination.get(writeBatching)!) {
-          benchmark = _SyncWriteManyDocumentBenchmark();
-        } else {
+        if (batchSizeValue == 1) {
           benchmark = _SyncWriteOneDocumentBenchmark();
+        } else {
+          benchmark = _SyncWriteManyDocumentBenchmark(batchSizeValue);
         }
         break;
       case Execution.async:
-        if (parameterCombination.get(writeBatching)!) {
-          benchmark = _AsyncWriteManyDocumentBenchmark();
-        } else {
+        if (batchSizeValue == 1) {
           benchmark = _AsyncWriteOneDocumentBenchmark();
+        } else {
+          benchmark = _AsyncWriteManyDocumentBenchmark(batchSizeValue);
         }
         break;
     }
@@ -65,10 +66,12 @@ class _AsyncWriteOneDocumentBenchmark extends BenchmarkRunner
   }
 }
 
-const _batchSize = 50;
-
 class _SyncWriteManyDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
+  _SyncWriteManyDocumentBenchmark(this._batchSize);
+
+  final int _batchSize;
+
   @override
   void executeOperations() {
     final database = this.database as InsertManyDocumentsSync;
@@ -82,6 +85,10 @@ class _SyncWriteManyDocumentBenchmark extends BenchmarkRunner
 
 class _AsyncWriteManyDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
+  _AsyncWriteManyDocumentBenchmark(this._batchSize);
+
+  final int _batchSize;
+
   @override
   Future<void> executeOperations() async {
     final database = this.database as InsertManyDocumentsAsync;
