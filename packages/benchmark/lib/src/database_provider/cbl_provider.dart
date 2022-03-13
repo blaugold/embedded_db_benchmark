@@ -82,9 +82,9 @@ class _AsyncCblDatabase extends BenchmarkDatabase
   @override
   Future<void> insertManyDocumentsAsync(List<BenchmarkDoc> docs) =>
       database.inBatch(() async {
-        for (final doc in docs) {
-          await database.saveDocument(doc.toMutableDocument());
-        }
+        await Future.wait(
+          docs.map((doc) => database.saveDocument(doc.toMutableDocument())),
+        );
       });
 
   @override
