@@ -126,28 +126,28 @@ packages:
       name: cbl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   cbl_dart:
     dependency: transitive
     description:
       name: cbl_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0+1"
+    version: "1.0.0+2"
   cbl_ffi:
     dependency: transitive
     description:
       name: cbl_ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.0+1"
   cbl_flutter:
     dependency: "direct main"
     description:
       name: cbl_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0+1"
+    version: "1.0.0+2"
   cbl_flutter_ce:
     dependency: "direct main"
     description:

@@ -7,8 +7,8 @@ environment:
 
 dependencies:
   benchmark_harness: ^2.0.0
-  cbl: ^1.0.1
-  cbl_dart: ^1.0.0+1
+  cbl: ^1.0.2
+  cbl_dart: ^1.0.0+2
   collection: ^1.15.0
   hive: ^2.0.6
   hive_document:
