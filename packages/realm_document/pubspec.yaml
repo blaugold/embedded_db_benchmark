@@ -6,6 +6,8 @@ environment:
   sdk: '>=2.16.1 <3.0.0'
 
 dependencies:
+  benchmark_document:
+    path: ../benchmark_document
   realm_dart: ^0.2.0+alpha
 
 dev_dependencies:

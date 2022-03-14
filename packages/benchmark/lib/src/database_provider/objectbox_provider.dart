@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:benchmark_document/benchmark_document.dart';
 import 'package:objectbox_document/objectbox.g.dart';
 import 'package:objectbox_document/objectbox_document.dart';
 
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
-import '../fixture/document.dart';
 import '../parameter.dart';
 import 'database_provider.dart';
 
-class ObjectBoxProvider extends DatabaseProvider {
+class ObjectBoxProvider extends DatabaseProvider<ObjectboxDoc> {
   @override
   String get name => 'ObjectBox';
 
@@ -17,12 +17,11 @@ class ObjectBoxProvider extends DatabaseProvider {
   Iterable<ParameterCombination> get supportedParameterCombinations =>
       ParameterCombination.allCombinations([
         ParameterRange.single(execution, Execution.sync),
-        ParameterRange.single(dataModel, DataModel.static),
         ParameterRange.all(batchSize),
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase> openDatabase(
+  FutureOr<BenchmarkDatabase<ObjectboxDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) async {
@@ -33,7 +32,7 @@ class ObjectBoxProvider extends DatabaseProvider {
   }
 }
 
-class _ObjectBoxDatabase extends BenchmarkDatabase {
+class _ObjectBoxDatabase extends BenchmarkDatabase<ObjectboxDoc> {
   _ObjectBoxDatabase(this.store, this.box, this.query);
 
   final Store store;
@@ -41,19 +40,27 @@ class _ObjectBoxDatabase extends BenchmarkDatabase {
   final Query<ObjectboxDoc> query;
 
   @override
+  ObjectboxDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toObjectBoxDoc();
+
+  @override
   void close() => store.close();
 
   @override
-  void createDocumentSync(BenchmarkDoc doc) => box.put(doc.toObjectBoxDoc());
+  ObjectboxDoc createDocumentSync(ObjectboxDoc doc) {
+    box.put(doc);
+    return doc;
+  }
 
   @override
-  void createDocumentsSync(List<BenchmarkDoc> docs) =>
-      box.putMany([for (final doc in docs) doc.toObjectBoxDoc()]);
+  List<ObjectboxDoc> createDocumentsSync(List<ObjectboxDoc> docs) {
+    box.putMany([for (final doc in docs) doc.toObjectBoxDoc()]);
+    return docs;
+  }
 
   @override
-  BenchmarkDoc getDocumentByIdSync(String id) {
+  ObjectboxDoc getDocumentByIdSync(String id) {
     query.param(ObjectboxDoc_.id).value = id;
-    return query.findFirst()!.toBenchmarkDoc();
+    return query.findFirst()!;
   }
 }
 
@@ -80,8 +87,8 @@ extension on BenchmarkDoc {
         greeting: greeting,
         favoriteFruit: favoriteFruit,
       )
-        ..name.target = name.toObjectBoxName()
-        ..friends.addAll(
+        ..obxName.target = name.toObjectBoxName()
+        ..obxFriends.addAll(
           friends.map((friend) => friend.toObjectBoxFriend()).toList(),
         );
 }
@@ -92,37 +99,4 @@ extension on BenchmarkName {
 
 extension on BenchmarkFriend {
   ObjectboxFriend toObjectBoxFriend() => ObjectboxFriend(id: id, name: name);
-}
-
-extension on ObjectboxDoc {
-  BenchmarkDoc toBenchmarkDoc() => BenchmarkDoc(
-        id: id,
-        index: index,
-        guid: guid,
-        isActive: isActive,
-        balance: balance,
-        picture: picture,
-        age: age,
-        eyeColor: eyeColor,
-        name: BenchmarkName(
-          first: name.target!.first,
-          last: name.target!.last,
-        ),
-        company: company,
-        email: email,
-        phone: phone,
-        address: address,
-        about: about,
-        registered: registered,
-        latitude: latitude,
-        longitude: longitude,
-        tags: tags,
-        range: range,
-        friends: friends
-            .map((friend) => BenchmarkFriend(id: friend.id, name: friend.name))
-            .toList()
-          ..sort((a, b) => a.id - b.id),
-        greeting: greeting,
-        favoriteFruit: favoriteFruit,
-      );
 }

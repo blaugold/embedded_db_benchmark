@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:benchmark_document/benchmark_document.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:tabular/tabular.dart';
@@ -43,7 +44,9 @@ abstract class Benchmark {
 
   Iterable<ParameterCombination> get supportedParameterCombinations;
 
-  BenchmarkRunner createRunner(ParameterCombination parameterCombination);
+  BenchmarkRunner<T> createRunner<T extends BenchmarkDoc>(
+    ParameterCombination parameterCombination,
+  );
 }
 
 abstract class _BenchmarkDuration {
@@ -82,8 +85,8 @@ class _FixedOperationsDuration extends _BenchmarkDuration {
       operations - benchmark.executedOperations;
 }
 
-abstract class BenchmarkRunner {
-  late final DatabaseProvider _databaseProvider;
+abstract class BenchmarkRunner<T extends BenchmarkDoc> {
+  late final DatabaseProvider<T> _databaseProvider;
   late final ParameterCombination _parameterCombination;
   late final _BenchmarkDuration _duration;
 
@@ -96,10 +99,10 @@ abstract class BenchmarkRunner {
   final _stopwatch = Stopwatch();
 
   @protected
-  late final BenchmarkDatabase database;
+  late final BenchmarkDatabase<T> database;
 
   Future<BenchmarkResult> run(
-    DatabaseProvider databaseProvider,
+    DatabaseProvider<T> databaseProvider,
     ParameterCombination parameterCombination,
     _BenchmarkDuration duration,
   ) async {
@@ -166,9 +169,11 @@ Future<BenchmarkResult> _runBenchmark({
   required ParameterCombination parameterCombination,
 }) async {
   Future<BenchmarkResult> _runBenchmark(_BenchmarkDuration duration) =>
-      benchmark
-          .createRunner(parameterCombination)
-          .run(databaseProvider, parameterCombination, duration);
+      databaseProvider.runWith(
+        <T extends BenchmarkDoc>(provider) => benchmark
+            .createRunner<T>(parameterCombination)
+            .run(provider, parameterCombination, duration),
+      );
 
   const warmUpDuration = _FixedTimedDuration(Duration(milliseconds: 500));
   const runDuration = _FixedTimedDuration(Duration(seconds: 2));
@@ -290,7 +295,6 @@ String printRuns(List<BenchmarkRun> runs) {
       Sort('Benchmark'),
       Sort('Database'),
       Sort(execution.name),
-      Sort(dataModel.name),
       Sort(batchSize.name),
     ],
   );

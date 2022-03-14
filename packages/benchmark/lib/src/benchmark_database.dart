@@ -1,31 +1,33 @@
 import 'dart:async';
 
-import 'fixture/document.dart';
+import 'package:benchmark_document/benchmark_document.dart';
 
-abstract class BenchmarkDatabase {
+abstract class BenchmarkDatabase<T extends BenchmarkDoc> {
+  T createBenchmarkDocImpl(BenchmarkDoc doc);
+
   FutureOr<void> close() {}
 
-  void createDocumentSync(BenchmarkDoc doc) {
-    createDocumentsSync([doc]);
+  T createDocumentSync(T doc) {
+    return createDocumentsSync([doc]).single;
   }
 
-  void createDocumentsSync(List<BenchmarkDoc> docs) {
+  List<T> createDocumentsSync(List<T> docs) {
     throw UnimplementedError();
   }
 
-  Future<void> createDocumentAsync(BenchmarkDoc doc) {
-    return createDocumentsAsync([doc]);
+  Future<T> createDocumentAsync(T doc) {
+    return createDocumentsAsync([doc]).then((docs) => docs.single);
   }
 
-  Future<void> createDocumentsAsync(List<BenchmarkDoc> docs) {
+  Future<List<T>> createDocumentsAsync(List<T> docs) {
     throw UnimplementedError();
   }
 
-  BenchmarkDoc getDocumentByIdSync(String id) {
+  T getDocumentByIdSync(String id) {
     throw UnimplementedError();
   }
 
-  Future<BenchmarkDoc> getDocumentByIdAsync(String id) {
+  Future<T> getDocumentByIdAsync(String id) {
     throw UnimplementedError();
   }
 }

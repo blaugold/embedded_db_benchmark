@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:benchmark_document/benchmark_document.dart';
 import 'package:test/expect.dart';
 
 import '../benchmark.dart';
@@ -16,12 +17,13 @@ class ReadDocumentBenchmark extends Benchmark {
   Iterable<ParameterCombination> get supportedParameterCombinations =>
       ParameterCombination.allCombinations([
         ParameterRange.all(execution),
-        ParameterRange.all(dataModel),
       ]);
 
   @override
-  BenchmarkRunner createRunner(ParameterCombination parameterCombination) {
-    final BenchmarkRunner benchmark;
+  BenchmarkRunner<T> createRunner<T extends BenchmarkDoc>(
+    ParameterCombination parameterCombination,
+  ) {
+    final BenchmarkRunner<T> benchmark;
 
     switch (parameterCombination.get(execution)!) {
       case Execution.sync:
@@ -36,8 +38,8 @@ class ReadDocumentBenchmark extends Benchmark {
   }
 }
 
-abstract class _ReadDocumentBase extends BenchmarkRunner
-    with BenchmarkDocumentMixin {
+abstract class _ReadDocumentBase<T extends BenchmarkDoc>
+    extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
   late final List<BenchmarkDoc> documents;
 
   BenchmarkDoc get currentDocument =>
@@ -90,10 +92,11 @@ abstract class _ReadDocumentBase extends BenchmarkRunner
   }
 }
 
-class _SyncReadOneDocumentBenchmark extends _ReadDocumentBase {
+class _SyncReadOneDocumentBenchmark<T extends BenchmarkDoc>
+    extends _ReadDocumentBase<T> {
   @override
   void createDocument(BenchmarkDoc document) {
-    database.createDocumentSync(document);
+    database.createDocumentSync(database.createBenchmarkDocImpl(document));
   }
 
   @override
@@ -108,10 +111,12 @@ class _SyncReadOneDocumentBenchmark extends _ReadDocumentBase {
   }
 }
 
-class _AsyncReadOneDocumentBenchmark extends _ReadDocumentBase {
+class _AsyncReadOneDocumentBenchmark<T extends BenchmarkDoc>
+    extends _ReadDocumentBase<T> {
   @override
   Future<void> createDocument(BenchmarkDoc document) async {
-    await database.createDocumentAsync(document);
+    await database
+        .createDocumentAsync(database.createBenchmarkDocImpl(document));
   }
 
   @override

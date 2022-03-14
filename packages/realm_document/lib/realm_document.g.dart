@@ -26,7 +26,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
     String longitude,
     String greeting,
     String favoriteFruit, {
-    RealmName? name,
+    RealmName? nameRel,
     Iterable<String> tags = const [],
     Iterable<int> range = const [],
     Iterable<RealmFriend> friends = const [],
@@ -39,7 +39,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
     RealmObject.set(this, 'picture', picture);
     RealmObject.set(this, 'age', age);
     RealmObject.set(this, 'eyeColor', eyeColor);
-    RealmObject.set(this, 'name', name);
+    RealmObject.set(this, 'nameRel', nameRel);
     RealmObject.set(this, 'company', company);
     RealmObject.set(this, 'email', email);
     RealmObject.set(this, 'phone', phone);
@@ -98,9 +98,10 @@ class RealmDoc extends _RealmDoc with RealmObject {
   set eyeColor(String value) => throw RealmUnsupportedSetError();
 
   @override
-  RealmName? get name => RealmObject.get<RealmName>(this, 'name') as RealmName?;
+  RealmName? get nameRel =>
+      RealmObject.get<RealmName>(this, 'nameRel') as RealmName?;
   @override
-  set name(covariant RealmName? value) => throw RealmUnsupportedSetError();
+  set nameRel(covariant RealmName? value) => throw RealmUnsupportedSetError();
 
   @override
   String get company => RealmObject.get<String>(this, 'company') as String;
@@ -185,7 +186,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
       SchemaProperty('picture', RealmPropertyType.string),
       SchemaProperty('age', RealmPropertyType.int),
       SchemaProperty('eyeColor', RealmPropertyType.string),
-      SchemaProperty('name', RealmPropertyType.object,
+      SchemaProperty('nameRel', RealmPropertyType.object,
           optional: true, linkTarget: 'RealmName'),
       SchemaProperty('company', RealmPropertyType.string),
       SchemaProperty('email', RealmPropertyType.string),

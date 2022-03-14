@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:110508833524735892",
-      "lastPropertyId": "23:3961540835188943383",
+      "lastPropertyId": "24:7500067224874914523",
       "name": "ObjectboxDoc",
       "properties": [
         {
@@ -49,14 +49,6 @@
           "id": "8:6235868881030615646",
           "name": "eyeColor",
           "type": 9
-        },
-        {
-          "id": "9:1167247666618880382",
-          "name": "nameId",
-          "type": 11,
-          "flags": 520,
-          "indexId": "1:7428278450406228165",
-          "relationTarget": "ObjectboxName"
         },
         {
           "id": "10:204460225648943795",
@@ -123,12 +115,20 @@
           "name": "dbId",
           "type": 6,
           "flags": 1
+        },
+        {
+          "id": "24:7500067224874914523",
+          "name": "obxNameId",
+          "type": 11,
+          "flags": 520,
+          "indexId": "3:2335236624869731754",
+          "relationTarget": "ObjectboxName"
         }
       ],
       "relations": [
         {
-          "id": "1:8804691660091051136",
-          "name": "friends",
+          "id": "2:8130017285336605337",
+          "name": "obxFriends",
           "targetId": "3:8278041067566766108"
         }
       ]
@@ -183,17 +183,22 @@
     }
   ],
   "lastEntityId": "3:8278041067566766108",
-  "lastIndexId": "2:4984996048941082833",
-  "lastRelationId": "1:8804691660091051136",
+  "lastIndexId": "3:2335236624869731754",
+  "lastRelationId": "2:8130017285336605337",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
-  "retiredIndexUids": [],
+  "retiredIndexUids": [
+    7428278450406228165
+  ],
   "retiredPropertyUids": [
     3886440479243237754,
-    9131136361258168339
+    9131136361258168339,
+    1167247666618880382
   ],
-  "retiredRelationUids": [],
+  "retiredRelationUids": [
+    8804691660091051136
+  ],
   "version": 1
 }

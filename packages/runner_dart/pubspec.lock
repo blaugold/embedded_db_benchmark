@@ -36,6 +36,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  benchmark_document:
+    dependency: transitive
+    description:
+      path: "../benchmark_document"
+      relative: true
+    source: path
+    version: "1.0.0"
   benchmark_harness:
     dependency: transitive
     description:

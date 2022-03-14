@@ -1,9 +1,14 @@
 import 'dart:async';
 
+import 'package:benchmark_document/benchmark_document.dart';
+
 import '../benchmark_database.dart';
 import '../parameter.dart';
 
-abstract class DatabaseProvider {
+abstract class DatabaseProvider<T extends BenchmarkDoc> {
+  R runWith<R>(R Function<T extends BenchmarkDoc>(DatabaseProvider<T>) fn) =>
+      fn<T>(this);
+
   String get name;
 
   Iterable<ParameterCombination> get supportedParameterCombinations;
@@ -14,7 +19,7 @@ abstract class DatabaseProvider {
             supportedCombination.containsCombination(combination),
       );
 
-  FutureOr<BenchmarkDatabase> openDatabase(
+  FutureOr<BenchmarkDatabase<T>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   );

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:benchmark_document/benchmark_document.dart';
 import 'package:path/path.dart' as p;
 import 'package:realm_dart/realm.dart';
 import 'package:realm_document/realm_document.dart';
@@ -7,10 +8,9 @@ import 'package:realm_document/realm_document.dart';
 import '../../benchmark.dart';
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
-import '../fixture/document.dart';
 import '../parameter.dart';
 
-class RealmProvider extends DatabaseProvider {
+class RealmProvider extends DatabaseProvider<RealmDoc> {
   @override
   String get name => 'Realm';
 
@@ -18,12 +18,11 @@ class RealmProvider extends DatabaseProvider {
   Iterable<ParameterCombination> get supportedParameterCombinations =>
       ParameterCombination.allCombinations([
         ParameterRange.single(execution, Execution.sync),
-        ParameterRange.single(dataModel, DataModel.static),
         ParameterRange.all(batchSize),
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase> openDatabase(
+  FutureOr<BenchmarkDatabase<RealmDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) {
@@ -38,31 +37,35 @@ class RealmProvider extends DatabaseProvider {
   }
 }
 
-class _RealmDatabase extends BenchmarkDatabase {
+class _RealmDatabase extends BenchmarkDatabase<RealmDoc> {
   _RealmDatabase(this.realm);
 
   final Realm realm;
 
   @override
+  RealmDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toRealmDoc();
+
+  @override
   void close() => realm.close();
 
   @override
-  void createDocumentSync(BenchmarkDoc doc) {
+  RealmDoc createDocumentSync(RealmDoc doc) {
     realm.write(() {
       realm.add(doc.toRealmDoc());
     });
+    return doc;
   }
 
   @override
-  void createDocumentsSync(List<BenchmarkDoc> docs) {
+  List<RealmDoc> createDocumentsSync(List<RealmDoc> docs) {
     realm.write(() {
       realm.addAll(docs.map((doc) => doc.toRealmDoc()));
     });
+    return docs;
   }
 
   @override
-  BenchmarkDoc getDocumentByIdSync(String id) =>
-      realm.find<RealmDoc>(id)!.toBenchmarkDoc();
+  RealmDoc getDocumentByIdSync(String id) => realm.find<RealmDoc>(id)!;
 }
 
 extension on BenchmarkDoc {
@@ -85,7 +88,7 @@ extension on BenchmarkDoc {
         longitude,
         greeting,
         favoriteFruit,
-        name: name.toRealmName(),
+        nameRel: name.toRealmName(),
         tags: tags,
         range: range,
         friends: friends.map((friend) => friend.toRealmFriend()),
@@ -98,39 +101,4 @@ extension on BenchmarkName {
 
 extension on BenchmarkFriend {
   RealmFriend toRealmFriend() => RealmFriend(id, name);
-}
-
-extension on RealmDoc {
-  BenchmarkDoc toBenchmarkDoc() => BenchmarkDoc(
-        id: id,
-        index: index,
-        guid: guid,
-        isActive: isActive,
-        balance: balance,
-        picture: picture,
-        age: age,
-        eyeColor: eyeColor,
-        name: name!.toBenchmarkName(),
-        company: company,
-        email: email,
-        phone: phone,
-        address: address,
-        about: about,
-        registered: registered,
-        latitude: latitude,
-        longitude: longitude,
-        tags: tags,
-        range: range,
-        friends: friends.map((friend) => friend.toBenchmarkFriend()).toList(),
-        greeting: greeting,
-        favoriteFruit: favoriteFruit,
-      );
-}
-
-extension on RealmName {
-  BenchmarkName toBenchmarkName() => BenchmarkName(first: first, last: last);
-}
-
-extension on RealmFriend {
-  BenchmarkFriend toBenchmarkFriend() => BenchmarkFriend(id: id, name: name);
 }

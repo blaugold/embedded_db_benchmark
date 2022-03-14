@@ -17,7 +17,7 @@ extension GetIsarDocCollection on Isar {
 final IsarDocSchema = CollectionSchema(
   name: 'IsarDoc',
   schema:
-      '{"name":"IsarDoc","idName":"dbId","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[{"name":"id","unique":false,"properties":[{"name":"id","type":"Hash","caseSensitive":true}]}],"links":[{"name":"friends","target":"IsarFriend"},{"name":"name","target":"IsarName"}]}',
+      '{"name":"IsarDoc","idName":"dbId","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[{"name":"id","unique":false,"properties":[{"name":"id","type":"Hash","caseSensitive":true}]}],"links":[{"name":"isarFriends","target":"IsarFriend"},{"name":"isarName","target":"IsarName"}]}',
   nativeAdapter: const _IsarDocNativeAdapter(),
   webAdapter: const _IsarDocWebAdapter(),
   idName: 'dbId',
@@ -50,7 +50,7 @@ final IsarDocSchema = CollectionSchema(
       NativeIndexType.stringHash,
     ]
   },
-  linkIds: {'friends': 0, 'name': 1},
+  linkIds: {'isarFriends': 0, 'isarName': 1},
   backlinkIds: {},
   linkedCollections: ['IsarFriend', 'IsarName'],
   getId: (obj) {
@@ -61,7 +61,7 @@ final IsarDocSchema = CollectionSchema(
     }
   },
   setId: (obj, id) => obj.dbId = id,
-  getLinks: (obj) => [obj.friends, obj.name],
+  getLinks: (obj) => [obj.isarFriends, obj.isarName],
   version: 2,
 );
 
@@ -200,18 +200,18 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
 
   @override
   void attachLinks(Isar isar, int id, IsarDoc object) {
-    object.friends.attach(
+    object.isarFriends.attach(
       id,
       isar.isarDocs,
       isar.getCollection<IsarFriend>('IsarFriend'),
-      'friends',
+      'isarFriends',
       false,
     );
-    object.name.attach(
+    object.isarName.attach(
       id,
       isar.isarDocs,
       isar.getCollection<IsarName>('IsarName'),
-      'name',
+      'isarName',
       false,
     );
   }
@@ -397,18 +397,18 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
 
   @override
   void attachLinks(Isar isar, int id, IsarDoc object) {
-    object.friends.attach(
+    object.isarFriends.attach(
       id,
       isar.isarDocs,
       isar.getCollection<IsarFriend>('IsarFriend'),
-      'friends',
+      'isarFriends',
       false,
     );
-    object.name.attach(
+    object.isarName.attach(
       id,
       isar.isarDocs,
       isar.getCollection<IsarName>('IsarName'),
-      'name',
+      'isarName',
       false,
     );
   }
@@ -2383,21 +2383,21 @@ extension IsarDocQueryFilter
 
 extension IsarDocQueryLinks
     on QueryBuilder<IsarDoc, IsarDoc, QFilterCondition> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friends(
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> isarFriends(
       FilterQuery<IsarFriend> q) {
     return linkInternal(
       isar.isarFriends,
       q,
-      'friends',
+      'isarFriends',
     );
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> name(
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> isarName(
       FilterQuery<IsarName> q) {
     return linkInternal(
       isar.isarNames,
       q,
-      'name',
+      'isarName',
     );
   }
 }

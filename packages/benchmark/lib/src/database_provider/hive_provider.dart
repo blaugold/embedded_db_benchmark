@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:benchmark_document/benchmark_document.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_document/hive_document.dart';
 
 import '../../benchmark.dart';
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
-import '../fixture/document.dart';
 import '../parameter.dart';
 
 // TODO: Introduce hooks to init and dispose DatabaseProviders
@@ -23,7 +23,7 @@ void _registerTypeAdapters() {
   Hive.registerAdapter(HiveFriendAdapter());
 }
 
-class HiveProvider extends DatabaseProvider {
+class HiveProvider extends DatabaseProvider<HiveDoc> {
   @override
   String get name => 'Hive';
 
@@ -31,12 +31,11 @@ class HiveProvider extends DatabaseProvider {
   Iterable<ParameterCombination> get supportedParameterCombinations =>
       ParameterCombination.allCombinations([
         ParameterRange.single(execution, Execution.async),
-        ParameterRange.single(dataModel, DataModel.static),
         ParameterRange.all(batchSize),
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase> openDatabase(
+  FutureOr<BenchmarkDatabase<HiveDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) async {
@@ -47,28 +46,31 @@ class HiveProvider extends DatabaseProvider {
   }
 }
 
-class _HiveDatabase extends BenchmarkDatabase {
+class _HiveDatabase extends BenchmarkDatabase<HiveDoc> {
   _HiveDatabase(this.box);
 
   final LazyBox<HiveDoc> box;
 
   @override
+  HiveDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toHiveDoc();
+
+  @override
   FutureOr<void> close() => box.close();
 
   @override
-  void createDocumentSync(BenchmarkDoc doc) {
-    box.put(doc.id, doc.toHiveDoc());
+  Future<HiveDoc> createDocumentAsync(HiveDoc doc) async {
+    await box.put(doc.id, doc);
+    return doc;
   }
 
   @override
-  Future<void> createDocumentsAsync(List<BenchmarkDoc> docs) =>
-      box.putAll(<String, HiveDoc>{
-        for (final doc in docs) doc.id: doc.toHiveDoc(),
-      });
+  Future<List<HiveDoc>> createDocumentsAsync(List<HiveDoc> docs) async {
+    await box.putAll(<String, HiveDoc>{for (final doc in docs) doc.id: doc});
+    return docs;
+  }
 
   @override
-  Future<BenchmarkDoc> getDocumentByIdAsync(String id) =>
-      box.get(id).then((doc) => doc!.toBenchmarkDoc());
+  Future<HiveDoc> getDocumentByIdAsync(String id) async => (await box.get(id))!;
 }
 
 extension on BenchmarkDoc {
@@ -104,33 +106,4 @@ extension on BenchmarkName {
 
 extension on BenchmarkFriend {
   HiveFriend toHiveFriend() => HiveFriend(id: id, name: name);
-}
-
-extension on HiveDoc {
-  BenchmarkDoc toBenchmarkDoc() => BenchmarkDoc(
-        id: id,
-        index: index,
-        guid: guid,
-        isActive: isActive,
-        balance: balance,
-        picture: picture,
-        age: age,
-        eyeColor: eyeColor,
-        name: BenchmarkName(first: name.first, last: name.last),
-        company: company,
-        email: email,
-        phone: phone,
-        address: address,
-        about: about,
-        registered: registered,
-        latitude: latitude,
-        longitude: longitude,
-        tags: tags,
-        range: range,
-        friends: friends
-            .map((friend) => BenchmarkFriend(id: friend.id, name: friend.name))
-            .toList(),
-        greeting: greeting,
-        favoriteFruit: favoriteFruit,
-      );
 }

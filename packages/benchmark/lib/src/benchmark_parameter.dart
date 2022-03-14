@@ -12,6 +12,4 @@ enum DataModel {
   dynamic,
 }
 
-final dataModel = EnumParameter('data-model', DataModel.values);
-
 final batchSize = ListParameter('batch-size', [1, 100, 1000]);
