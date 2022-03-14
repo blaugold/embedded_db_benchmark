@@ -6,9 +6,9 @@ import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
 
-class WriteDocumentBenchmark extends Benchmark {
+class CreateDocumentBenchmark extends Benchmark {
   @override
-  String get name => 'WriteDocument';
+  String get name => 'CreateDocument';
 
   @override
   Iterable<ParameterCombination> get supportedParameterCombinations =>
@@ -26,16 +26,16 @@ class WriteDocumentBenchmark extends Benchmark {
     switch (parameterCombination.get(execution)!) {
       case Execution.sync:
         if (batchSizeValue == 1) {
-          benchmark = _SyncWriteOneDocumentBenchmark();
+          benchmark = _SyncCreateOneDocumentBenchmark();
         } else {
-          benchmark = _SyncWriteManyDocumentBenchmark(batchSizeValue);
+          benchmark = _SyncCreateManyDocumentBenchmark(batchSizeValue);
         }
         break;
       case Execution.async:
         if (batchSizeValue == 1) {
-          benchmark = _AsyncWriteOneDocumentBenchmark();
+          benchmark = _AsyncCreateOneDocumentBenchmark();
         } else {
-          benchmark = _AsyncWriteManyDocumentBenchmark(batchSizeValue);
+          benchmark = _AsyncCreateManyDocumentBenchmark(batchSizeValue);
         }
         break;
     }
@@ -44,7 +44,7 @@ class WriteDocumentBenchmark extends Benchmark {
   }
 }
 
-class _SyncWriteOneDocumentBenchmark extends BenchmarkRunner
+class _SyncCreateOneDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
   @override
   void executeOperations() {
@@ -54,7 +54,7 @@ class _SyncWriteOneDocumentBenchmark extends BenchmarkRunner
   }
 }
 
-class _AsyncWriteOneDocumentBenchmark extends BenchmarkRunner
+class _AsyncCreateOneDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
   @override
   Future<void> executeOperations() async {
@@ -66,9 +66,9 @@ class _AsyncWriteOneDocumentBenchmark extends BenchmarkRunner
   }
 }
 
-class _SyncWriteManyDocumentBenchmark extends BenchmarkRunner
+class _SyncCreateManyDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
-  _SyncWriteManyDocumentBenchmark(this._batchSize);
+  _SyncCreateManyDocumentBenchmark(this._batchSize);
 
   final int _batchSize;
 
@@ -83,9 +83,9 @@ class _SyncWriteManyDocumentBenchmark extends BenchmarkRunner
   }
 }
 
-class _AsyncWriteManyDocumentBenchmark extends BenchmarkRunner
+class _AsyncCreateManyDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
-  _AsyncWriteManyDocumentBenchmark(this._batchSize);
+  _AsyncCreateManyDocumentBenchmark(this._batchSize);
 
   final int _batchSize;
 

@@ -18,7 +18,7 @@ Future<void> main() async {
 
   final runs = await runBenchmarks(
     benchmarks: [
-      WriteDocumentBenchmark(),
+      CreateDocumentBenchmark(),
       ReadDocumentBenchmark(),
     ],
     databasesProviders: [
