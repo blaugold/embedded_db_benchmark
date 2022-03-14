@@ -47,11 +47,7 @@ class HiveProvider extends DatabaseProvider {
   }
 }
 
-class _HiveDatabase extends BenchmarkDatabase
-    implements
-        InsertOneDocumentAsync,
-        InsertManyDocumentsAsync,
-        LoadDocumentAsync {
+class _HiveDatabase extends BenchmarkDatabase {
   _HiveDatabase(this.box);
 
   final LazyBox<HiveDoc> box;
@@ -60,17 +56,18 @@ class _HiveDatabase extends BenchmarkDatabase
   FutureOr<void> close() => box.close();
 
   @override
-  Future<void> insertOneDocumentAsync(BenchmarkDoc doc) =>
-      box.put(doc.id, doc.toHiveDoc());
+  void createDocumentSync(BenchmarkDoc doc) {
+    box.put(doc.id, doc.toHiveDoc());
+  }
 
   @override
-  Future<void> insertManyDocumentsAsync(List<BenchmarkDoc> docs) =>
+  Future<void> createDocumentsAsync(List<BenchmarkDoc> docs) =>
       box.putAll(<String, HiveDoc>{
         for (final doc in docs) doc.id: doc.toHiveDoc(),
       });
 
   @override
-  Future<BenchmarkDoc> loadDocumentAsync(String id) =>
+  Future<BenchmarkDoc> getDocumentByIdAsync(String id) =>
       box.get(id).then((doc) => doc!.toBenchmarkDoc());
 }
 

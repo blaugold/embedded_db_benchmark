@@ -37,50 +37,45 @@ class CblProvider extends DatabaseProvider {
   }
 }
 
-class _SyncCblDatabase extends BenchmarkDatabase
-    implements
-        InsertOneDocumentSync,
-        InsertManyDocumentsSync,
-        LoadDocumentSync {
+class _SyncCblDatabase extends BenchmarkDatabase {
   _SyncCblDatabase(this.database);
 
   final SyncDatabase database;
 
   @override
-  void insertOneDocumentSync(BenchmarkDoc doc) =>
-      database.saveDocument(doc.toMutableDocument());
+  void createDocumentSync(BenchmarkDoc doc) {
+    database.saveDocument(doc.toMutableDocument());
+  }
 
   @override
-  void insertManyDocumentsSync(List<BenchmarkDoc> docs) =>
-      database.inBatchSync(() {
-        for (final doc in docs) {
-          database.saveDocument(doc.toMutableDocument());
-        }
-      });
+  void createDocumentsSync(List<BenchmarkDoc> docs) {
+    database.inBatchSync(() {
+      for (final doc in docs) {
+        database.saveDocument(doc.toMutableDocument());
+      }
+    });
+  }
 
   @override
-  BenchmarkDoc loadDocumentSync(String id) =>
+  BenchmarkDoc getDocumentByIdSync(String id) =>
       database.document(id)!.toBenchmarkDoc();
 
   @override
   FutureOr<void> close() => database.close();
 }
 
-class _AsyncCblDatabase extends BenchmarkDatabase
-    implements
-        InsertOneDocumentAsync,
-        InsertManyDocumentsAsync,
-        LoadDocumentAsync {
+class _AsyncCblDatabase extends BenchmarkDatabase {
   _AsyncCblDatabase(this.database);
 
   final AsyncDatabase database;
 
   @override
-  Future<void> insertOneDocumentAsync(BenchmarkDoc doc) =>
-      database.saveDocument(doc.toMutableDocument());
+  Future<void> createDocumentAsync(BenchmarkDoc doc) {
+    return database.saveDocument(doc.toMutableDocument());
+  }
 
   @override
-  Future<void> insertManyDocumentsAsync(List<BenchmarkDoc> docs) =>
+  Future<void> createDocumentsAsync(List<BenchmarkDoc> docs) =>
       database.inBatch(() async {
         await Future.wait(
           docs.map((doc) => database.saveDocument(doc.toMutableDocument())),
@@ -88,7 +83,7 @@ class _AsyncCblDatabase extends BenchmarkDatabase
       });
 
   @override
-  Future<BenchmarkDoc> loadDocumentAsync(String id) =>
+  Future<BenchmarkDoc> getDocumentByIdAsync(String id) =>
       database.document(id).then((doc) => doc!.toBenchmarkDoc());
 
   @override

@@ -4,28 +4,28 @@ import 'fixture/document.dart';
 
 abstract class BenchmarkDatabase {
   FutureOr<void> close() {}
-}
 
-abstract class InsertOneDocumentSync {
-  void insertOneDocumentSync(BenchmarkDoc doc);
-}
+  void createDocumentSync(BenchmarkDoc doc) {
+    createDocumentsSync([doc]);
+  }
 
-abstract class InsertOneDocumentAsync {
-  Future<void> insertOneDocumentAsync(BenchmarkDoc doc);
-}
+  void createDocumentsSync(List<BenchmarkDoc> docs) {
+    throw UnimplementedError();
+  }
 
-abstract class InsertManyDocumentsSync {
-  void insertManyDocumentsSync(List<BenchmarkDoc> docs);
-}
+  Future<void> createDocumentAsync(BenchmarkDoc doc) {
+    return createDocumentsAsync([doc]);
+  }
 
-abstract class InsertManyDocumentsAsync {
-  Future<void> insertManyDocumentsAsync(List<BenchmarkDoc> docs);
-}
+  Future<void> createDocumentsAsync(List<BenchmarkDoc> docs) {
+    throw UnimplementedError();
+  }
 
-abstract class LoadDocumentSync {
-  BenchmarkDoc loadDocumentSync(String id);
-}
+  BenchmarkDoc getDocumentByIdSync(String id) {
+    throw UnimplementedError();
+  }
 
-abstract class LoadDocumentAsync {
-  Future<BenchmarkDoc> loadDocumentAsync(String id);
+  Future<BenchmarkDoc> getDocumentByIdAsync(String id) {
+    throw UnimplementedError();
+  }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import '../benchmark.dart';
-import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
@@ -48,9 +47,8 @@ class _SyncCreateOneDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
   @override
   void executeOperations() {
-    final database = this.database as InsertOneDocumentSync;
-    final document = createDocument();
-    measureOperationsSync(() => database.insertOneDocumentSync(document));
+    final document = createBenchmarkDoc();
+    measureOperationsSync(() => database.createDocumentSync(document));
   }
 }
 
@@ -58,11 +56,8 @@ class _AsyncCreateOneDocumentBenchmark extends BenchmarkRunner
     with BenchmarkDocumentMixin {
   @override
   Future<void> executeOperations() async {
-    final database = this.database as InsertOneDocumentAsync;
-    final document = createDocument();
-    await measureOperationsAsync(
-      () => database.insertOneDocumentAsync(document),
-    );
+    final document = createBenchmarkDoc();
+    await measureOperationsAsync(() => database.createDocumentAsync(document));
   }
 }
 
@@ -74,10 +69,9 @@ class _SyncCreateManyDocumentBenchmark extends BenchmarkRunner
 
   @override
   void executeOperations() {
-    final database = this.database as InsertManyDocumentsSync;
-    final documents = createDocuments(_batchSize);
+    final documents = createBenchmarkDocs(_batchSize);
     measureOperationsSync(
-      () => database.insertManyDocumentsSync(documents),
+      () => database.createDocumentsSync(documents),
       operations: _batchSize,
     );
   }
@@ -91,10 +85,9 @@ class _AsyncCreateManyDocumentBenchmark extends BenchmarkRunner
 
   @override
   Future<void> executeOperations() async {
-    final database = this.database as InsertManyDocumentsAsync;
-    final documents = createDocuments(_batchSize);
+    final documents = createBenchmarkDocs(_batchSize);
     await measureOperationsAsync(
-      () => database.insertManyDocumentsAsync(documents),
+      () => database.createDocumentsAsync(documents),
       operations: _batchSize,
     );
   }

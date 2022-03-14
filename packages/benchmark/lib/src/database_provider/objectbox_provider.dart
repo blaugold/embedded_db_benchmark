@@ -33,11 +33,7 @@ class ObjectBoxProvider extends DatabaseProvider {
   }
 }
 
-class _ObjectBoxDatabase extends BenchmarkDatabase
-    implements
-        InsertOneDocumentSync,
-        InsertManyDocumentsSync,
-        LoadDocumentSync {
+class _ObjectBoxDatabase extends BenchmarkDatabase {
   _ObjectBoxDatabase(this.store, this.box, this.query);
 
   final Store store;
@@ -48,14 +44,14 @@ class _ObjectBoxDatabase extends BenchmarkDatabase
   void close() => store.close();
 
   @override
-  void insertOneDocumentSync(BenchmarkDoc doc) => box.put(doc.toObjectBoxDoc());
+  void createDocumentSync(BenchmarkDoc doc) => box.put(doc.toObjectBoxDoc());
 
   @override
-  void insertManyDocumentsSync(List<BenchmarkDoc> docs) =>
+  void createDocumentsSync(List<BenchmarkDoc> docs) =>
       box.putMany([for (final doc in docs) doc.toObjectBoxDoc()]);
 
   @override
-  BenchmarkDoc loadDocumentSync(String id) {
+  BenchmarkDoc getDocumentByIdSync(String id) {
     query.param(ObjectboxDoc_.id).value = id;
     return query.findFirst()!.toBenchmarkDoc();
   }

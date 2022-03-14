@@ -39,14 +39,7 @@ class IsarProvider extends DatabaseProvider {
   }
 }
 
-class _IsarDatabase extends BenchmarkDatabase
-    implements
-        InsertOneDocumentSync,
-        InsertOneDocumentAsync,
-        InsertManyDocumentsSync,
-        InsertManyDocumentsAsync,
-        LoadDocumentSync,
-        LoadDocumentAsync {
+class _IsarDatabase extends BenchmarkDatabase {
   _IsarDatabase(this.isar);
 
   final Isar isar;
@@ -55,7 +48,7 @@ class _IsarDatabase extends BenchmarkDatabase
   FutureOr<void> close() => isar.close();
 
   @override
-  void insertOneDocumentSync(BenchmarkDoc doc) => isar.writeTxnSync((isar) {
+  void createDocumentSync(BenchmarkDoc doc) => isar.writeTxnSync((isar) {
         final isarDoc = doc.toIsarDoc();
         isar.isarNames.putSync(isarDoc.name.value!);
         isar.isarFriends.putAllSync(isarDoc.friends.toList());
@@ -65,7 +58,7 @@ class _IsarDatabase extends BenchmarkDatabase
       });
 
   @override
-  Future<void> insertOneDocumentAsync(BenchmarkDoc doc) =>
+  Future<void> createDocumentAsync(BenchmarkDoc doc) =>
       isar.writeTxn((isar) async {
         final isarDoc = doc.toIsarDoc();
         await isar.isarNames.put(isarDoc.name.value!);
@@ -76,7 +69,7 @@ class _IsarDatabase extends BenchmarkDatabase
       });
 
   @override
-  void insertManyDocumentsSync(List<BenchmarkDoc> docs) =>
+  void createDocumentsSync(List<BenchmarkDoc> docs) =>
       isar.writeTxnSync((isar) {
         for (final doc in docs) {
           final isarDoc = doc.toIsarDoc();
@@ -89,7 +82,7 @@ class _IsarDatabase extends BenchmarkDatabase
       });
 
   @override
-  Future<void> insertManyDocumentsAsync(List<BenchmarkDoc> docs) =>
+  Future<void> createDocumentsAsync(List<BenchmarkDoc> docs) =>
       isar.writeTxn((isar) async {
         for (final doc in docs) {
           final isarDoc = doc.toIsarDoc();
@@ -102,7 +95,7 @@ class _IsarDatabase extends BenchmarkDatabase
       });
 
   @override
-  BenchmarkDoc loadDocumentSync(String id) =>
+  BenchmarkDoc getDocumentByIdSync(String id) =>
       // For some reason a write transaction is necessary here.
       isar.writeTxnSync((isar) {
         final doc = isar.isarDocs.where().idEqualTo(id).findFirstSync();
@@ -112,7 +105,7 @@ class _IsarDatabase extends BenchmarkDatabase
       });
 
   @override
-  Future<BenchmarkDoc> loadDocumentAsync(String id) =>
+  Future<BenchmarkDoc> getDocumentByIdAsync(String id) =>
       // For some reason a write transaction is necessary here.
       isar.writeTxn((isar) async {
         final doc = await isar.isarDocs.where().idEqualTo(id).findFirst();

@@ -38,11 +38,7 @@ class RealmProvider extends DatabaseProvider {
   }
 }
 
-class _RealmDatabase extends BenchmarkDatabase
-    implements
-        InsertOneDocumentSync,
-        InsertManyDocumentsSync,
-        LoadDocumentSync {
+class _RealmDatabase extends BenchmarkDatabase {
   _RealmDatabase(this.realm);
 
   final Realm realm;
@@ -51,21 +47,21 @@ class _RealmDatabase extends BenchmarkDatabase
   void close() => realm.close();
 
   @override
-  void insertOneDocumentSync(BenchmarkDoc doc) {
+  void createDocumentSync(BenchmarkDoc doc) {
     realm.write(() {
       realm.add(doc.toRealmDoc());
     });
   }
 
   @override
-  void insertManyDocumentsSync(List<BenchmarkDoc> docs) {
+  void createDocumentsSync(List<BenchmarkDoc> docs) {
     realm.write(() {
       realm.addAll(docs.map((doc) => doc.toRealmDoc()));
     });
   }
 
   @override
-  BenchmarkDoc loadDocumentSync(String id) =>
+  BenchmarkDoc getDocumentByIdSync(String id) =>
       realm.find<RealmDoc>(id)!.toBenchmarkDoc();
 }
 

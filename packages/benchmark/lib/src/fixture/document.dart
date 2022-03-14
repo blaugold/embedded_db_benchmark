@@ -282,12 +282,12 @@ mixin BenchmarkDocumentMixin on BenchmarkRunner {
     return super.setup();
   }
 
-  BenchmarkDoc createDocument() => _createDocument();
+  BenchmarkDoc createBenchmarkDoc() => _createBenchmarkDoc();
 
-  List<BenchmarkDoc> createDocuments(int count) =>
-      List.generate(count, _createDocument);
+  List<BenchmarkDoc> createBenchmarkDocs(int count) =>
+      List.generate(count, _createBenchmarkDoc);
 
-  BenchmarkDoc _createDocument([int index = 0]) {
+  BenchmarkDoc _createBenchmarkDoc([int index = 0]) {
     final rawDocument =
         rawDocuments[(executedOperations + index) % rawDocuments.length];
     return BenchmarkDoc.fromJson(
