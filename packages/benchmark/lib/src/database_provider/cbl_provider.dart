@@ -3,13 +3,18 @@ import 'dart:async';
 import 'package:benchmark_document/benchmark_document.dart';
 import 'package:cbl/cbl.dart' hide DatabaseConfiguration;
 import 'package:cbl/cbl.dart' as cbl;
+import 'package:path/path.dart' as p;
 
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../parameter.dart';
 import 'database_provider.dart';
 
-class CblProvider extends DatabaseProvider<CblDoc> {
+class CblProvider extends DatabaseProvider<String, CblDoc> {
+  CblProvider({this.fileLogging = false});
+
+  final bool fileLogging;
+
   @override
   String get name => 'Couchbase Lite';
 
@@ -21,10 +26,19 @@ class CblProvider extends DatabaseProvider<CblDoc> {
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase<CblDoc>> openDatabase(
+  FutureOr<BenchmarkDatabase<String, CblDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) async {
+    if (fileLogging) {
+      final logFileConfig = LogFileConfiguration(
+        directory: p.join(directory, 'logs'),
+        usePlainText: false,
+      );
+      Database.log.file.config = logFileConfig;
+      Database.log.file.level = LogLevel.verbose;
+    }
+
     late final cblConfig = cbl.DatabaseConfiguration(directory: directory);
 
     switch (parameterCombination.get(execution)!) {
@@ -36,7 +50,7 @@ class CblProvider extends DatabaseProvider<CblDoc> {
   }
 }
 
-class _SyncCblDatabase extends BenchmarkDatabase<CblDoc>
+class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
     with _CblDatabaseHelper {
   _SyncCblDatabase(this.database);
 
@@ -44,14 +58,14 @@ class _SyncCblDatabase extends BenchmarkDatabase<CblDoc>
   final SyncDatabase database;
 
   @override
-  CblDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toCblDoc();
+  CblDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toCblDoc();
 
   @override
   FutureOr<void> close() => database.close();
 
   @override
   CblDoc createDocumentSync(CblDoc doc) {
-    database.saveDocument(doc.doc);
+    database.saveDocument(doc.mutableDoc);
     return doc;
   }
 
@@ -59,7 +73,7 @@ class _SyncCblDatabase extends BenchmarkDatabase<CblDoc>
   List<CblDoc> createDocumentsSync(List<CblDoc> docs) {
     database.inBatchSync(() {
       for (final doc in docs) {
-        database.saveDocument(doc.doc);
+        database.saveDocument(doc.mutableDoc);
       }
     });
     return docs;
@@ -67,10 +81,24 @@ class _SyncCblDatabase extends BenchmarkDatabase<CblDoc>
 
   @override
   CblDoc getDocumentByIdSync(String id) =>
-      CblDoc.fromDoc(database.document(id)!.toMutable());
+      CblDoc.fromDoc(database.document(id)!);
+
+  @override
+  void deleteDocumentSync(CblDoc doc) {
+    database.deleteDocument(doc.doc);
+  }
+
+  @override
+  void deleteDocumentsSync(List<CblDoc> docs) {
+    database.inBatchSync(() {
+      for (final doc in docs) {
+        database.deleteDocument(doc.doc);
+      }
+    });
+  }
 }
 
-class _AsyncCblDatabase extends BenchmarkDatabase<CblDoc>
+class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
     with _CblDatabaseHelper {
   _AsyncCblDatabase(this.database);
 
@@ -81,18 +109,20 @@ class _AsyncCblDatabase extends BenchmarkDatabase<CblDoc>
   FutureOr<void> close() => database.close();
 
   @override
-  CblDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toCblDoc();
+  CblDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toCblDoc();
 
   @override
   Future<CblDoc> createDocumentAsync(CblDoc doc) async {
-    await database.saveDocument(doc.doc);
+    await database.saveDocument(doc.mutableDoc);
     return doc;
   }
 
   @override
   Future<List<CblDoc>> createDocumentsAsync(List<CblDoc> docs) async {
     await database.inBatch(() async {
-      await Future.wait(docs.map((doc) => database.saveDocument(doc.doc)));
+      await Future.wait(
+        docs.map((doc) => database.saveDocument(doc.mutableDoc)),
+      );
     });
     return docs;
   }
@@ -100,9 +130,21 @@ class _AsyncCblDatabase extends BenchmarkDatabase<CblDoc>
   @override
   Future<CblDoc> getDocumentByIdAsync(String id) async =>
       CblDoc.fromDoc((await database.document(id))!.toMutable());
+
+  @override
+  Future<void> deleteDocumentAsync(CblDoc doc) {
+    return database.deleteDocument(doc.doc);
+  }
+
+  @override
+  Future<void> deleteDocumentsAsync(List<CblDoc> docs) {
+    return database.inBatch(() async {
+      await Future.wait(docs.map((doc) => database.deleteDocument(doc.doc)));
+    });
+  }
 }
 
-mixin _CblDatabaseHelper on BenchmarkDatabase<CblDoc> {
+mixin _CblDatabaseHelper on BenchmarkDatabase<String, CblDoc> {
   Database get database;
 
   late final allIdsQuery =
@@ -124,7 +166,7 @@ mixin _CblDatabaseHelper on BenchmarkDatabase<CblDoc> {
   }
 }
 
-extension on BenchmarkDoc {
+extension on BenchmarkDoc<String> {
   CblDoc toCblDoc() => CblDoc(
         id: id,
         index: index,
@@ -151,7 +193,7 @@ extension on BenchmarkDoc {
       );
 }
 
-class CblDoc with BenchmarkDoc {
+class CblDoc with BenchmarkDoc<String> {
   CblDoc({
     required String id,
     required int index,
@@ -206,7 +248,15 @@ class CblDoc with BenchmarkDoc {
 
   CblDoc.fromDoc(this.doc);
 
-  final MutableDocument doc;
+  Document doc;
+
+  MutableDocument get mutableDoc {
+    final doc = this.doc;
+    if (doc is! MutableDocument) {
+      return this.doc = doc.toMutable();
+    }
+    return doc;
+  }
 
   @override
   String get id => doc.id;
@@ -268,7 +318,7 @@ class CblDoc with BenchmarkDoc {
   @override
   List<BenchmarkFriend> get friends => doc
       .array('friends')!
-      .cast<MutableDictionary>()
+      .cast<Dictionary>()
       .map((dict) => CblFriend.fromDict(dict))
       .toList();
 
@@ -290,7 +340,7 @@ class CblName with BenchmarkName {
 
   CblName.fromDict(this.dict);
 
-  final MutableDictionary dict;
+  final Dictionary dict;
 
   @override
   String get first => dict.value('first')!;
@@ -310,7 +360,7 @@ class CblFriend with BenchmarkFriend {
 
   CblFriend.fromDict(this.dict);
 
-  final MutableDictionary dict;
+  final Dictionary dict;
 
   @override
   int get id => dict.value('id')!;

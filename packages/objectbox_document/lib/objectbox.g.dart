@@ -18,177 +18,171 @@ export 'package:objectbox/objectbox.dart'; // so that callers only have to impor
 
 final _entities = <ModelEntity>[
   ModelEntity(
-      id: const IdUid(1, 110508833524735892),
+      id: const IdUid(1, 8737410811577805751),
       name: 'ObjectboxDoc',
-      lastPropertyId: const IdUid(24, 7500067224874914523),
+      lastPropertyId: const IdUid(21, 6456840558341321235),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
-            id: const IdUid(1, 2756476576729890188),
+            id: const IdUid(1, 1856295674693729954),
             name: 'id',
-            type: 9,
-            flags: 2048,
-            indexId: const IdUid(2, 4984996048941082833)),
+            type: 6,
+            flags: 1),
         ModelProperty(
-            id: const IdUid(2, 1803984718397515963),
+            id: const IdUid(2, 2963442018149439969),
             name: 'index',
             type: 6,
             flags: 0),
         ModelProperty(
-            id: const IdUid(3, 456765814606734479),
+            id: const IdUid(3, 8961768086225947912),
             name: 'guid',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(4, 302027292187508492),
+            id: const IdUid(4, 4686604151971845257),
             name: 'isActive',
             type: 1,
             flags: 0),
         ModelProperty(
-            id: const IdUid(5, 1191233812433334458),
+            id: const IdUid(5, 3926642472195923280),
             name: 'balance',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(6, 3099099690824981750),
+            id: const IdUid(6, 6599039953402696761),
             name: 'picture',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(7, 7953884654089440513),
+            id: const IdUid(7, 5038969029098870891),
             name: 'age',
             type: 6,
             flags: 0),
         ModelProperty(
-            id: const IdUid(8, 6235868881030615646),
+            id: const IdUid(8, 734735567939286789),
             name: 'eyeColor',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(10, 204460225648943795),
+            id: const IdUid(9, 2751490723331117562),
+            name: 'obxNameId',
+            type: 11,
+            flags: 520,
+            indexId: const IdUid(1, 6600362065289272279),
+            relationTarget: 'ObjectboxName'),
+        ModelProperty(
+            id: const IdUid(10, 8328738906461127535),
             name: 'company',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(11, 6946925352944923873),
+            id: const IdUid(11, 2773589779135390990),
             name: 'email',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(12, 947663455830537931),
+            id: const IdUid(12, 2111985962746921432),
             name: 'phone',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(13, 6518746044648241766),
+            id: const IdUid(13, 3772269138821545720),
             name: 'address',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(14, 3776573471784835142),
+            id: const IdUid(14, 1123233842187526525),
             name: 'about',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(15, 3496852478087686881),
+            id: const IdUid(15, 105054602288262333),
             name: 'registered',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(16, 666970885414060636),
+            id: const IdUid(16, 298891375230813835),
             name: 'latitude',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(17, 4312645177577161725),
+            id: const IdUid(17, 2243448704755234753),
             name: 'longitude',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(18, 5799165882936424372),
+            id: const IdUid(18, 1801015898239287795),
             name: 'tags',
             type: 30,
             flags: 0),
         ModelProperty(
-            id: const IdUid(19, 4643702838393377346),
-            name: 'greeting',
-            type: 9,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(20, 4785659561339604838),
-            name: 'favoriteFruit',
-            type: 9,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(22, 5193248094615037014),
+            id: const IdUid(19, 5969051672056288778),
             name: 'dbRange',
             type: 30,
             flags: 0),
         ModelProperty(
-            id: const IdUid(23, 3961540835188943383),
+            id: const IdUid(20, 250648193170022815),
+            name: 'greeting',
+            type: 9,
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(21, 6456840558341321235),
+            name: 'favoriteFruit',
+            type: 9,
+            flags: 0)
+      ],
+      relations: <ModelRelation>[
+        ModelRelation(
+            id: const IdUid(1, 1794437513546623260),
+            name: 'obxFriends',
+            targetId: const IdUid(2, 239126003857663414))
+      ],
+      backlinks: <ModelBacklink>[]),
+  ModelEntity(
+      id: const IdUid(2, 239126003857663414),
+      name: 'ObjectboxFriend',
+      lastPropertyId: const IdUid(3, 8450888900053847920),
+      flags: 0,
+      properties: <ModelProperty>[
+        ModelProperty(
+            id: const IdUid(1, 2896855326122576940),
             name: 'dbId',
             type: 6,
             flags: 1),
         ModelProperty(
-            id: const IdUid(24, 7500067224874914523),
-            name: 'obxNameId',
-            type: 11,
-            flags: 520,
-            indexId: const IdUid(3, 2335236624869731754),
-            relationTarget: 'ObjectboxName')
-      ],
-      relations: <ModelRelation>[
-        ModelRelation(
-            id: const IdUid(2, 8130017285336605337),
-            name: 'obxFriends',
-            targetId: const IdUid(3, 8278041067566766108))
-      ],
-      backlinks: <ModelBacklink>[]),
-  ModelEntity(
-      id: const IdUid(2, 8564006045192440331),
-      name: 'ObjectboxName',
-      lastPropertyId: const IdUid(4, 2804765736740573573),
-      flags: 0,
-      properties: <ModelProperty>[
-        ModelProperty(
-            id: const IdUid(2, 6528529618981580335),
-            name: 'first',
-            type: 9,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(3, 3282042645606389258),
-            name: 'last',
-            type: 9,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(4, 2804765736740573573),
-            name: 'dbId',
-            type: 6,
-            flags: 1)
-      ],
-      relations: <ModelRelation>[],
-      backlinks: <ModelBacklink>[]),
-  ModelEntity(
-      id: const IdUid(3, 8278041067566766108),
-      name: 'ObjectboxFriend',
-      lastPropertyId: const IdUid(3, 4725725023579620220),
-      flags: 0,
-      properties: <ModelProperty>[
-        ModelProperty(
-            id: const IdUid(1, 291722160156892971),
+            id: const IdUid(2, 3988697117894743514),
             name: 'id',
             type: 6,
             flags: 0),
         ModelProperty(
-            id: const IdUid(2, 7815945799659295841),
+            id: const IdUid(3, 8450888900053847920),
             name: 'name',
+            type: 9,
+            flags: 0)
+      ],
+      relations: <ModelRelation>[],
+      backlinks: <ModelBacklink>[]),
+  ModelEntity(
+      id: const IdUid(3, 8777435277265586707),
+      name: 'ObjectboxName',
+      lastPropertyId: const IdUid(3, 1280342645370459658),
+      flags: 0,
+      properties: <ModelProperty>[
+        ModelProperty(
+            id: const IdUid(1, 3265199211243858979),
+            name: 'dbId',
+            type: 6,
+            flags: 1),
+        ModelProperty(
+            id: const IdUid(2, 3721943392173776011),
+            name: 'first',
             type: 9,
             flags: 0),
         ModelProperty(
-            id: const IdUid(3, 4725725023579620220),
-            name: 'dbId',
-            type: 6,
-            flags: 1)
+            id: const IdUid(3, 1280342645370459658),
+            name: 'last',
+            type: 9,
+            flags: 0)
       ],
       relations: <ModelRelation>[],
       backlinks: <ModelBacklink>[])
@@ -214,18 +208,14 @@ Store openStore(
 ModelDefinition getObjectBoxModel() {
   final model = ModelInfo(
       entities: _entities,
-      lastEntityId: const IdUid(3, 8278041067566766108),
-      lastIndexId: const IdUid(3, 2335236624869731754),
-      lastRelationId: const IdUid(2, 8130017285336605337),
+      lastEntityId: const IdUid(3, 8777435277265586707),
+      lastIndexId: const IdUid(1, 6600362065289272279),
+      lastRelationId: const IdUid(1, 1794437513546623260),
       lastSequenceId: const IdUid(0, 0),
       retiredEntityUids: const [],
-      retiredIndexUids: const [7428278450406228165],
-      retiredPropertyUids: const [
-        3886440479243237754,
-        9131136361258168339,
-        1167247666618880382
-      ],
-      retiredRelationUids: const [8804691660091051136],
+      retiredIndexUids: const [],
+      retiredPropertyUids: const [],
+      retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
       version: 1);
@@ -235,13 +225,12 @@ ModelDefinition getObjectBoxModel() {
         model: _entities[0],
         toOneRelations: (ObjectboxDoc object) => [object.obxName],
         toManyRelations: (ObjectboxDoc object) =>
-            {RelInfo<ObjectboxDoc>.toMany(2, object.dbId): object.obxFriends},
-        getId: (ObjectboxDoc object) => object.dbId,
+            {RelInfo<ObjectboxDoc>.toMany(1, object.id): object.obxFriends},
+        getId: (ObjectboxDoc object) => object.id,
         setId: (ObjectboxDoc object, int id) {
-          object.dbId = id;
+          object.id = id;
         },
         objectToFB: (ObjectboxDoc object, fb.Builder fbb) {
-          final idOffset = fbb.writeString(object.id);
           final guidOffset = fbb.writeString(object.guid);
           final balanceOffset = fbb.writeString(object.balance);
           final pictureOffset = fbb.writeString(object.picture);
@@ -256,12 +245,12 @@ ModelDefinition getObjectBoxModel() {
           final longitudeOffset = fbb.writeString(object.longitude);
           final tagsOffset = fbb.writeList(
               object.tags.map(fbb.writeString).toList(growable: false));
-          final greetingOffset = fbb.writeString(object.greeting);
-          final favoriteFruitOffset = fbb.writeString(object.favoriteFruit);
           final dbRangeOffset = fbb.writeList(
               object.dbRange.map(fbb.writeString).toList(growable: false));
-          fbb.startTable(25);
-          fbb.addOffset(0, idOffset);
+          final greetingOffset = fbb.writeString(object.greeting);
+          final favoriteFruitOffset = fbb.writeString(object.favoriteFruit);
+          fbb.startTable(22);
+          fbb.addInt64(0, object.id);
           fbb.addInt64(1, object.index);
           fbb.addOffset(2, guidOffset);
           fbb.addBool(3, object.isActive);
@@ -269,6 +258,7 @@ ModelDefinition getObjectBoxModel() {
           fbb.addOffset(5, pictureOffset);
           fbb.addInt64(6, object.age);
           fbb.addOffset(7, eyeColorOffset);
+          fbb.addInt64(8, object.obxName.targetId);
           fbb.addOffset(9, companyOffset);
           fbb.addOffset(10, emailOffset);
           fbb.addOffset(11, phoneOffset);
@@ -278,22 +268,18 @@ ModelDefinition getObjectBoxModel() {
           fbb.addOffset(15, latitudeOffset);
           fbb.addOffset(16, longitudeOffset);
           fbb.addOffset(17, tagsOffset);
-          fbb.addOffset(18, greetingOffset);
-          fbb.addOffset(19, favoriteFruitOffset);
-          fbb.addOffset(21, dbRangeOffset);
-          fbb.addInt64(22, object.dbId);
-          fbb.addInt64(23, object.obxName.targetId);
+          fbb.addOffset(18, dbRangeOffset);
+          fbb.addOffset(19, greetingOffset);
+          fbb.addOffset(20, favoriteFruitOffset);
           fbb.finish(fbb.endTable());
-          return object.dbId;
+          return object.id;
         },
         objectFromFB: (Store store, ByteData fbData) {
           final buffer = fb.BufferContext(fbData);
           final rootOffset = buffer.derefObject(0);
 
           final object = ObjectboxDoc(
-              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 48, 0),
-              id: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 4, ''),
+              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
               index: const fb.Int64Reader().vTableGet(buffer, rootOffset, 6, 0),
               guid: const fb.StringReader(asciiOptimization: true)
                   .vTableGet(buffer, rootOffset, 8, ''),
@@ -312,58 +298,28 @@ ModelDefinition getObjectBoxModel() {
                   .vTableGet(buffer, rootOffset, 24, ''),
               phone: const fb.StringReader(asciiOptimization: true)
                   .vTableGet(buffer, rootOffset, 26, ''),
-              address: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 28, ''),
+              address:
+                  const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 28, ''),
               about: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 30, ''),
               registered: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 32, ''),
               latitude: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 34, ''),
               longitude: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 36, ''),
               tags: const fb.ListReader<String>(fb.StringReader(asciiOptimization: true), lazy: false).vTableGet(buffer, rootOffset, 38, []),
-              dbRange: const fb.ListReader<String>(fb.StringReader(asciiOptimization: true), lazy: false).vTableGet(buffer, rootOffset, 46, []),
-              greeting: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 40, ''),
-              favoriteFruit: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 42, ''));
+              dbRange: const fb.ListReader<String>(fb.StringReader(asciiOptimization: true), lazy: false).vTableGet(buffer, rootOffset, 40, []),
+              greeting: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 42, ''),
+              favoriteFruit: const fb.StringReader(asciiOptimization: true).vTableGet(buffer, rootOffset, 44, ''));
           object.obxName.targetId =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 50, 0);
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 20, 0);
           object.obxName.attach(store);
           InternalToManyAccess.setRelInfo(
               object.obxFriends,
               store,
-              RelInfo<ObjectboxDoc>.toMany(2, object.dbId),
+              RelInfo<ObjectboxDoc>.toMany(1, object.id),
               store.box<ObjectboxDoc>());
           return object;
         }),
-    ObjectboxName: EntityDefinition<ObjectboxName>(
-        model: _entities[1],
-        toOneRelations: (ObjectboxName object) => [],
-        toManyRelations: (ObjectboxName object) => {},
-        getId: (ObjectboxName object) => object.dbId,
-        setId: (ObjectboxName object, int id) {
-          object.dbId = id;
-        },
-        objectToFB: (ObjectboxName object, fb.Builder fbb) {
-          final firstOffset = fbb.writeString(object.first);
-          final lastOffset = fbb.writeString(object.last);
-          fbb.startTable(5);
-          fbb.addOffset(1, firstOffset);
-          fbb.addOffset(2, lastOffset);
-          fbb.addInt64(3, object.dbId);
-          fbb.finish(fbb.endTable());
-          return object.dbId;
-        },
-        objectFromFB: (Store store, ByteData fbData) {
-          final buffer = fb.BufferContext(fbData);
-          final rootOffset = buffer.derefObject(0);
-
-          final object = ObjectboxName(
-              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0),
-              first: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 6, ''),
-              last: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 8, ''));
-
-          return object;
-        }),
     ObjectboxFriend: EntityDefinition<ObjectboxFriend>(
-        model: _entities[2],
+        model: _entities[1],
         toOneRelations: (ObjectboxFriend object) => [],
         toManyRelations: (ObjectboxFriend object) => {},
         getId: (ObjectboxFriend object) => object.dbId,
@@ -373,9 +329,9 @@ ModelDefinition getObjectBoxModel() {
         objectToFB: (ObjectboxFriend object, fb.Builder fbb) {
           final nameOffset = fbb.writeString(object.name);
           fbb.startTable(4);
-          fbb.addInt64(0, object.id);
-          fbb.addOffset(1, nameOffset);
-          fbb.addInt64(2, object.dbId);
+          fbb.addInt64(0, object.dbId);
+          fbb.addInt64(1, object.id);
+          fbb.addOffset(2, nameOffset);
           fbb.finish(fbb.endTable());
           return object.dbId;
         },
@@ -384,10 +340,41 @@ ModelDefinition getObjectBoxModel() {
           final rootOffset = buffer.derefObject(0);
 
           final object = ObjectboxFriend(
-              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 8, 0),
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
+              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
+              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 6, 0),
               name: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 6, ''));
+                  .vTableGet(buffer, rootOffset, 8, ''));
+
+          return object;
+        }),
+    ObjectboxName: EntityDefinition<ObjectboxName>(
+        model: _entities[2],
+        toOneRelations: (ObjectboxName object) => [],
+        toManyRelations: (ObjectboxName object) => {},
+        getId: (ObjectboxName object) => object.dbId,
+        setId: (ObjectboxName object, int id) {
+          object.dbId = id;
+        },
+        objectToFB: (ObjectboxName object, fb.Builder fbb) {
+          final firstOffset = fbb.writeString(object.first);
+          final lastOffset = fbb.writeString(object.last);
+          fbb.startTable(4);
+          fbb.addInt64(0, object.dbId);
+          fbb.addOffset(1, firstOffset);
+          fbb.addOffset(2, lastOffset);
+          fbb.finish(fbb.endTable());
+          return object.dbId;
+        },
+        objectFromFB: (Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+
+          final object = ObjectboxName(
+              dbId: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0),
+              first: const fb.StringReader(asciiOptimization: true)
+                  .vTableGet(buffer, rootOffset, 6, ''),
+              last: const fb.StringReader(asciiOptimization: true)
+                  .vTableGet(buffer, rootOffset, 8, ''));
 
           return object;
         })
@@ -400,7 +387,7 @@ ModelDefinition getObjectBoxModel() {
 class ObjectboxDoc_ {
   /// see [ObjectboxDoc.id]
   static final id =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[0]);
+      QueryIntegerProperty<ObjectboxDoc>(_entities[0].properties[0]);
 
   /// see [ObjectboxDoc.index]
   static final index =
@@ -430,93 +417,89 @@ class ObjectboxDoc_ {
   static final eyeColor =
       QueryStringProperty<ObjectboxDoc>(_entities[0].properties[7]);
 
+  /// see [ObjectboxDoc.obxName]
+  static final obxName = QueryRelationToOne<ObjectboxDoc, ObjectboxName>(
+      _entities[0].properties[8]);
+
   /// see [ObjectboxDoc.company]
   static final company =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[8]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[9]);
 
   /// see [ObjectboxDoc.email]
   static final email =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[9]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[10]);
 
   /// see [ObjectboxDoc.phone]
   static final phone =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[10]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[11]);
 
   /// see [ObjectboxDoc.address]
   static final address =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[11]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[12]);
 
   /// see [ObjectboxDoc.about]
   static final about =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[12]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[13]);
 
   /// see [ObjectboxDoc.registered]
   static final registered =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[13]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[14]);
 
   /// see [ObjectboxDoc.latitude]
   static final latitude =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[14]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[15]);
 
   /// see [ObjectboxDoc.longitude]
   static final longitude =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[15]);
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[16]);
 
   /// see [ObjectboxDoc.tags]
   static final tags =
-      QueryStringVectorProperty<ObjectboxDoc>(_entities[0].properties[16]);
-
-  /// see [ObjectboxDoc.greeting]
-  static final greeting =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[17]);
-
-  /// see [ObjectboxDoc.favoriteFruit]
-  static final favoriteFruit =
-      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[18]);
+      QueryStringVectorProperty<ObjectboxDoc>(_entities[0].properties[17]);
 
   /// see [ObjectboxDoc.dbRange]
   static final dbRange =
-      QueryStringVectorProperty<ObjectboxDoc>(_entities[0].properties[19]);
+      QueryStringVectorProperty<ObjectboxDoc>(_entities[0].properties[18]);
 
-  /// see [ObjectboxDoc.dbId]
-  static final dbId =
-      QueryIntegerProperty<ObjectboxDoc>(_entities[0].properties[20]);
+  /// see [ObjectboxDoc.greeting]
+  static final greeting =
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[19]);
 
-  /// see [ObjectboxDoc.obxName]
-  static final obxName = QueryRelationToOne<ObjectboxDoc, ObjectboxName>(
-      _entities[0].properties[21]);
+  /// see [ObjectboxDoc.favoriteFruit]
+  static final favoriteFruit =
+      QueryStringProperty<ObjectboxDoc>(_entities[0].properties[20]);
 
   /// see [ObjectboxDoc.obxFriends]
   static final obxFriends = QueryRelationToMany<ObjectboxDoc, ObjectboxFriend>(
       _entities[0].relations[0]);
 }
 
-/// [ObjectboxName] entity fields to define ObjectBox queries.
-class ObjectboxName_ {
-  /// see [ObjectboxName.first]
-  static final first =
-      QueryStringProperty<ObjectboxName>(_entities[1].properties[0]);
-
-  /// see [ObjectboxName.last]
-  static final last =
-      QueryStringProperty<ObjectboxName>(_entities[1].properties[1]);
-
-  /// see [ObjectboxName.dbId]
-  static final dbId =
-      QueryIntegerProperty<ObjectboxName>(_entities[1].properties[2]);
-}
-
 /// [ObjectboxFriend] entity fields to define ObjectBox queries.
 class ObjectboxFriend_ {
+  /// see [ObjectboxFriend.dbId]
+  static final dbId =
+      QueryIntegerProperty<ObjectboxFriend>(_entities[1].properties[0]);
+
   /// see [ObjectboxFriend.id]
   static final id =
-      QueryIntegerProperty<ObjectboxFriend>(_entities[2].properties[0]);
+      QueryIntegerProperty<ObjectboxFriend>(_entities[1].properties[1]);
 
   /// see [ObjectboxFriend.name]
   static final name =
-      QueryStringProperty<ObjectboxFriend>(_entities[2].properties[1]);
+      QueryStringProperty<ObjectboxFriend>(_entities[1].properties[2]);
+}
 
-  /// see [ObjectboxFriend.dbId]
+/// [ObjectboxName] entity fields to define ObjectBox queries.
+class ObjectboxName_ {
+  /// see [ObjectboxName.dbId]
   static final dbId =
-      QueryIntegerProperty<ObjectboxFriend>(_entities[2].properties[2]);
+      QueryIntegerProperty<ObjectboxName>(_entities[2].properties[0]);
+
+  /// see [ObjectboxName.first]
+  static final first =
+      QueryStringProperty<ObjectboxName>(_entities[2].properties[1]);
+
+  /// see [ObjectboxName.last]
+  static final last =
+      QueryStringProperty<ObjectboxName>(_entities[2].properties[2]);
 }

@@ -9,7 +9,7 @@ import '../benchmark_parameter.dart';
 import '../parameter.dart';
 import 'database_provider.dart';
 
-class ObjectBoxProvider extends DatabaseProvider<ObjectboxDoc> {
+class ObjectBoxProvider extends DatabaseProvider<int, ObjectboxDoc> {
   @override
   String get name => 'ObjectBox';
 
@@ -21,26 +21,25 @@ class ObjectBoxProvider extends DatabaseProvider<ObjectboxDoc> {
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase<ObjectboxDoc>> openDatabase(
+  FutureOr<BenchmarkDatabase<int, ObjectboxDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) async {
     final store = openStore(directory: directory);
     final box = store.box<ObjectboxDoc>();
-    final query = box.query(ObjectboxDoc_.id.equals('')).build();
-    return _ObjectBoxDatabase(store, box, query);
+    return _ObjectBoxDatabase(store, box);
   }
 }
 
-class _ObjectBoxDatabase extends BenchmarkDatabase<ObjectboxDoc> {
-  _ObjectBoxDatabase(this.store, this.box, this.query);
+class _ObjectBoxDatabase extends BenchmarkDatabase<int, ObjectboxDoc> {
+  _ObjectBoxDatabase(this.store, this.box);
 
   final Store store;
   final Box<ObjectboxDoc> box;
-  final Query<ObjectboxDoc> query;
 
   @override
-  ObjectboxDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toObjectBoxDoc();
+  ObjectboxDoc createBenchmarkDocImpl(BenchmarkDoc<int> doc) =>
+      doc.toObjectBoxDoc();
 
   @override
   void close() => store.close();
@@ -56,20 +55,25 @@ class _ObjectBoxDatabase extends BenchmarkDatabase<ObjectboxDoc> {
 
   @override
   List<ObjectboxDoc> createDocumentsSync(List<ObjectboxDoc> docs) {
-    box.putMany([for (final doc in docs) doc.toObjectBoxDoc()]);
+    box.putMany([for (final doc in docs) doc]);
     return docs;
   }
 
   @override
-  ObjectboxDoc getDocumentByIdSync(String id) {
-    query.param(ObjectboxDoc_.id).value = id;
-    return query.findFirst()!;
+  ObjectboxDoc getDocumentByIdSync(int id) => box.get(id)!;
+
+  @override
+  List<ObjectboxDoc> getDocumentsByIdSync(List<int> ids) =>
+      box.getMany(ids).cast();
+
+  @override
+  void deleteDocumentsSync(List<ObjectboxDoc> docs) {
+    box.removeMany(docs.map((doc) => doc.id).toList());
   }
 }
 
-extension on BenchmarkDoc {
+extension on BenchmarkDoc<int> {
   ObjectboxDoc toObjectBoxDoc() => ObjectboxDoc(
-        id: id,
         index: index,
         guid: guid,
         isActive: isActive,

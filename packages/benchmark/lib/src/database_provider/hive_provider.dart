@@ -23,7 +23,7 @@ void _registerTypeAdapters() {
   Hive.registerAdapter(HiveFriendAdapter());
 }
 
-class HiveProvider extends DatabaseProvider<HiveDoc> {
+class HiveProvider extends DatabaseProvider<String, HiveDoc> {
   @override
   String get name => 'Hive';
 
@@ -35,7 +35,7 @@ class HiveProvider extends DatabaseProvider<HiveDoc> {
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase<HiveDoc>> openDatabase(
+  FutureOr<BenchmarkDatabase<String, HiveDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) async {
@@ -46,13 +46,13 @@ class HiveProvider extends DatabaseProvider<HiveDoc> {
   }
 }
 
-class _HiveDatabase extends BenchmarkDatabase<HiveDoc> {
+class _HiveDatabase extends BenchmarkDatabase<String, HiveDoc> {
   _HiveDatabase(this.box);
 
   final LazyBox<HiveDoc> box;
 
   @override
-  HiveDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toHiveDoc();
+  HiveDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toHiveDoc();
 
   @override
   FutureOr<void> close() => box.close();
@@ -74,9 +74,19 @@ class _HiveDatabase extends BenchmarkDatabase<HiveDoc> {
 
   @override
   Future<HiveDoc> getDocumentByIdAsync(String id) async => (await box.get(id))!;
+
+  @override
+  Future<void> deleteDocumentAsync(HiveDoc doc) {
+    return box.delete(doc.id);
+  }
+
+  @override
+  Future<void> deleteDocumentsAsync(List<HiveDoc> docs) {
+    return box.deleteAll(docs.map<String>((doc) => doc.id));
+  }
 }
 
-extension on BenchmarkDoc {
+extension on BenchmarkDoc<String> {
   HiveDoc toHiveDoc() => HiveDoc(
         id: id,
         index: index,

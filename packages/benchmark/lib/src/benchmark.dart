@@ -44,7 +44,8 @@ abstract class Benchmark {
 
   Iterable<ParameterCombination> get supportedParameterCombinations;
 
-  BenchmarkRunner<T> createRunner<T extends BenchmarkDoc>(
+  BenchmarkRunner<ID, T>
+      createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterCombination parameterCombination,
   );
 }
@@ -85,8 +86,8 @@ class _FixedOperationsDuration extends _BenchmarkDuration {
       operations - benchmark.executedOperations;
 }
 
-abstract class BenchmarkRunner<T extends BenchmarkDoc> {
-  late final DatabaseProvider<T> _databaseProvider;
+abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
+  late final DatabaseProvider<ID, T> _databaseProvider;
   late final ParameterCombination _parameterCombination;
   late final _BenchmarkDuration _duration;
 
@@ -99,16 +100,21 @@ abstract class BenchmarkRunner<T extends BenchmarkDoc> {
   final _stopwatch = Stopwatch();
 
   @protected
-  late final BenchmarkDatabase<T> database;
+  late final Logger logger;
+
+  @protected
+  late final BenchmarkDatabase<ID, T> database;
 
   Future<BenchmarkResult> run(
-    DatabaseProvider<T> databaseProvider,
+    DatabaseProvider<ID, T> databaseProvider,
     ParameterCombination parameterCombination,
     _BenchmarkDuration duration,
+    Logger logger,
   ) async {
     _duration = duration;
     _parameterCombination = parameterCombination;
     _databaseProvider = databaseProvider;
+    this.logger = logger;
 
     await setup();
 
@@ -128,6 +134,8 @@ abstract class BenchmarkRunner<T extends BenchmarkDoc> {
   @mustCallSuper
   Future<void> setup() async {
     final directory = Directory.systemTemp.createTempSync();
+    logger.info('Opening database in ${directory.path}');
+
     database = await _databaseProvider.openDatabase(
       directory.path,
       _parameterCombination,
@@ -167,18 +175,22 @@ Future<BenchmarkResult> _runBenchmark({
   required Benchmark benchmark,
   required DatabaseProvider databaseProvider,
   required ParameterCombination parameterCombination,
+  required Logger logger,
 }) async {
   Future<BenchmarkResult> _runBenchmark(_BenchmarkDuration duration) =>
       databaseProvider.runWith(
-        <T extends BenchmarkDoc>(provider) => benchmark
-            .createRunner<T>(parameterCombination)
-            .run(provider, parameterCombination, duration),
+        <ID extends Object, T extends BenchmarkDoc<ID>>(provider) {
+          final runner = benchmark.createRunner<ID, T>(parameterCombination);
+          return runner.run(provider, parameterCombination, duration, logger);
+        },
       );
 
   const warmUpDuration = _FixedTimedDuration(Duration(milliseconds: 500));
   const runDuration = _FixedTimedDuration(Duration(seconds: 2));
 
+  logger.info('Warming up');
   await _runBenchmark(warmUpDuration);
+  logger.info('Running benchmark');
   return _runBenchmark(runDuration);
 }
 
@@ -193,43 +205,56 @@ Future<List<BenchmarkRun>> runBenchmarks({
     'Running the following benchmarks:',
     for (final benchmark in benchmarks) ' - ${benchmark.name}'
   ].forEach(logger.info);
+  logger.info('');
 
   [
     'Benchmarking the following databases:',
     for (final databaseProvider in databasesProviders)
       ' - ${databaseProvider.name}'
   ].forEach(logger.info);
+  logger.info('');
 
   final runs = <BenchmarkRun>[];
 
   for (final benchmark in benchmarks) {
-    logger.info('-> ${benchmark.name}');
+    logger.info('=== Benchmark: ${benchmark.name} '.padRight(80, '='));
+    logger.info('');
 
     for (final parameterCombination
         in benchmark.supportedParameterCombinations) {
-      logger.info('   -> ${parameterCombination.toString()}');
+      logger.info(parameterCombination.toString());
+      logger.info('');
 
       for (final databaseProvider in databasesProviders) {
         if (!databaseProvider
             .supportsParameterCombination(parameterCombination)) {
-          logger.fine('     -> ${databaseProvider.name} [SKIPPED]');
+          logger.fine(
+            '--- Database: ${databaseProvider.name} [SKIPPED] '
+                .padRight(80, '-'),
+          );
           continue;
         }
 
-        logger.info('     -> ${databaseProvider.name}');
+        logger
+            .info('--- Database:  ${databaseProvider.name} '.padRight(80, '-'));
 
         final result = await _runBenchmark(
           benchmark: benchmark,
           databaseProvider: databaseProvider,
           parameterCombination: parameterCombination,
+          logger: logger,
         );
 
+        logger.info('Results:');
+
         [
-          '        Ops:     ${result.operations}',
-          '        Ops/s:   ${result.operationsPerSecond.floor()}',
-          '        Time:    ${result.duration.inMicroseconds / 10e5}s',
-          '        Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
+          'Ops:     ${result.operations}',
+          'Ops/s:   ${result.operationsPerSecond.floor()}',
+          'Time:    ${result.duration.inMicroseconds / 10e5}s',
+          'Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
         ].forEach(logger.info);
+
+        logger.info('');
 
         runs.add(BenchmarkRun(
           benchmark: benchmark.name,

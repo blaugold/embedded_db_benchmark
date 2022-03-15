@@ -10,7 +10,7 @@ import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../parameter.dart';
 
-class RealmProvider extends DatabaseProvider<RealmDoc> {
+class RealmProvider extends DatabaseProvider<String, RealmDoc> {
   @override
   String get name => 'Realm';
 
@@ -22,7 +22,7 @@ class RealmProvider extends DatabaseProvider<RealmDoc> {
       ]);
 
   @override
-  FutureOr<BenchmarkDatabase<RealmDoc>> openDatabase(
+  FutureOr<BenchmarkDatabase<String, RealmDoc>> openDatabase(
     String directory,
     ParameterCombination parameterCombination,
   ) {
@@ -37,13 +37,13 @@ class RealmProvider extends DatabaseProvider<RealmDoc> {
   }
 }
 
-class _RealmDatabase extends BenchmarkDatabase<RealmDoc> {
+class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   _RealmDatabase(this.realm);
 
   final Realm realm;
 
   @override
-  RealmDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toRealmDoc();
+  RealmDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toRealmDoc();
 
   @override
   void close() => realm.close();
@@ -56,7 +56,7 @@ class _RealmDatabase extends BenchmarkDatabase<RealmDoc> {
   @override
   RealmDoc createDocumentSync(RealmDoc doc) {
     realm.write(() {
-      realm.add(doc.toRealmDoc());
+      realm.add(doc);
     });
     return doc;
   }
@@ -64,16 +64,23 @@ class _RealmDatabase extends BenchmarkDatabase<RealmDoc> {
   @override
   List<RealmDoc> createDocumentsSync(List<RealmDoc> docs) {
     realm.write(() {
-      realm.addAll(docs.map((doc) => doc.toRealmDoc()));
+      realm.addAll(docs);
     });
     return docs;
   }
 
   @override
   RealmDoc getDocumentByIdSync(String id) => realm.find<RealmDoc>(id)!;
+
+  @override
+  void deleteDocumentsSync(List<RealmDoc> docs) {
+    realm.write(() {
+      realm.deleteMany(docs);
+    });
+  }
 }
 
-extension on BenchmarkDoc {
+extension on BenchmarkDoc<String> {
   RealmDoc toRealmDoc() => RealmDoc(
         id,
         index,

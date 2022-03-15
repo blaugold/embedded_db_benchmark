@@ -4,7 +4,7 @@ import 'package:realm_dart/realm.dart';
 part 'realm_document.g.dart';
 
 @RealmModel()
-class _RealmDoc with BenchmarkDoc {
+class _RealmDoc with BenchmarkDoc<String> {
   @override
   @PrimaryKey()
   late final String id;
