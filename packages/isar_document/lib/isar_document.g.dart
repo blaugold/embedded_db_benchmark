@@ -17,10 +17,10 @@ extension GetIsarDocCollection on Isar {
 final IsarDocSchema = CollectionSchema(
   name: 'IsarDoc',
   schema:
-      '{"name":"IsarDoc","idName":"dbId","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"id","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[{"name":"id","unique":false,"properties":[{"name":"id","type":"Hash","caseSensitive":true}]}],"links":[{"name":"isarFriends","target":"IsarFriend"},{"name":"isarName","target":"IsarName"}]}',
+      '{"name":"IsarDoc","idName":"id","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[],"links":[{"name":"isarFriends","target":"IsarFriend"},{"name":"isarName","target":"IsarName"}]}',
   nativeAdapter: const _IsarDocNativeAdapter(),
   webAdapter: const _IsarDocWebAdapter(),
-  idName: 'dbId',
+  idName: 'id',
   propertyIds: {
     'about': 0,
     'address': 1,
@@ -32,35 +32,30 @@ final IsarDocSchema = CollectionSchema(
     'favoriteFruit': 7,
     'greeting': 8,
     'guid': 9,
-    'id': 10,
-    'index': 11,
-    'isActive': 12,
-    'latitude': 13,
-    'longitude': 14,
-    'phone': 15,
-    'picture': 16,
-    'range': 17,
-    'registered': 18,
-    'tags': 19
+    'index': 10,
+    'isActive': 11,
+    'latitude': 12,
+    'longitude': 13,
+    'phone': 14,
+    'picture': 15,
+    'range': 16,
+    'registered': 17,
+    'tags': 18
   },
   listProperties: {'range', 'tags'},
-  indexIds: {'id': 0},
-  indexTypes: {
-    'id': [
-      NativeIndexType.stringHash,
-    ]
-  },
+  indexIds: {},
+  indexTypes: {},
   linkIds: {'isarFriends': 0, 'isarName': 1},
   backlinkIds: {},
   linkedCollections: ['IsarFriend', 'IsarName'],
   getId: (obj) {
-    if (obj.dbId == Isar.autoIncrement) {
+    if (obj.id == Isar.autoIncrement) {
       return null;
     } else {
-      return obj.dbId;
+      return obj.id;
     }
   },
-  setId: (obj, id) => obj.dbId = id,
+  setId: (obj, id) => obj.id = id,
   getLinks: (obj) => [obj.isarFriends, obj.isarName],
   version: 2,
 );
@@ -76,7 +71,6 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
     IsarNative.jsObjectSet(jsObj, 'age', object.age);
     IsarNative.jsObjectSet(jsObj, 'balance', object.balance);
     IsarNative.jsObjectSet(jsObj, 'company', object.company);
-    IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
     IsarNative.jsObjectSet(jsObj, 'email', object.email);
     IsarNative.jsObjectSet(jsObj, 'eyeColor', object.eyeColor);
     IsarNative.jsObjectSet(jsObj, 'favoriteFruit', object.favoriteFruit);
@@ -104,14 +98,12 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity;
     object.balance = IsarNative.jsObjectGet(jsObj, 'balance') ?? '';
     object.company = IsarNative.jsObjectGet(jsObj, 'company') ?? '';
-    object.dbId =
-        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
     object.email = IsarNative.jsObjectGet(jsObj, 'email') ?? '';
     object.eyeColor = IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '';
     object.favoriteFruit = IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '';
     object.greeting = IsarNative.jsObjectGet(jsObj, 'greeting') ?? '';
     object.guid = IsarNative.jsObjectGet(jsObj, 'guid') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? '';
+    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
     object.index =
         IsarNative.jsObjectGet(jsObj, 'index') ?? double.negativeInfinity;
     object.isActive = IsarNative.jsObjectGet(jsObj, 'isActive') ?? false;
@@ -130,10 +122,8 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
             .toList()
             .cast<String>() ??
         [];
-    attachLinks(
-        collection.isar,
-        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity,
-        object);
+    attachLinks(collection.isar,
+        IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
     return object;
   }
 
@@ -151,9 +141,6 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
         return (IsarNative.jsObjectGet(jsObj, 'balance') ?? '') as P;
       case 'company':
         return (IsarNative.jsObjectGet(jsObj, 'company') ?? '') as P;
-      case 'dbId':
-        return (IsarNative.jsObjectGet(jsObj, 'dbId') ??
-            double.negativeInfinity) as P;
       case 'email':
         return (IsarNative.jsObjectGet(jsObj, 'email') ?? '') as P;
       case 'eyeColor':
@@ -165,7 +152,8 @@ class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
       case 'guid':
         return (IsarNative.jsObjectGet(jsObj, 'guid') ?? '') as P;
       case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? '') as P;
+        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+            as P;
       case 'index':
         return (IsarNative.jsObjectGet(jsObj, 'index') ??
             double.negativeInfinity) as P;
@@ -253,40 +241,37 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
     final value9 = object.guid;
     final _guid = IsarBinaryWriter.utf8Encoder.convert(value9);
     dynamicSize += (_guid.length) as int;
-    final value10 = object.id;
-    final _id = IsarBinaryWriter.utf8Encoder.convert(value10);
-    dynamicSize += (_id.length) as int;
-    final value11 = object.index;
-    final _index = value11;
-    final value12 = object.isActive;
-    final _isActive = value12;
-    final value13 = object.latitude;
-    final _latitude = IsarBinaryWriter.utf8Encoder.convert(value13);
+    final value10 = object.index;
+    final _index = value10;
+    final value11 = object.isActive;
+    final _isActive = value11;
+    final value12 = object.latitude;
+    final _latitude = IsarBinaryWriter.utf8Encoder.convert(value12);
     dynamicSize += (_latitude.length) as int;
-    final value14 = object.longitude;
-    final _longitude = IsarBinaryWriter.utf8Encoder.convert(value14);
+    final value13 = object.longitude;
+    final _longitude = IsarBinaryWriter.utf8Encoder.convert(value13);
     dynamicSize += (_longitude.length) as int;
-    final value15 = object.phone;
-    final _phone = IsarBinaryWriter.utf8Encoder.convert(value15);
+    final value14 = object.phone;
+    final _phone = IsarBinaryWriter.utf8Encoder.convert(value14);
     dynamicSize += (_phone.length) as int;
-    final value16 = object.picture;
-    final _picture = IsarBinaryWriter.utf8Encoder.convert(value16);
+    final value15 = object.picture;
+    final _picture = IsarBinaryWriter.utf8Encoder.convert(value15);
     dynamicSize += (_picture.length) as int;
-    final value17 = object.range;
-    dynamicSize += (value17.length) * 8;
-    final _range = value17;
-    final value18 = object.registered;
-    final _registered = IsarBinaryWriter.utf8Encoder.convert(value18);
+    final value16 = object.range;
+    dynamicSize += (value16.length) * 8;
+    final _range = value16;
+    final value17 = object.registered;
+    final _registered = IsarBinaryWriter.utf8Encoder.convert(value17);
     dynamicSize += (_registered.length) as int;
-    final value19 = object.tags;
-    dynamicSize += (value19.length) * 8;
-    final bytesList19 = <IsarUint8List>[];
-    for (var str in value19) {
+    final value18 = object.tags;
+    dynamicSize += (value18.length) * 8;
+    final bytesList18 = <IsarUint8List>[];
+    for (var str in value18) {
       final bytes = IsarBinaryWriter.utf8Encoder.convert(str);
-      bytesList19.add(bytes);
+      bytesList18.add(bytes);
       dynamicSize += bytes.length as int;
     }
-    final _tags = bytesList19;
+    final _tags = bytesList18;
     final size = staticSize + dynamicSize;
 
     rawObj.buffer = alloc(size);
@@ -303,16 +288,15 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
     writer.writeBytes(offsets[7], _favoriteFruit);
     writer.writeBytes(offsets[8], _greeting);
     writer.writeBytes(offsets[9], _guid);
-    writer.writeBytes(offsets[10], _id);
-    writer.writeLong(offsets[11], _index);
-    writer.writeBool(offsets[12], _isActive);
-    writer.writeBytes(offsets[13], _latitude);
-    writer.writeBytes(offsets[14], _longitude);
-    writer.writeBytes(offsets[15], _phone);
-    writer.writeBytes(offsets[16], _picture);
-    writer.writeLongList(offsets[17], _range);
-    writer.writeBytes(offsets[18], _registered);
-    writer.writeStringList(offsets[19], _tags);
+    writer.writeLong(offsets[10], _index);
+    writer.writeBool(offsets[11], _isActive);
+    writer.writeBytes(offsets[12], _latitude);
+    writer.writeBytes(offsets[13], _longitude);
+    writer.writeBytes(offsets[14], _phone);
+    writer.writeBytes(offsets[15], _picture);
+    writer.writeLongList(offsets[16], _range);
+    writer.writeBytes(offsets[17], _registered);
+    writer.writeStringList(offsets[18], _tags);
   }
 
   @override
@@ -324,22 +308,21 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
     object.age = reader.readLong(offsets[2]);
     object.balance = reader.readString(offsets[3]);
     object.company = reader.readString(offsets[4]);
-    object.dbId = id;
     object.email = reader.readString(offsets[5]);
     object.eyeColor = reader.readString(offsets[6]);
     object.favoriteFruit = reader.readString(offsets[7]);
     object.greeting = reader.readString(offsets[8]);
     object.guid = reader.readString(offsets[9]);
-    object.id = reader.readString(offsets[10]);
-    object.index = reader.readLong(offsets[11]);
-    object.isActive = reader.readBool(offsets[12]);
-    object.latitude = reader.readString(offsets[13]);
-    object.longitude = reader.readString(offsets[14]);
-    object.phone = reader.readString(offsets[15]);
-    object.picture = reader.readString(offsets[16]);
-    object.range = reader.readLongList(offsets[17]) ?? [];
-    object.registered = reader.readString(offsets[18]);
-    object.tags = reader.readStringList(offsets[19]) ?? [];
+    object.id = id;
+    object.index = reader.readLong(offsets[10]);
+    object.isActive = reader.readBool(offsets[11]);
+    object.latitude = reader.readString(offsets[12]);
+    object.longitude = reader.readString(offsets[13]);
+    object.phone = reader.readString(offsets[14]);
+    object.picture = reader.readString(offsets[15]);
+    object.range = reader.readLongList(offsets[16]) ?? [];
+    object.registered = reader.readString(offsets[17]);
+    object.tags = reader.readStringList(offsets[18]) ?? [];
     attachLinks(collection.isar, id, object);
     return object;
   }
@@ -371,11 +354,11 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
       case 9:
         return (reader.readString(offset)) as P;
       case 10:
-        return (reader.readString(offset)) as P;
-      case 11:
         return (reader.readLong(offset)) as P;
-      case 12:
+      case 11:
         return (reader.readBool(offset)) as P;
+      case 12:
+        return (reader.readString(offset)) as P;
       case 13:
         return (reader.readString(offset)) as P;
       case 14:
@@ -383,12 +366,10 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
       case 15:
         return (reader.readString(offset)) as P;
       case 16:
-        return (reader.readString(offset)) as P;
-      case 17:
         return (reader.readLongList(offset) ?? []) as P;
-      case 18:
+      case 17:
         return (reader.readString(offset)) as P;
-      case 19:
+      case 18:
         return (reader.readStringList(offset) ?? []) as P;
       default:
         throw 'Illegal propertyIndex';
@@ -415,90 +396,15 @@ class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
 }
 
 extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyDbId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
-  }
-
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: 'id'));
+    return addWhereClauseInternal(const WhereClause(indexName: null));
   }
 }
 
 extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdEqualTo(int dbId) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idEqualTo(int id) {
     return addWhereClauseInternal(WhereClause(
       indexName: null,
-      lower: [dbId],
-      includeLower: true,
-      upper: [dbId],
-      includeUpper: true,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdNotEqualTo(int dbId) {
-    if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [dbId],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [dbId],
-        includeLower: false,
-      ));
-    } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [dbId],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [dbId],
-        includeUpper: false,
-      ));
-    }
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdGreaterThan(
-    int dbId, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [dbId],
-      includeLower: include,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdLessThan(
-    int dbId, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [dbId],
-      includeUpper: include,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> dbIdBetween(
-    int lowerDbId,
-    int upperDbId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerDbId],
-      includeLower: includeLower,
-      upper: [upperDbId],
-      includeUpper: includeUpper,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idEqualTo(String id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: 'id',
       lower: [id],
       includeLower: true,
       upper: [id],
@@ -506,28 +412,65 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
     ));
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idNotEqualTo(String id) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
       return addWhereClauseInternal(WhereClause(
-        indexName: 'id',
+        indexName: null,
         upper: [id],
         includeUpper: false,
       )).addWhereClauseInternal(WhereClause(
-        indexName: 'id',
+        indexName: null,
         lower: [id],
         includeLower: false,
       ));
     } else {
       return addWhereClauseInternal(WhereClause(
-        indexName: 'id',
+        indexName: null,
         lower: [id],
         includeLower: false,
       )).addWhereClauseInternal(WhereClause(
-        indexName: 'id',
+        indexName: null,
         upper: [id],
         includeUpper: false,
       ));
     }
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idGreaterThan(
+    int id, {
+    bool include = false,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [id],
+      includeLower: include,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idLessThan(
+    int id, {
+    bool include = false,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      upper: [id],
+      includeUpper: include,
+    ));
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idBetween(
+    int lowerId,
+    int upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addWhereClauseInternal(WhereClause(
+      indexName: null,
+      lower: [lowerId],
+      includeLower: includeLower,
+      upper: [upperId],
+      includeUpper: includeUpper,
+    ));
   }
 }
 
@@ -989,53 +932,6 @@ extension IsarDocQueryFilter
       property: 'company',
       value: pattern,
       caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'dbId',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'dbId',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'dbId',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> dbIdBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'dbId',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
     ));
   }
 
@@ -1555,21 +1451,16 @@ extension IsarDocQueryFilter
     ));
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idEqualTo(int value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'id',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idGreaterThan(
-    String value, {
-    bool caseSensitive = true,
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -1577,13 +1468,11 @@ extension IsarDocQueryFilter
       include: include,
       property: 'id',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idLessThan(
-    String value, {
-    bool caseSensitive = true,
+    int value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
@@ -1591,14 +1480,12 @@ extension IsarDocQueryFilter
       include: include,
       property: 'id',
       value: value,
-      caseSensitive: caseSensitive,
     ));
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idBetween(
-    String lower,
-    String upper, {
-    bool caseSensitive = true,
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1608,52 +1495,6 @@ extension IsarDocQueryFilter
       includeLower: includeLower,
       upper: upper,
       includeUpper: includeUpper,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.startsWith,
-      property: 'id',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.endsWith,
-      property: 'id',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idContains(String value,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.contains,
-      property: 'id',
-      value: value,
-      caseSensitive: caseSensitive,
-    ));
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.matches,
-      property: 'id',
-      value: pattern,
-      caseSensitive: caseSensitive,
     ));
   }
 
@@ -2443,14 +2284,6 @@ extension IsarDocQueryWhereSortBy on QueryBuilder<IsarDoc, IsarDoc, QSortBy> {
     return addSortByInternal('company', Sort.desc);
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByDbId() {
-    return addSortByInternal('dbId', Sort.asc);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByDbIdDesc() {
-    return addSortByInternal('dbId', Sort.desc);
-  }
-
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByEmail() {
     return addSortByInternal('email', Sort.asc);
   }
@@ -2598,14 +2431,6 @@ extension IsarDocQueryWhereSortThenBy
     return addSortByInternal('company', Sort.desc);
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByDbId() {
-    return addSortByInternal('dbId', Sort.asc);
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByDbIdDesc() {
-    return addSortByInternal('dbId', Sort.desc);
-  }
-
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> thenByEmail() {
     return addSortByInternal('email', Sort.asc);
   }
@@ -2737,10 +2562,6 @@ extension IsarDocQueryWhereDistinct
     return addDistinctByInternal('company', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctByDbId() {
-    return addDistinctByInternal('dbId');
-  }
-
   QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctByEmail(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('email', caseSensitive: caseSensitive);
@@ -2766,9 +2587,8 @@ extension IsarDocQueryWhereDistinct
     return addDistinctByInternal('guid', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctById(
-      {bool caseSensitive = true}) {
-    return addDistinctByInternal('id', caseSensitive: caseSensitive);
+  QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QDistinct> distinctByIndex() {
@@ -2827,10 +2647,6 @@ extension IsarDocQueryProperty
     return addPropertyNameInternal('company');
   }
 
-  QueryBuilder<IsarDoc, int, QQueryOperations> dbIdProperty() {
-    return addPropertyNameInternal('dbId');
-  }
-
   QueryBuilder<IsarDoc, String, QQueryOperations> emailProperty() {
     return addPropertyNameInternal('email');
   }
@@ -2851,7 +2667,7 @@ extension IsarDocQueryProperty
     return addPropertyNameInternal('guid');
   }
 
-  QueryBuilder<IsarDoc, String, QQueryOperations> idProperty() {
+  QueryBuilder<IsarDoc, int, QQueryOperations> idProperty() {
     return addPropertyNameInternal('id');
   }
 

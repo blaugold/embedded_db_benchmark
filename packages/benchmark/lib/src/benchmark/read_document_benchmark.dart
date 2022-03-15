@@ -17,20 +17,23 @@ class ReadDocumentBenchmark extends Benchmark {
   Iterable<ParameterCombination> get supportedParameterCombinations =>
       ParameterCombination.allCombinations([
         ParameterRange.all(execution),
+        ParameterRange.all(batchSize),
       ]);
 
   @override
-  BenchmarkRunner<T> createRunner<T extends BenchmarkDoc>(
+  BenchmarkRunner<ID, T>
+      createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterCombination parameterCombination,
   ) {
-    final BenchmarkRunner<T> benchmark;
+    final BenchmarkRunner<ID, T> benchmark;
+    final batchSizeValue = parameterCombination.get(batchSize)!;
 
     switch (parameterCombination.get(execution)!) {
       case Execution.sync:
-        benchmark = _SyncReadOneDocumentBenchmark();
+        benchmark = _SyncReadOneDocumentBenchmark(batchSizeValue);
         break;
       case Execution.async:
-        benchmark = _AsyncReadOneDocumentBenchmark();
+        benchmark = _AsyncReadOneDocumentBenchmark(batchSizeValue);
         break;
     }
 
@@ -38,31 +41,38 @@ class ReadDocumentBenchmark extends Benchmark {
   }
 }
 
-abstract class _ReadDocumentBase<T extends BenchmarkDoc>
-    extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
-  late final List<BenchmarkDoc> documents;
+abstract class _ReadDocumentBase<ID extends Object, T extends BenchmarkDoc<ID>>
+    extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
+  _ReadDocumentBase(this._execution, this._batchSize);
 
-  BenchmarkDoc get currentDocument =>
-      documents[executedOperations % documents.length];
+  final Execution _execution;
+  final int _batchSize;
 
-  FutureOr<void> createDocument(BenchmarkDoc document);
+  late final List<ID> documentIds;
 
-  FutureOr<BenchmarkDoc> getDocumentById(String id);
+  List<ID> get currentDocumentIds => List.generate(
+        _batchSize,
+        (i) => documentIds[(executedOperations + i) % documentIds.length],
+      );
 
   @override
   Future<void> setup() async {
     await super.setup();
 
-    documents = createBenchmarkDocs(100);
+    List<BenchmarkDoc<ID>> documents = createBenchmarkDocs(1000);
+    assert(_batchSize <= documents.length);
 
     // Insert documents.
-    for (final document in documents) {
-      await createDocument(document);
-    }
+    documents = await database.createDocuments(
+      documents.map(database.createBenchmarkDocImpl).toList(growable: false),
+      _execution,
+    );
+    documentIds = documents.map((doc) => doc.id).toList();
 
     // Verify that document can be persisted and loaded correctly.
     for (final document in documents) {
-      final loadedDocument = await getDocumentById(document.id);
+      final loadedDocument =
+          await database.getDocumentById(document.id, _execution);
 
       var documentJson = document.toJson();
       var loadedDocumentJson = loadedDocument.toJson();
@@ -92,43 +102,48 @@ abstract class _ReadDocumentBase<T extends BenchmarkDoc>
   }
 }
 
-class _SyncReadOneDocumentBenchmark<T extends BenchmarkDoc>
-    extends _ReadDocumentBase<T> {
-  @override
-  void createDocument(BenchmarkDoc document) {
-    database.createDocumentSync(database.createBenchmarkDocImpl(document));
-  }
-
-  @override
-  BenchmarkDoc getDocumentById(String id) {
-    return database.getDocumentByIdSync(id);
-  }
+class _SyncReadOneDocumentBenchmark<ID extends Object,
+    T extends BenchmarkDoc<ID>> extends _ReadDocumentBase<ID, T> {
+  _SyncReadOneDocumentBenchmark(int batchSize)
+      : super(Execution.sync, batchSize);
 
   @override
   void executeOperations() {
-    final document = currentDocument;
-    measureOperationsSync(() => database.getDocumentByIdSync(document.id));
+    final documentIds = currentDocumentIds;
+    if (documentIds.length == 1) {
+      final documentId = documentIds.single;
+      measureOperationsSync(
+        () => database.getDocumentByIdSync(documentId),
+        operations: _batchSize,
+      );
+    } else {
+      measureOperationsSync(
+        () => database.getDocumentsByIdSync(documentIds),
+        operations: _batchSize,
+      );
+    }
   }
 }
 
-class _AsyncReadOneDocumentBenchmark<T extends BenchmarkDoc>
-    extends _ReadDocumentBase<T> {
-  @override
-  Future<void> createDocument(BenchmarkDoc document) async {
-    await database
-        .createDocumentAsync(database.createBenchmarkDocImpl(document));
-  }
-
-  @override
-  Future<BenchmarkDoc> getDocumentById(String id) {
-    return database.getDocumentByIdAsync(id);
-  }
+class _AsyncReadOneDocumentBenchmark<ID extends Object,
+    T extends BenchmarkDoc<ID>> extends _ReadDocumentBase<ID, T> {
+  _AsyncReadOneDocumentBenchmark(int batchSize)
+      : super(Execution.async, batchSize);
 
   @override
   Future<void> executeOperations() async {
-    final document = currentDocument;
-    await measureOperationsAsync(
-      () => database.getDocumentByIdAsync(document.id),
-    );
+    final documentIds = currentDocumentIds;
+    if (documentIds.length == 1) {
+      final documentId = documentIds.single;
+      await measureOperationsAsync(
+        () => database.getDocumentByIdAsync(documentId),
+        operations: _batchSize,
+      );
+    } else {
+      await measureOperationsAsync(
+        () => database.getDocumentsByIdAsync(documentIds),
+        operations: _batchSize,
+      );
+    }
   }
 }

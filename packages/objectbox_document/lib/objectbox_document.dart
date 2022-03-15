@@ -2,10 +2,9 @@ import 'package:benchmark_document/benchmark_document.dart';
 import 'package:objectbox/objectbox.dart';
 
 @Entity()
-class ObjectboxDoc with BenchmarkDoc {
+class ObjectboxDoc with BenchmarkDoc<int> {
   ObjectboxDoc({
-    this.dbId = 0,
-    required this.id,
+    this.id = 0,
     required this.index,
     required this.guid,
     required this.isActive,
@@ -27,11 +26,9 @@ class ObjectboxDoc with BenchmarkDoc {
     required this.favoriteFruit,
   });
 
-  @Id()
-  int dbId;
   @override
-  @Index()
-  String id;
+  @Id()
+  int id;
   @override
   int index;
   @override

@@ -17,17 +17,26 @@ Future<List<DocumentMap>> loadDocuments() async {
   });
 }
 
-var _documentNumber = 0;
+var _nextDocumentNumber = 0;
 
-final _documentNumbers = <Object?, int>{};
+final _documentNumbers = Expando<int>();
 
-String createDocumentId(DocumentMap rawDocument) =>
-    '${rawDocument['id']}_${_documentNumbers[rawDocument] = _documentNumber++}';
+ID createDocumentId<ID extends Object>(DocumentMap rawDocument) {
+  _documentNumbers[rawDocument] = _nextDocumentNumber++;
+  return _getDocumentId(rawDocument);
+}
 
-String getDocumentId(DocumentMap rawDocument) =>
-    '${rawDocument['id']}_${_documentNumbers[rawDocument]!}';
+ID _getDocumentId<ID>(DocumentMap rawDocument) {
+  final documentNumber = _documentNumbers[rawDocument]!;
+  if (ID == String) {
+    return documentNumber.toString() as ID;
+  } else /*if(ID == int)*/ {
+    return documentNumber as ID;
+  }
+}
 
-mixin BenchmarkDocumentMixin<T extends BenchmarkDoc> on BenchmarkRunner<T> {
+mixin BenchmarkDocumentMixin<ID extends Object, T extends BenchmarkDoc<ID>>
+    on BenchmarkRunner<ID, T> {
   late final List<DocumentMap> rawDocuments;
 
   @override
@@ -36,12 +45,12 @@ mixin BenchmarkDocumentMixin<T extends BenchmarkDoc> on BenchmarkRunner<T> {
     return super.setup();
   }
 
-  BenchmarkDocData createBenchmarkDoc() => _createBenchmarkDoc();
+  BenchmarkDocData<ID> createBenchmarkDoc() => _createBenchmarkDoc();
 
-  List<BenchmarkDocData> createBenchmarkDocs(int count) =>
+  List<BenchmarkDocData<ID>> createBenchmarkDocs(int count) =>
       List.generate(count, _createBenchmarkDoc);
 
-  BenchmarkDocData _createBenchmarkDoc([int index = 0]) {
+  BenchmarkDocData<ID> _createBenchmarkDoc([int index = 0]) {
     final rawDocument =
         rawDocuments[(executedOperations + index) % rawDocuments.length];
     return BenchmarkDocData.fromJson(

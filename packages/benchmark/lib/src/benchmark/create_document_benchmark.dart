@@ -19,26 +19,19 @@ class CreateDocumentBenchmark extends Benchmark {
       ]);
 
   @override
-  BenchmarkRunner<T> createRunner<T extends BenchmarkDoc>(
+  BenchmarkRunner<ID, T>
+      createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterCombination parameterCombination,
   ) {
-    final BenchmarkRunner<T> benchmark;
+    final BenchmarkRunner<ID, T> benchmark;
     final batchSizeValue = parameterCombination.get(batchSize)!;
 
     switch (parameterCombination.get(execution)!) {
       case Execution.sync:
-        if (batchSizeValue == 1) {
-          benchmark = _SyncCreateOneDocumentBenchmark();
-        } else {
-          benchmark = _SyncCreateManyDocumentBenchmark(batchSizeValue);
-        }
+        benchmark = _SyncCreateManyDocumentBenchmark(batchSizeValue);
         break;
       case Execution.async:
-        if (batchSizeValue == 1) {
-          benchmark = _AsyncCreateOneDocumentBenchmark();
-        } else {
-          benchmark = _AsyncCreateManyDocumentBenchmark(batchSizeValue);
-        }
+        benchmark = _AsyncCreateManyDocumentBenchmark(batchSizeValue);
         break;
     }
 
@@ -46,28 +39,9 @@ class CreateDocumentBenchmark extends Benchmark {
   }
 }
 
-class _SyncCreateOneDocumentBenchmark<T extends BenchmarkDoc>
-    extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
-  @override
-  Future<void> executeOperations() async {
-    await database.clear();
-    final document = database.createBenchmarkDocImpl(createBenchmarkDoc());
-    measureOperationsSync(() => database.createDocumentSync(document));
-  }
-}
-
-class _AsyncCreateOneDocumentBenchmark<T extends BenchmarkDoc>
-    extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
-  @override
-  Future<void> executeOperations() async {
-    await database.clear();
-    final document = database.createBenchmarkDocImpl(createBenchmarkDoc());
-    await measureOperationsAsync(() => database.createDocumentAsync(document));
-  }
-}
-
-class _SyncCreateManyDocumentBenchmark<T extends BenchmarkDoc>
-    extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
+class _SyncCreateManyDocumentBenchmark<ID extends Object,
+        T extends BenchmarkDoc<ID>> extends BenchmarkRunner<ID, T>
+    with BenchmarkDocumentMixin {
   _SyncCreateManyDocumentBenchmark(this._batchSize);
 
   final int _batchSize;
@@ -78,15 +52,25 @@ class _SyncCreateManyDocumentBenchmark<T extends BenchmarkDoc>
     final documents = createBenchmarkDocs(_batchSize)
         .map(database.createBenchmarkDocImpl)
         .toList(growable: false);
-    measureOperationsSync(
-      () => database.createDocumentsSync(documents),
-      operations: _batchSize,
-    );
+
+    if (_batchSize == 1) {
+      final document = documents.first;
+      measureOperationsSync(
+        () => database.createDocumentSync(document),
+        operations: _batchSize,
+      );
+    } else {
+      measureOperationsSync(
+        () => database.createDocumentsSync(documents),
+        operations: _batchSize,
+      );
+    }
   }
 }
 
-class _AsyncCreateManyDocumentBenchmark<T extends BenchmarkDoc>
-    extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
+class _AsyncCreateManyDocumentBenchmark<ID extends Object,
+        T extends BenchmarkDoc<ID>> extends BenchmarkRunner<ID, T>
+    with BenchmarkDocumentMixin {
   _AsyncCreateManyDocumentBenchmark(this._batchSize);
 
   final int _batchSize;
@@ -97,9 +81,18 @@ class _AsyncCreateManyDocumentBenchmark<T extends BenchmarkDoc>
     final documents = createBenchmarkDocs(_batchSize)
         .map(database.createBenchmarkDocImpl)
         .toList(growable: false);
-    await measureOperationsAsync(
-      () => database.createDocumentsAsync(documents),
-      operations: _batchSize,
-    );
+
+    if (_batchSize == 1) {
+      final document = documents.first;
+      await measureOperationsAsync(
+        () => database.createDocumentAsync(document),
+        operations: _batchSize,
+      );
+    } else {
+      await measureOperationsAsync(
+        () => database.createDocumentsAsync(documents),
+        operations: _batchSize,
+      );
+    }
   }
 }

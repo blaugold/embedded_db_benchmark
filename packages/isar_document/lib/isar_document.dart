@@ -4,14 +4,12 @@ import 'package:isar/isar.dart';
 part 'isar_document.g.dart';
 
 @Collection()
-class IsarDoc with BenchmarkDoc {
+class IsarDoc with BenchmarkDoc<int> {
   IsarDoc();
 
-  @Id()
-  late int dbId = Isar.autoIncrement;
   @override
-  @Index()
-  late final String id;
+  @Id()
+  late int id = Isar.autoIncrement;
   @override
   late final int index;
   @override

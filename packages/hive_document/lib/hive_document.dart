@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 part 'hive_document.g.dart';
 
 @HiveType(typeId: 0)
-class HiveDoc with BenchmarkDoc {
+class HiveDoc with BenchmarkDoc<String> {
   HiveDoc({
     required this.id,
     required this.index,

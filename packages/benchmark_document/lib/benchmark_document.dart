@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 
-mixin BenchmarkDoc {
-  String get id;
+mixin BenchmarkDoc<ID extends Object> {
+  ID get id;
   int get index;
   String get guid;
   bool get isActive;
@@ -139,9 +139,9 @@ mixin BenchmarkFriend {
       };
 }
 
-class BenchmarkDocData with BenchmarkDoc {
+class BenchmarkDocData<ID extends Object> with BenchmarkDoc<ID> {
   @override
-  final String id;
+  final ID id;
   @override
   final int index;
   @override
@@ -210,9 +210,12 @@ class BenchmarkDocData with BenchmarkDoc {
     required this.favoriteFruit,
   });
 
-  static BenchmarkDocData fromJson(Map<String, Object?> json, {String? id}) =>
-      BenchmarkDocData(
-        id: id ?? json['id'] as String,
+  static BenchmarkDocData<ID> fromJson<ID extends Object>(
+    Map<String, Object?> json, {
+    ID? id,
+  }) =>
+      BenchmarkDocData<ID>(
+        id: id ?? json['id'] as ID,
         index: json['index'] as int,
         guid: json['guid'] as String,
         isActive: json['isActive'] as bool,
