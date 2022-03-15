@@ -50,6 +50,9 @@ class _IsarDatabase extends BenchmarkDatabase<IsarDoc> {
   FutureOr<void> close() => isar.close();
 
   @override
+  void clear() => isar.writeTxn((isar) => isar.clear());
+
+  @override
   IsarDoc createDocumentSync(IsarDoc doc) => isar.writeTxnSync((isar) {
         final isarDoc = doc.toIsarDoc();
         isar.isarNames.putSync(isarDoc.isarName.value!);

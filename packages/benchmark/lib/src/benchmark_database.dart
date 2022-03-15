@@ -7,6 +7,8 @@ abstract class BenchmarkDatabase<T extends BenchmarkDoc> {
 
   FutureOr<void> close() {}
 
+  FutureOr<void> clear();
+
   T createDocumentSync(T doc) {
     return createDocumentsSync([doc]).single;
   }

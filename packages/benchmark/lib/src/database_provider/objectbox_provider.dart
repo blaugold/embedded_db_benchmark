@@ -46,6 +46,9 @@ class _ObjectBoxDatabase extends BenchmarkDatabase<ObjectboxDoc> {
   void close() => store.close();
 
   @override
+  FutureOr<void> clear() => box.removeAll();
+
+  @override
   ObjectboxDoc createDocumentSync(ObjectboxDoc doc) {
     box.put(doc);
     return doc;

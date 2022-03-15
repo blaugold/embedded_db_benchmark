@@ -49,6 +49,11 @@ class _RealmDatabase extends BenchmarkDatabase<RealmDoc> {
   void close() => realm.close();
 
   @override
+  void clear() => realm.write(() {
+        realm.deleteMany(realm.all<RealmDoc>());
+      });
+
+  @override
   RealmDoc createDocumentSync(RealmDoc doc) {
     realm.write(() {
       realm.add(doc.toRealmDoc());

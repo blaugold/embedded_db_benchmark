@@ -49,7 +49,8 @@ class CreateDocumentBenchmark extends Benchmark {
 class _SyncCreateOneDocumentBenchmark<T extends BenchmarkDoc>
     extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
   @override
-  void executeOperations() {
+  Future<void> executeOperations() async {
+    await database.clear();
     final document = database.createBenchmarkDocImpl(createBenchmarkDoc());
     measureOperationsSync(() => database.createDocumentSync(document));
   }
@@ -59,6 +60,7 @@ class _AsyncCreateOneDocumentBenchmark<T extends BenchmarkDoc>
     extends BenchmarkRunner<T> with BenchmarkDocumentMixin {
   @override
   Future<void> executeOperations() async {
+    await database.clear();
     final document = database.createBenchmarkDocImpl(createBenchmarkDoc());
     await measureOperationsAsync(() => database.createDocumentAsync(document));
   }
@@ -71,7 +73,8 @@ class _SyncCreateManyDocumentBenchmark<T extends BenchmarkDoc>
   final int _batchSize;
 
   @override
-  void executeOperations() {
+  Future<void> executeOperations() async {
+    await database.clear();
     final documents = createBenchmarkDocs(_batchSize)
         .map(database.createBenchmarkDocImpl)
         .toList(growable: false);
@@ -90,6 +93,7 @@ class _AsyncCreateManyDocumentBenchmark<T extends BenchmarkDoc>
 
   @override
   Future<void> executeOperations() async {
+    await database.clear();
     final documents = createBenchmarkDocs(_batchSize)
         .map(database.createBenchmarkDocImpl)
         .toList(growable: false);

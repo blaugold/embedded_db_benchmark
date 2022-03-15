@@ -36,13 +36,18 @@ class CblProvider extends DatabaseProvider<CblDoc> {
   }
 }
 
-class _SyncCblDatabase extends BenchmarkDatabase<CblDoc> {
+class _SyncCblDatabase extends BenchmarkDatabase<CblDoc>
+    with _CblDatabaseHelper {
   _SyncCblDatabase(this.database);
 
+  @override
   final SyncDatabase database;
 
   @override
   CblDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toCblDoc();
+
+  @override
+  FutureOr<void> close() => database.close();
 
   @override
   CblDoc createDocumentSync(CblDoc doc) {
@@ -63,15 +68,17 @@ class _SyncCblDatabase extends BenchmarkDatabase<CblDoc> {
   @override
   CblDoc getDocumentByIdSync(String id) =>
       CblDoc.fromDoc(database.document(id)!.toMutable());
+}
+
+class _AsyncCblDatabase extends BenchmarkDatabase<CblDoc>
+    with _CblDatabaseHelper {
+  _AsyncCblDatabase(this.database);
+
+  @override
+  final AsyncDatabase database;
 
   @override
   FutureOr<void> close() => database.close();
-}
-
-class _AsyncCblDatabase extends BenchmarkDatabase<CblDoc> {
-  _AsyncCblDatabase(this.database);
-
-  final AsyncDatabase database;
 
   @override
   CblDoc createBenchmarkDocImpl(BenchmarkDoc doc) => doc.toCblDoc();
@@ -93,9 +100,28 @@ class _AsyncCblDatabase extends BenchmarkDatabase<CblDoc> {
   @override
   Future<CblDoc> getDocumentByIdAsync(String id) async =>
       CblDoc.fromDoc((await database.document(id))!.toMutable());
+}
+
+mixin _CblDatabaseHelper on BenchmarkDatabase<CblDoc> {
+  Database get database;
+
+  late final allIdsQuery =
+      Future.value(Query.fromN1ql(database, 'SELECT Meta().id FROM _'));
+
+  Future<List<String>> allDocIds() async {
+    final resultSet = await (await allIdsQuery).execute();
+    return resultSet.asStream().map((result) => result.string(0)!).toList();
+  }
 
   @override
-  FutureOr<void> close() => database.close();
+  Future<void> clear() async {
+    await database.inBatch(() async {
+      final allDocIds = await this.allDocIds();
+      await Future.wait(
+        allDocIds.map((id) async => database.purgeDocumentById(id)),
+      );
+    });
+  }
 }
 
 extension on BenchmarkDoc {

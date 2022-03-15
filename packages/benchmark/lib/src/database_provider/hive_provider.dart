@@ -58,6 +58,9 @@ class _HiveDatabase extends BenchmarkDatabase<HiveDoc> {
   FutureOr<void> close() => box.close();
 
   @override
+  FutureOr<void> clear() => box.clear();
+
+  @override
   Future<HiveDoc> createDocumentAsync(HiveDoc doc) async {
     await box.put(doc.id, doc);
     return doc;
