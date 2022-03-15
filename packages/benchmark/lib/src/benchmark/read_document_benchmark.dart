@@ -43,8 +43,9 @@ class ReadDocumentBenchmark extends Benchmark {
 
 abstract class _ReadDocumentBase<ID extends Object, T extends BenchmarkDoc<ID>>
     extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
-  _ReadDocumentBase(this._batchSize);
+  _ReadDocumentBase(this._execution, this._batchSize);
 
+  final Execution _execution;
   final int _batchSize;
 
   late final List<ID> documentIds;
@@ -62,14 +63,16 @@ abstract class _ReadDocumentBase<ID extends Object, T extends BenchmarkDoc<ID>>
     assert(_batchSize <= documents.length);
 
     // Insert documents.
-    documents = await database.createDocumentsAsync(
+    documents = await database.createDocuments(
       documents.map(database.createBenchmarkDocImpl).toList(growable: false),
+      _execution,
     );
     documentIds = documents.map((doc) => doc.id).toList();
 
     // Verify that document can be persisted and loaded correctly.
     for (final document in documents) {
-      final loadedDocument = await database.getDocumentByIdAsync(document.id);
+      final loadedDocument =
+          await database.getDocumentById(document.id, _execution);
 
       var documentJson = document.toJson();
       var loadedDocumentJson = loadedDocument.toJson();
@@ -101,7 +104,8 @@ abstract class _ReadDocumentBase<ID extends Object, T extends BenchmarkDoc<ID>>
 
 class _SyncReadOneDocumentBenchmark<ID extends Object,
     T extends BenchmarkDoc<ID>> extends _ReadDocumentBase<ID, T> {
-  _SyncReadOneDocumentBenchmark(int batchSize) : super(batchSize);
+  _SyncReadOneDocumentBenchmark(int batchSize)
+      : super(Execution.sync, batchSize);
 
   @override
   void executeOperations() {
@@ -123,7 +127,8 @@ class _SyncReadOneDocumentBenchmark<ID extends Object,
 
 class _AsyncReadOneDocumentBenchmark<ID extends Object,
     T extends BenchmarkDoc<ID>> extends _ReadDocumentBase<ID, T> {
-  _AsyncReadOneDocumentBenchmark(int batchSize) : super(batchSize);
+  _AsyncReadOneDocumentBenchmark(int batchSize)
+      : super(Execution.async, batchSize);
 
   @override
   Future<void> executeOperations() async {

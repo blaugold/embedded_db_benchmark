@@ -73,6 +73,13 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   RealmDoc getDocumentByIdSync(String id) => realm.find<RealmDoc>(id)!;
 
   @override
+  void deleteDocumentSync(RealmDoc doc) {
+    realm.write(() {
+      realm.delete(doc);
+    });
+  }
+
+  @override
   void deleteDocumentsSync(List<RealmDoc> docs) {
     realm.write(() {
       realm.deleteMany(docs);

@@ -100,6 +100,11 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
           })));
 
   @override
+  IsarDoc getDocumentByIdSync(int id) {
+    return getDocumentsByIdSync([id]).single;
+  }
+
+  @override
   List<IsarDoc> getDocumentsByIdSync(List<int> ids) =>
       // For some reason a write transaction is necessary here.
       isar.writeTxnSync((isar) {
@@ -110,6 +115,11 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
         }
         return docs;
       });
+
+  @override
+  Future<IsarDoc> getDocumentByIdAsync(int id) {
+    return getDocumentsByIdAsync([id]).then((docs) => docs.single);
+  }
 
   @override
   Future<List<IsarDoc>> getDocumentsByIdAsync(List<int> ids) =>
@@ -125,6 +135,16 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
 
         return docs;
       });
+
+  @override
+  void deleteDocumentSync(IsarDoc doc) {
+    deleteDocumentsSync([doc]);
+  }
+
+  @override
+  Future<void> deleteDocumentAsync(IsarDoc doc) {
+    return deleteDocumentsAsync([doc]);
+  }
 
   @override
   void deleteDocumentsSync(List<IsarDoc> docs) {

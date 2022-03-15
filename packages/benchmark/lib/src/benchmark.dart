@@ -222,6 +222,7 @@ Future<List<BenchmarkRun>> runBenchmarks({
 
     for (final parameterCombination
         in benchmark.supportedParameterCombinations) {
+      logger.info('*' * 80);
       logger.info(parameterCombination.toString());
       logger.info('');
 
@@ -238,30 +239,34 @@ Future<List<BenchmarkRun>> runBenchmarks({
         logger
             .info('--- Database:  ${databaseProvider.name} '.padRight(80, '-'));
 
-        final result = await _runBenchmark(
-          benchmark: benchmark,
-          databaseProvider: databaseProvider,
-          parameterCombination: parameterCombination,
-          logger: logger,
-        );
+        try {
+          final result = await _runBenchmark(
+            benchmark: benchmark,
+            databaseProvider: databaseProvider,
+            parameterCombination: parameterCombination,
+            logger: logger,
+          );
 
-        logger.info('Results:');
+          logger.info('Results:');
 
-        [
-          'Ops:     ${result.operations}',
-          'Ops/s:   ${result.operationsPerSecond.floor()}',
-          'Time:    ${result.duration.inMicroseconds / 10e5}s',
-          'Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
-        ].forEach(logger.info);
+          [
+            'Ops:     ${result.operations}',
+            'Ops/s:   ${result.operationsPerSecond.floor()}',
+            'Time:    ${result.duration.inMicroseconds / 10e5}s',
+            'Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
+          ].forEach(logger.info);
 
-        logger.info('');
+          logger.info('');
 
-        runs.add(BenchmarkRun(
-          benchmark: benchmark.name,
-          database: databaseProvider.name,
-          parameterCombination: parameterCombination,
-          result: result,
-        ));
+          runs.add(BenchmarkRun(
+            benchmark: benchmark.name,
+            database: databaseProvider.name,
+            parameterCombination: parameterCombination,
+            result: result,
+          ));
+        } catch (e, s) {
+          logger.severe('Error running benchmark: $e', e, s);
+        }
       }
     }
   }
