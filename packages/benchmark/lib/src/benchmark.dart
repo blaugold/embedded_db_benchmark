@@ -90,6 +90,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   late final DatabaseProvider<ID, T> _databaseProvider;
   late final ParameterCombination _parameterCombination;
   late final _BenchmarkDuration _duration;
+  late final Directory _tempDirectory;
 
   int get executedOperations => _executedOperations;
   var _executedOperations = 0;
@@ -136,11 +137,11 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   @protected
   @mustCallSuper
   Future<void> setup() async {
-    final directory = Directory.systemTemp.createTempSync();
-    logger.info('Opening database in ${directory.path}');
+    _tempDirectory = Directory.systemTemp.createTempSync();
+    logger.fine('Opening database in ${_tempDirectory.path}');
 
     database = await _databaseProvider.openDatabase(
-      directory.path,
+      _tempDirectory.path,
       _parameterCombination,
     );
   }
@@ -153,7 +154,10 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
   @protected
   @mustCallSuper
-  FutureOr<void> teardown() => database.close();
+  FutureOr<void> teardown() async {
+    await database.close();
+    await _tempDirectory.delete(recursive: true);
+  }
 
   @protected
   @pragma('vm:prefer-inline')

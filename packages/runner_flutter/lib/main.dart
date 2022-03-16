@@ -11,10 +11,12 @@ Future<void> main() async {
 
   await setup();
 
-  Logger.root.onRecord.listen((LogRecord rec) {
-    // ignore: avoid_print
-    print(rec.message);
-  });
+  Logger.root
+    ..onRecord.listen((LogRecord rec) {
+      // ignore: avoid_print
+      print(rec.message);
+    })
+    ..level = Level.INFO;
 
   final runs = await runBenchmarks(
     benchmarks: [
