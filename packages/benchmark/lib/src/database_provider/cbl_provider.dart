@@ -50,12 +50,44 @@ class CblProvider extends DatabaseProvider<String, CblDoc> {
   }
 }
 
+mixin _CblDatabaseHelper on BenchmarkDatabase<String, CblDoc> {
+  Database get database;
+
+  FutureOr<List<String>> allDocIds();
+
+  @override
+  Future<void> clear() async {
+    final allDocIds = await this.allDocIds();
+    if (allDocIds.isEmpty) {
+      return;
+    }
+
+    await database.inBatch(() async {
+      await Future.wait(
+        allDocIds.map((id) async => database.purgeDocumentById(id)),
+      );
+    });
+  }
+}
+
 class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
     with _CblDatabaseHelper {
   _SyncCblDatabase(this.database);
 
   @override
   final SyncDatabase database;
+
+  late final _allIdsQuery =
+      Query.fromN1qlSync(database, 'SELECT Meta().id FROM _');
+
+  @override
+  List<String> allDocIds() {
+    if (database.count == 0) {
+      return [];
+    }
+
+    return _allIdsQuery.execute().map((result) => result.string(0)!).toList();
+  }
 
   @override
   CblDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toCblDoc();
@@ -84,6 +116,10 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
       CblDoc.fromDoc(database.document(id)!);
 
   @override
+  List<CblDoc> getAllDocumentsSync() =>
+      [for (final id in allDocIds()) getDocumentByIdSync(id)];
+
+  @override
   void deleteDocumentSync(CblDoc doc) {
     database.deleteDocument(doc.doc);
   }
@@ -104,6 +140,19 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
 
   @override
   final AsyncDatabase database;
+
+  late final allIdsQuery =
+      Future.value(Query.fromN1ql(database, 'SELECT Meta().id FROM _'));
+
+  @override
+  Future<List<String>> allDocIds() async {
+    if ((await database.count) == 0) {
+      return [];
+    }
+
+    final resultSet = await (await allIdsQuery).execute();
+    return resultSet.asStream().map((result) => result.string(0)!).toList();
+  }
 
   @override
   FutureOr<void> close() => database.close();
@@ -132,6 +181,12 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
       CblDoc.fromDoc((await database.document(id))!.toMutable());
 
   @override
+  Future<List<CblDoc>> getAllDocumentsAsync() async {
+    final allDocIds = await this.allDocIds();
+    return Future.wait(allDocIds.map(getDocumentByIdAsync));
+  }
+
+  @override
   Future<void> deleteDocumentAsync(CblDoc doc) {
     return database.deleteDocument(doc.doc);
   }
@@ -140,28 +195,6 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   Future<void> deleteDocumentsAsync(List<CblDoc> docs) {
     return database.inBatch(() async {
       await Future.wait(docs.map((doc) => database.deleteDocument(doc.doc)));
-    });
-  }
-}
-
-mixin _CblDatabaseHelper on BenchmarkDatabase<String, CblDoc> {
-  Database get database;
-
-  late final allIdsQuery =
-      Future.value(Query.fromN1ql(database, 'SELECT Meta().id FROM _'));
-
-  Future<List<String>> allDocIds() async {
-    final resultSet = await (await allIdsQuery).execute();
-    return resultSet.asStream().map((result) => result.string(0)!).toList();
-  }
-
-  @override
-  Future<void> clear() async {
-    await database.inBatch(() async {
-      final allDocIds = await this.allDocIds();
-      await Future.wait(
-        allDocIds.map((id) async => database.purgeDocumentById(id)),
-      );
     });
   }
 }

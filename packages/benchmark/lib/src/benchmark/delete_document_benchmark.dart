@@ -7,9 +7,9 @@ import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
 
-class CreateDocumentBenchmark extends Benchmark {
+class DeleteDocumentBenchmark extends Benchmark {
   @override
-  String get name => 'CreateDocument';
+  String get name => 'DeleteDocument';
 
   @override
   Iterable<ParameterCombination> get supportedParameterCombinations =>
@@ -23,82 +23,79 @@ class CreateDocumentBenchmark extends Benchmark {
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterCombination parameterCombination,
   ) {
-    return _CreateDocumentBenchmark(
+    return _DeleteDocumentBenchmark(
       parameterCombination.get(execution)!,
       parameterCombination.get(batchSize)!,
     );
   }
 }
 
-class _CreateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
+class _DeleteDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
-  _CreateDocumentBenchmark(this._execution, this._batchSize);
+  _DeleteDocumentBenchmark(this._execution, this._batchSize);
 
   final Execution _execution;
   final int _batchSize;
 
+  /// Validates that the database is correctly executing the operations.
   @override
-  FutureOr<void> validateDatabase() async {
+  Future<void> validateDatabase() async {
+    // In this step we create documents in the database and ask the database
+    // to delete them.
     await executeOperations();
 
-    // We only check that the number of persisted documents is correct.
-    // The ReadDocument benchmark also checks that the content is persisted
-    // correctly.
+    // Now check that there are not documents left in the database.
     final allDocuments = await database.getAllDocuments(_execution);
-    if (allDocuments.length != _batchSize) {
-      throw Exception(
-        'Database did not persist correct number of documents: '
-        'expected: $_batchSize, actual: ${allDocuments.length}',
-      );
+    if (allDocuments.isNotEmpty) {
+      throw Exception('Database is not correctly deleting documents.');
     }
   }
 
   @override
-  FutureOr<void> executeOperations() async {
-    await database.clear();
-    final documents = _createDatabaseDocuments();
-
+  Future<void> executeOperations() async {
+    final documents = await _createDocuments();
     if (_batchSize == 1) {
-      await _createDocumentMeasured(documents.first);
+      await _deleteDocumentMeasured(documents.single);
     } else {
-      await _createDocumentsMeasured(documents);
+      await _deleteDocumentsMeasured(documents);
     }
   }
 
-  List<T> _createDatabaseDocuments() {
-    return createBenchmarkDocs(_batchSize)
-        .map(database.createBenchmarkDocImpl)
-        .toList(growable: false);
+  Future<List<T>> _createDocuments() async {
+    final documents = createBenchmarkDocs(_batchSize);
+    final implDocuments =
+        documents.map(database.createBenchmarkDocImpl).toList(growable: false);
+    return database.createDocuments(implDocuments, _execution);
   }
 
-  Future<void> _createDocumentMeasured(T document) async {
+  Future<void> _deleteDocumentMeasured(T document) async {
     switch (_execution) {
       case Execution.sync:
         measureOperationsSync(
-          () => database.createDocumentSync(document),
+          () => database.deleteDocumentSync(document),
           operations: _batchSize,
         );
         break;
       case Execution.async:
         await measureOperationsAsync(
-          () => database.createDocumentAsync(document),
+          () => database.deleteDocumentAsync(document),
           operations: _batchSize,
         );
         break;
     }
   }
 
-  Future<void> _createDocumentsMeasured(List<T> documents) async {
+  Future<void> _deleteDocumentsMeasured(List<T> documents) async {
     switch (_execution) {
       case Execution.sync:
         measureOperationsSync(
-          () => database.createDocumentsSync(documents),
+          () => database.deleteDocumentsSync(documents),
           operations: _batchSize,
         );
         break;
       case Execution.async:
         await measureOperationsAsync(
-          () => database.createDocumentsAsync(documents),
+          () => database.deleteDocumentsAsync(documents),
           operations: _batchSize,
         );
         break;

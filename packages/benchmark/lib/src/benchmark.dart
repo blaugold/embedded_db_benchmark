@@ -118,6 +118,9 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
     await setup();
 
+    await validateDatabase();
+    resetMeasuredOperations();
+
     while (!_duration.isDone(this)) {
       await executeOperations();
     }
@@ -141,6 +144,9 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
       _parameterCombination,
     );
   }
+
+  @protected
+  FutureOr<void> validateDatabase();
 
   @protected
   FutureOr<void> executeOperations();
@@ -168,6 +174,11 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
     fn();
     _stopwatch.stop();
     _executedOperations += operations;
+  }
+
+  void resetMeasuredOperations() {
+    _stopwatch.reset();
+    _executedOperations = 0;
   }
 }
 

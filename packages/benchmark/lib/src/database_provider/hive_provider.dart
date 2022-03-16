@@ -76,6 +76,10 @@ class _HiveDatabase extends BenchmarkDatabase<String, HiveDoc> {
   Future<HiveDoc> getDocumentByIdAsync(String id) async => (await box.get(id))!;
 
   @override
+  Future<List<HiveDoc>> getAllDocumentsAsync() =>
+      Future.wait(box.keys.cast<String>().map(getDocumentByIdAsync));
+
+  @override
   Future<void> deleteDocumentAsync(HiveDoc doc) {
     return box.delete(doc.id);
   }

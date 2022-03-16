@@ -1,8 +1,10 @@
 export 'src/benchmark.dart'
     show BenchmarkRun, BenchmarkResult, Benchmark, runBenchmarks, printRuns;
-export 'src/benchmark/read_document_benchmark.dart' show ReadDocumentBenchmark;
 export 'src/benchmark/create_document_benchmark.dart'
     show CreateDocumentBenchmark;
+export 'src/benchmark/delete_document_benchmark.dart'
+    show DeleteDocumentBenchmark;
+export 'src/benchmark/read_document_benchmark.dart' show ReadDocumentBenchmark;
 export 'src/database_provider/cbl_provider.dart' show CblProvider;
 export 'src/database_provider/database_provider.dart' show DatabaseProvider;
 export 'src/database_provider/hive_provider.dart' show HiveProvider;

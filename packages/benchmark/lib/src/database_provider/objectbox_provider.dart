@@ -67,6 +67,9 @@ class _ObjectBoxDatabase extends BenchmarkDatabase<int, ObjectboxDoc> {
       box.getMany(ids).cast();
 
   @override
+  List<ObjectboxDoc> getAllDocumentsSync() => box.getAll();
+
+  @override
   void deleteDocumentSync(ObjectboxDoc doc) {
     box.remove(doc.id);
   }
