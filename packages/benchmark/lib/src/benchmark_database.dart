@@ -84,6 +84,25 @@ abstract class BenchmarkDatabase<ID extends Object,
     }
   }
 
+  // === Get All Documents =====================================================
+
+  List<T> getAllDocumentsSync() {
+    throw UnimplementedError();
+  }
+
+  Future<List<T>> getAllDocumentsAsync() async {
+    throw UnimplementedError();
+  }
+
+  FutureOr<List<T>> getAllDocuments(Execution execution) {
+    switch (execution) {
+      case Execution.sync:
+        return getAllDocumentsSync();
+      case Execution.async:
+        return getAllDocumentsAsync();
+    }
+  }
+
   // === Delete Document =======================================================
 
   void deleteDocumentSync(T doc) {

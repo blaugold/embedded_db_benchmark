@@ -137,6 +137,14 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
       });
 
   @override
+  List<IsarDoc> getAllDocumentsSync() =>
+      isar.isarDocs.where().build().findAllSync();
+
+  @override
+  Future<List<IsarDoc>> getAllDocumentsAsync() =>
+      isar.isarDocs.where().build().findAll();
+
+  @override
   void deleteDocumentSync(IsarDoc doc) {
     deleteDocumentsSync([doc]);
   }
