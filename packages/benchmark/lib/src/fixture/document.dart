@@ -58,4 +58,11 @@ mixin BenchmarkDocumentMixin<ID extends Object, T extends BenchmarkDoc<ID>>
       id: createDocumentId(rawDocument),
     );
   }
+
+  T createBenchmarkDocImp() =>
+      database.createBenchmarkDocImpl(createBenchmarkDoc());
+
+  List<T> createBenchmarkDocsImp(int count) => createBenchmarkDocs(count)
+      .map(database.createBenchmarkDocImpl)
+      .toList(growable: false);
 }

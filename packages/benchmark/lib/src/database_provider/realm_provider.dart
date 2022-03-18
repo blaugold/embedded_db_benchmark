@@ -76,6 +76,24 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   List<RealmDoc> getAllDocumentsSync() => realm.all<RealmDoc>().toList();
 
   @override
+  RealmDoc updateDocumentSync(RealmDoc doc) {
+    realm.write(() {
+      doc.balance_ = doc.updatedBalance!;
+    });
+    return doc;
+  }
+
+  @override
+  List<RealmDoc> updateDocumentsSync(List<RealmDoc> docs) {
+    realm.write(() {
+      for (final doc in docs) {
+        doc.balance_ = doc.updatedBalance!;
+      }
+    });
+    return docs;
+  }
+
+  @override
   void deleteDocumentSync(RealmDoc doc) {
     realm.write(() {
       realm.delete(doc);

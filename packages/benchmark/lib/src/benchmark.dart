@@ -212,6 +212,7 @@ Future<BenchmarkResult> _runBenchmark({
 Future<List<BenchmarkRun>> runBenchmarks({
   required List<Benchmark> benchmarks,
   required List<DatabaseProvider> databasesProviders,
+  bool catchExceptions = false,
   Logger? logger,
 }) async {
   logger ??= Logger('BenchmarkRunner');
@@ -280,7 +281,11 @@ Future<List<BenchmarkRun>> runBenchmarks({
             result: result,
           ));
         } catch (e, s) {
-          logger.severe('Error running benchmark: $e', e, s);
+          if (catchExceptions) {
+            logger.severe('Error running benchmark: $e', e, s);
+          } else {
+            rethrow;
+          }
         }
       }
     }

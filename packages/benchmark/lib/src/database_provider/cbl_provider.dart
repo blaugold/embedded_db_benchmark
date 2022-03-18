@@ -120,6 +120,22 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
       [for (final id in allDocIds()) getDocumentByIdSync(id)];
 
   @override
+  CblDoc updateDocumentSync(CblDoc doc) {
+    database.saveDocument(doc.mutableDoc);
+    return doc;
+  }
+
+  @override
+  List<CblDoc> updateDocumentsSync(List<CblDoc> docs) {
+    database.inBatchSync(() {
+      for (final doc in docs) {
+        database.saveDocument(doc.mutableDoc);
+      }
+    });
+    return docs;
+  }
+
+  @override
   void deleteDocumentSync(CblDoc doc) {
     database.deleteDocument(doc.doc);
   }
@@ -184,6 +200,22 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   Future<List<CblDoc>> getAllDocumentsAsync() async {
     final allDocIds = await this.allDocIds();
     return Future.wait(allDocIds.map(getDocumentByIdAsync));
+  }
+
+  @override
+  Future<CblDoc> updateDocumentAsync(CblDoc doc) async {
+    await database.saveDocument(doc.mutableDoc);
+    return doc;
+  }
+
+  @override
+  Future<List<CblDoc>> updateDocumentsAsync(List<CblDoc> docs) async {
+    await database.inBatch(() async {
+      await Future.wait(
+        docs.map((doc) => database.saveDocument(doc.mutableDoc)),
+      );
+    });
+    return docs;
   }
 
   @override
@@ -305,6 +337,9 @@ class CblDoc with BenchmarkDoc<String> {
 
   @override
   String get balance => doc.value('balance')!;
+
+  @override
+  set balance(String value) => mutableDoc.setValue(value, key: 'balance');
 
   @override
   String get picture => doc.value('picture')!;

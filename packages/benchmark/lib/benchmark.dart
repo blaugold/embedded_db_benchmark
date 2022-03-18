@@ -5,6 +5,8 @@ export 'src/benchmark/create_document_benchmark.dart'
 export 'src/benchmark/delete_document_benchmark.dart'
     show DeleteDocumentBenchmark;
 export 'src/benchmark/read_document_benchmark.dart' show ReadDocumentBenchmark;
+export 'src/benchmark/update_document_benchmark.dart'
+    show UpdateDocumentBenchmark;
 export 'src/database_provider/cbl_provider.dart' show CblProvider;
 export 'src/database_provider/database_provider.dart' show DatabaseProvider;
 export 'src/database_provider/hive_provider.dart' show HiveProvider;

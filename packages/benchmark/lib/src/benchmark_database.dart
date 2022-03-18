@@ -103,6 +103,42 @@ abstract class BenchmarkDatabase<ID extends Object,
     }
   }
 
+  // === Update Document =======================================================
+
+  T updateDocumentSync(T doc) {
+    return updateDocumentsSync([doc]).single;
+  }
+
+  Future<T> updateDocumentAsync(T doc) async {
+    return updateDocumentsAsync([doc]).then((docs) => docs.single);
+  }
+
+  FutureOr<T> updateDocument(T doc, Execution execution) {
+    switch (execution) {
+      case Execution.sync:
+        return updateDocumentSync(doc);
+      case Execution.async:
+        return updateDocumentAsync(doc);
+    }
+  }
+
+  List<T> updateDocumentsSync(List<T> docs) {
+    return [for (final doc in docs) updateDocumentSync(doc)];
+  }
+
+  Future<List<T>> updateDocumentsAsync(List<T> docs) async {
+    return Future.wait(docs.map(updateDocumentAsync));
+  }
+
+  FutureOr<List<T>> updateDocuments(List<T> docs, Execution execution) {
+    switch (execution) {
+      case Execution.sync:
+        return updateDocumentsSync(docs);
+      case Execution.async:
+        return updateDocumentsAsync(docs);
+    }
+  }
+
   // === Delete Document =======================================================
 
   void deleteDocumentSync(T doc) {

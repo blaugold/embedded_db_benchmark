@@ -12,7 +12,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
     int index,
     String guid,
     bool isActive,
-    String balance,
+    String balance_,
     String picture,
     int age,
     String eyeColor,
@@ -35,7 +35,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
     RealmObject.set(this, 'index', index);
     RealmObject.set(this, 'guid', guid);
     RealmObject.set(this, 'isActive', isActive);
-    RealmObject.set(this, 'balance', balance);
+    this.balance_ = balance_;
     RealmObject.set(this, 'picture', picture);
     RealmObject.set(this, 'age', age);
     RealmObject.set(this, 'eyeColor', eyeColor);
@@ -78,9 +78,9 @@ class RealmDoc extends _RealmDoc with RealmObject {
   set isActive(bool value) => throw RealmUnsupportedSetError();
 
   @override
-  String get balance => RealmObject.get<String>(this, 'balance') as String;
+  String get balance_ => RealmObject.get<String>(this, 'balance_') as String;
   @override
-  set balance(String value) => throw RealmUnsupportedSetError();
+  set balance_(String value) => RealmObject.set(this, 'balance_', value);
 
   @override
   String get picture => RealmObject.get<String>(this, 'picture') as String;
@@ -182,7 +182,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
       SchemaProperty('index', RealmPropertyType.int),
       SchemaProperty('guid', RealmPropertyType.string),
       SchemaProperty('isActive', RealmPropertyType.bool),
-      SchemaProperty('balance', RealmPropertyType.string),
+      SchemaProperty('balance_', RealmPropertyType.string),
       SchemaProperty('picture', RealmPropertyType.string),
       SchemaProperty('age', RealmPropertyType.int),
       SchemaProperty('eyeColor', RealmPropertyType.string),
