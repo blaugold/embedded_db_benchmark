@@ -25,6 +25,7 @@ class _RealmDoc with BenchmarkDoc<String> {
   set balance(String value) {
     updatedBalance = value;
   }
+
   @override
   late final String picture;
   @override
