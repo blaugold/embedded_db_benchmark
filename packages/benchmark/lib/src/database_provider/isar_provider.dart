@@ -50,13 +50,15 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   FutureOr<void> close() => isar.close();
 
   @override
-  void clear() => isar.writeTxn((isar) => isar.clear());
+  Future<void> clear() => isar.writeTxn((isar) => isar.clear());
 
   @override
   IsarDoc createDocumentSync(IsarDoc doc) => isar.writeTxnSync((isar) {
         isar.isarNames.putSync(doc.isarName.value!);
         isar.isarFriends.putAllSync(doc.friends.toList());
         isar.isarDocs.putSync(doc);
+        doc.isarName.saveSync();
+        doc.isarFriends.saveSync();
         return doc;
       });
 
@@ -68,6 +70,10 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
           isar.isarFriends.putAll(doc.friends.toList()),
         ]);
         await isar.isarDocs.put(doc);
+        await Future.wait([
+          doc.isarName.save(),
+          doc.isarFriends.save(),
+        ]);
         return doc;
       });
 
@@ -77,6 +83,8 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
             isar.isarNames.putSync(doc.isarName.value!);
             isar.isarFriends.putAllSync(doc.friends.toList());
             isar.isarDocs.putSync(doc);
+            doc.isarName.saveSync();
+            doc.isarFriends.saveSync();
             return doc;
           }).toList());
 
@@ -88,6 +96,10 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
               isar.isarFriends.putAll(doc.friends.toList()),
             ]);
             await isar.isarDocs.put(doc);
+            await Future.wait([
+              doc.isarName.save(),
+              doc.isarFriends.save(),
+            ]);
             return doc;
           })));
 
