@@ -18,6 +18,7 @@ Future<void> main() async {
       CreateDocumentBenchmark(),
       ReadDocumentBenchmark(),
       DeleteDocumentBenchmark(),
+      UpdateDocumentBenchmark(),
     ],
     databasesProviders: [
       CblProvider(),

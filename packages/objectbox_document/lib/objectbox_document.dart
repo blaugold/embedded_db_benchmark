@@ -30,53 +30,51 @@ class ObjectboxDoc with BenchmarkDoc<int> {
   @Id()
   int id;
   @override
-  int index;
+  final int index;
   @override
-  String guid;
+  final String guid;
   @override
-  bool isActive;
+  final bool isActive;
   @override
   String balance;
   @override
-  String picture;
+  final String picture;
   @override
-  int age;
+  final int age;
   @override
-  String eyeColor;
+  final String eyeColor;
   final obxName = ToOne<ObjectboxName>();
   @override
   ObjectboxName get name => obxName.target!;
   @override
-  String company;
+  final String company;
   @override
-  String email;
+  final String email;
   @override
-  String phone;
+  final String phone;
   @override
-  String address;
+  final String address;
   @override
-  String about;
+  final String about;
   @override
-  String registered;
+  final String registered;
   @override
-  String latitude;
+  final String latitude;
   @override
-  String longitude;
+  final String longitude;
   @override
-  List<String> tags;
-  List<String> dbRange = [];
+  final List<String> tags;
+  final List<String> dbRange;
   @override
   List<int> get range => dbRange.map(int.parse).toList();
-  set range(List<int> value) =>
-      dbRange = value.map((v) => v.toString()).toList();
   final obxFriends = ToMany<ObjectboxFriend>();
   @override
   List<ObjectboxFriend> get friends =>
       obxFriends.toList()..sort(((a, b) => a.id - b.id));
   @override
-  String greeting;
+  final String greeting;
   @override
-  String favoriteFruit;
+  final String favoriteFruit;
 }
 
 @Entity()
@@ -98,7 +96,7 @@ class ObjectboxFriend with BenchmarkFriend {
   @Id()
   int dbId;
   @override
-  int id;
+  final int id;
   @override
-  String name;
+  final String name;
 }

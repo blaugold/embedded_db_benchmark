@@ -44,7 +44,7 @@ class HiveDoc with BenchmarkDoc<String> {
   final bool isActive;
   @override
   @HiveField(4)
-  final String balance;
+  String balance;
   @override
   @HiveField(5)
   final String picture;

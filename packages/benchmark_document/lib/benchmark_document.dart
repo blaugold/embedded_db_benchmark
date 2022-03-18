@@ -6,6 +6,7 @@ mixin BenchmarkDoc<ID extends Object> {
   String get guid;
   bool get isActive;
   String get balance;
+  set balance(String value);
   String get picture;
   int get age;
   String get eyeColor;
@@ -149,7 +150,7 @@ class BenchmarkDocData<ID extends Object> with BenchmarkDoc<ID> {
   @override
   final bool isActive;
   @override
-  final String balance;
+  String balance;
   @override
   final String picture;
   @override

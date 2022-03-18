@@ -17,7 +17,7 @@ class IsarDoc with BenchmarkDoc<int> {
   @override
   late final bool isActive;
   @override
-  late final String balance;
+  late String balance;
   @override
   late final String picture;
   @override

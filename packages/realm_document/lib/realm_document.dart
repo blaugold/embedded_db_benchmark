@@ -14,8 +14,17 @@ class _RealmDoc with BenchmarkDoc<String> {
   late final String guid;
   @override
   late final bool isActive;
+  late String balance_;
+  @Ignored()
   @override
-  late final String balance;
+  String get balance => balance_;
+  @Ignored()
+  String? updatedBalance;
+  @Ignored()
+  @override
+  set balance(String value) {
+    updatedBalance = value;
+  }
   @override
   late final String picture;
   @override

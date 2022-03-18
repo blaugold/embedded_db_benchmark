@@ -49,13 +49,13 @@ class _ObjectBoxDatabase extends BenchmarkDatabase<int, ObjectboxDoc> {
 
   @override
   ObjectboxDoc createDocumentSync(ObjectboxDoc doc) {
-    box.put(doc);
+    box.put(doc, mode: PutMode.insert);
     return doc;
   }
 
   @override
   List<ObjectboxDoc> createDocumentsSync(List<ObjectboxDoc> docs) {
-    box.putMany([for (final doc in docs) doc]);
+    box.putMany([for (final doc in docs) doc], mode: PutMode.insert);
     return docs;
   }
 
@@ -68,6 +68,18 @@ class _ObjectBoxDatabase extends BenchmarkDatabase<int, ObjectboxDoc> {
 
   @override
   List<ObjectboxDoc> getAllDocumentsSync() => box.getAll();
+
+  @override
+  ObjectboxDoc updateDocumentSync(ObjectboxDoc doc) {
+    box.put(doc, mode: PutMode.update);
+    return doc;
+  }
+
+  @override
+  List<ObjectboxDoc> updateDocumentsSync(List<ObjectboxDoc> docs) {
+    box.putMany([for (final doc in docs) doc], mode: PutMode.update);
+    return docs;
+  }
 
   @override
   void deleteDocumentSync(ObjectboxDoc doc) {
