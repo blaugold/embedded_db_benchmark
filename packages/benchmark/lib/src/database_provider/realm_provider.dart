@@ -15,16 +15,16 @@ class RealmProvider extends DatabaseProvider<String, RealmDoc> {
   String get name => 'Realm';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.single(execution, Execution.sync),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgumentOf(execution, [Execution.sync]),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   FutureOr<BenchmarkDatabase<String, RealmDoc>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) {
     final config = Configuration([
       RealmDoc.schema,

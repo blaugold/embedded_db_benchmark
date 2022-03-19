@@ -19,16 +19,16 @@ class CblProvider extends DatabaseProvider<String, CblDoc> {
   String get name => 'Couchbase Lite';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.all(execution),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgument(execution),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   FutureOr<BenchmarkDatabase<String, CblDoc>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) async {
     if (fileLogging) {
       final logFileConfig = LogFileConfiguration(
@@ -41,7 +41,7 @@ class CblProvider extends DatabaseProvider<String, CblDoc> {
 
     late final cblConfig = cbl.DatabaseConfiguration(directory: directory);
 
-    switch (parameterCombination.get(execution)!) {
+    switch (arguments.get(execution)!) {
       case Execution.sync:
         return _SyncCblDatabase(Database.openSync('db', cblConfig));
       case Execution.async:

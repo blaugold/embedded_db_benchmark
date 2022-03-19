@@ -14,16 +14,16 @@ class ObjectBoxProvider extends DatabaseProvider<int, ObjectboxDoc> {
   String get name => 'ObjectBox';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.single(execution, Execution.sync),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgumentOf(execution, [Execution.sync]),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   FutureOr<BenchmarkDatabase<int, ObjectboxDoc>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) async {
     final store = openStore(directory: directory);
     final box = store.box<ObjectboxDoc>();

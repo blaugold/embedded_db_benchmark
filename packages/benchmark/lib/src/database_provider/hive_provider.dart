@@ -28,16 +28,16 @@ class HiveProvider extends DatabaseProvider<String, HiveDoc> {
   String get name => 'Hive';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.single(execution, Execution.async),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgumentOf(execution, [Execution.async]),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   FutureOr<BenchmarkDatabase<String, HiveDoc>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) async {
     _registerTypeAdapters();
 

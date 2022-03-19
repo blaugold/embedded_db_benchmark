@@ -7,9 +7,4 @@ enum Execution {
 
 final execution = EnumParameter('execution', Execution.values);
 
-enum DataModel {
-  static,
-  dynamic,
-}
-
-final batchSize = ListParameter('batch-size', [1, 100, 1000]);
+final batchSize = NumericParameter<int>('batch-size', min: 1);

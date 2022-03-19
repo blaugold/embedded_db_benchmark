@@ -3,57 +3,59 @@ abstract class Parameter<T> {
 
   final String name;
 
-  Iterable<T> get values;
+  Iterable<T>? get enumerableValues => null;
 
-  bool isValidValue(T value);
+  bool isValidArgument(T value);
 }
 
 class EnumParameter<T extends Enum> extends Parameter<T> {
-  EnumParameter(String name, this.values)
-      : assert(values.isNotEmpty),
+  EnumParameter(String name, this.enumerableValues)
+      : assert(enumerableValues.isNotEmpty),
         super(name);
 
   @override
-  final List<T> values;
+  final List<T> enumerableValues;
 
   @override
-  bool isValidValue(T value) => true;
+  bool isValidArgument(T value) => true;
 
   @override
-  String toString() => 'EnumParameter($name, $values)';
+  String toString() => 'EnumParameter($name, $enumerableValues)';
 }
 
-class FlagParameter extends Parameter<bool> {
-  FlagParameter(String name) : super(name);
+class NumericParameter<T extends num> extends Parameter<T> {
+  NumericParameter(String name, {this.min, this.max}) : super(name);
+
+  final T? min;
+  final T? max;
 
   @override
-  Iterable<bool> get values => const <bool>[true, false];
+  bool isValidArgument(T value) {
+    final min = this.min;
+    if (min != null && value < min) {
+      return false;
+    }
+    final max = this.max;
+    if (max != null && value > max) {
+      return false;
+    }
+    return true;
+  }
 
   @override
-  bool isValidValue(bool value) => true;
-
-  @override
-  String toString() => 'FlagParameter($name)';
-}
-
-class ListParameter<T> extends Parameter<T> {
-  ListParameter(String name, this.values) : super(name);
-
-  @override
-  final List<T> values;
-
-  @override
-  bool isValidValue(T value) => values.contains(value);
-
-  @override
-  String toString() => 'ListParameter($name, $values)';
+  String toString() => 'NumericParameter($name, min: $min, max: $max)';
 }
 
 abstract class ParameterRange<T> {
   ParameterRange(this.parameter);
 
-  factory ParameterRange.all(Parameter<T> parameter) =>
-      ListParameterRange(parameter, parameter.values.toList());
+  factory ParameterRange.all(Parameter<T> parameter) {
+    final values = parameter.enumerableValues;
+    if (values == null || values.isEmpty) {
+      throw ArgumentError('Parameter $parameter has no enumerable values.');
+    }
+    return ListParameterRange(parameter, values.toList());
+  }
 
   factory ParameterRange.single(Parameter<T> parameter, T value) =>
       ListParameterRange(parameter, [value]);
@@ -65,7 +67,7 @@ abstract class ParameterRange<T> {
 
 class ListParameterRange<T> extends ParameterRange<T> {
   ListParameterRange(Parameter<T> parameter, this.values)
-      : assert(values.every(parameter.isValidValue)),
+      : assert(values.every(parameter.isValidArgument)),
         super(parameter);
 
   @override
@@ -75,33 +77,8 @@ class ListParameterRange<T> extends ParameterRange<T> {
   String toString() => 'ListParameterRange(${parameter.name}, $values)';
 }
 
-class ParameterCombinationBuilder {
-  final _values = <Parameter, Object?>{};
-
-  void add<T>(Parameter<T> parameter, T value) {
-    if (_values.containsKey(parameter)) {
-      throw ArgumentError('Parameter $parameter already added.');
-    }
-
-    _values[parameter] = value;
-  }
-
-  ParameterCombination build() =>
-      ParameterCombination._(Map.unmodifiable(_values));
-}
-
-class ParameterCombination {
-  factory ParameterCombination(
-    void Function(ParameterCombinationBuilder) build,
-  ) {
-    final builder = ParameterCombinationBuilder();
-    build(builder);
-    return builder.build();
-  }
-
-  static Iterable<ParameterCombination> allCombinations(
-    List<ParameterRange<Object?>> ranges,
-  ) sync* {
+extension ParameterRangeListExt on List<ParameterRange<Object?>> {
+  Iterable<ParameterArguments> crossProduct() sync* {
     Iterable<List<MapEntry<Parameter, Object?>>> generateValues(
       List<ParameterRange> ranges,
     ) sync* {
@@ -120,44 +97,91 @@ class ParameterCombination {
       }
     }
 
-    for (final values in generateValues(ranges)) {
-      yield ParameterCombination._(Map.fromEntries(values));
+    for (final values in generateValues(this)) {
+      yield ParameterArguments._(Map.fromEntries(values));
     }
   }
+}
 
-  ParameterCombination._(this._values);
+class ParameterArgumentsBuilder {
+  final _arguments = <Parameter, Object?>{};
 
-  final Map<Parameter, Object?> _values;
+  void add<T>(Parameter<T> parameter, T argument) {
+    if (_arguments.containsKey(parameter)) {
+      throw ArgumentError('Parameter $parameter already added.');
+    }
+
+    _arguments[parameter] = argument;
+  }
+
+  ParameterArguments build() =>
+      ParameterArguments._(Map.unmodifiable(_arguments));
+}
+
+class ParameterArguments {
+  factory ParameterArguments(
+    void Function(ParameterArgumentsBuilder) build,
+  ) {
+    final builder = ParameterArgumentsBuilder();
+    build(builder);
+    return builder.build();
+  }
+
+  ParameterArguments._(this._arguments);
+
+  final Map<Parameter, Object?> _arguments;
 
   T? get<T>(Parameter<T> parameter) {
-    return _values[parameter] as T?;
+    return _arguments[parameter] as T?;
   }
 
   bool contains(Parameter parameter) {
-    return _values.containsKey(parameter);
+    return _arguments.containsKey(parameter);
   }
 
-  List<Parameter> get parameters => _values.keys.toList();
+  List<Parameter> get parameters => _arguments.keys.toList();
 
-  bool containsCombination(ParameterCombination combination) =>
-      combination._values.keys.every(
+  bool containsArguments(ParameterArguments other) =>
+      other._arguments.keys.every(
         (parameter) =>
-            _values.containsKey(parameter) &&
-            _values[parameter] == combination._values[parameter],
+            _arguments.containsKey(parameter) &&
+            _arguments[parameter] == other._arguments[parameter],
       );
 
   @override
   String toString() {
-    final sortedParameters = _values.keys.toList()
+    final sortedParameters = _arguments.keys.toList()
       ..sort(((a, b) => a.name.compareTo(b.name)));
 
     return [
-      'ParameterCombination(',
+      'ParameterArguments(',
       [
         for (final parameter in sortedParameters)
-          '${parameter.name}: ${_values[parameter]}',
+          '${parameter.name}: ${_arguments[parameter]}',
       ].join(', '),
       ')'
     ].join('');
   }
 }
+
+typedef ParameterArgumentsPredicate = bool Function(ParameterArguments);
+
+ParameterArgumentsPredicate andPredicates(
+  Iterable<ParameterArgumentsPredicate> predicates,
+) =>
+    (arguments) => predicates.every((predicate) => predicate(arguments));
+
+ParameterArgumentsPredicate anyArgument(Parameter<Object?> parameter) =>
+    (arguments) => arguments.contains(parameter);
+
+ParameterArgumentsPredicate anyArgumentOf<T>(
+  Parameter<T> parameter,
+  Iterable<T> values,
+) =>
+    (arguments) {
+      if (!arguments.contains(parameter)) {
+        return false;
+      }
+      final argument = arguments.get(parameter)!;
+      return values.contains(argument);
+    };

@@ -15,13 +15,13 @@ class BenchmarkRun {
   BenchmarkRun({
     required this.benchmark,
     required this.database,
-    required this.parameterCombination,
+    required this.parameterArguments,
     required this.result,
   });
 
   final String benchmark;
   final String database;
-  final ParameterCombination parameterCombination;
+  final ParameterArguments parameterArguments;
   final BenchmarkResult result;
 }
 
@@ -42,11 +42,11 @@ class BenchmarkResult {
 abstract class Benchmark {
   String get name;
 
-  Iterable<ParameterCombination> get supportedParameterCombinations;
+  bool supportsParameterArguments(ParameterArguments arguments);
 
   BenchmarkRunner<ID, T>
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
-    ParameterCombination parameterCombination,
+    ParameterArguments parameterArguments,
   );
 }
 
@@ -88,7 +88,7 @@ class _FixedOperationsDuration extends _BenchmarkDuration {
 
 abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   late final DatabaseProvider<ID, T> _databaseProvider;
-  late final ParameterCombination _parameterCombination;
+  late final ParameterArguments _parameterArguments;
   late final _BenchmarkDuration _duration;
   late final Directory _tempDirectory;
 
@@ -108,12 +108,12 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
   Future<BenchmarkResult> run(
     DatabaseProvider<ID, T> databaseProvider,
-    ParameterCombination parameterCombination,
+    ParameterArguments parameterArguments,
     _BenchmarkDuration duration,
     Logger logger,
   ) async {
     _duration = duration;
-    _parameterCombination = parameterCombination;
+    _parameterArguments = parameterArguments;
     _databaseProvider = databaseProvider;
     this.logger = logger;
 
@@ -142,7 +142,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
     database = await _databaseProvider.openDatabase(
       _tempDirectory.path,
-      _parameterCombination,
+      _parameterArguments,
     );
   }
 
@@ -189,14 +189,14 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 Future<BenchmarkResult> _runBenchmark({
   required Benchmark benchmark,
   required DatabaseProvider databaseProvider,
-  required ParameterCombination parameterCombination,
+  required ParameterArguments parameterArguments,
   required Logger logger,
 }) async {
   Future<BenchmarkResult> _runBenchmark(_BenchmarkDuration duration) =>
       databaseProvider.runWith(
         <ID extends Object, T extends BenchmarkDoc<ID>>(provider) {
-          final runner = benchmark.createRunner<ID, T>(parameterCombination);
-          return runner.run(provider, parameterCombination, duration, logger);
+          final runner = benchmark.createRunner<ID, T>(parameterArguments);
+          return runner.run(provider, parameterArguments, duration, logger);
         },
       );
 
@@ -232,34 +232,54 @@ Future<List<BenchmarkRun>> runBenchmarks({
 
   final runs = <BenchmarkRun>[];
 
+  final allArguments = <ParameterRange<Object?>>[
+    ParameterRange.all(execution),
+    ListParameterRange(batchSize, [1, 100, 1000]),
+  ].crossProduct();
+
   for (final benchmark in benchmarks) {
     logger.info('=== Benchmark: ${benchmark.name} '.padRight(80, '='));
     logger.info('');
 
-    for (final parameterCombination
-        in benchmark.supportedParameterCombinations) {
-      logger.info('*' * 80);
-      logger.info(parameterCombination.toString());
-      logger.info('');
+    for (final arguments in allArguments) {
+      final benchmarkSupportsArguments =
+          benchmark.supportsParameterArguments(arguments);
+      logger.info(
+        '*** Parameter arguments '
+                '${benchmarkSupportsArguments ? '' : '[SKIPPED] '}'
+            .padRight(80, '*'),
+      );
+      logger.info(arguments.toString());
+
+      if (!benchmarkSupportsArguments) {
+        logger.info('Parameter arguments not supported by benchmark');
+        logger.info('');
+        continue;
+      } else {
+        logger.info('');
+      }
 
       for (final databaseProvider in databasesProviders) {
-        if (!databaseProvider
-            .supportsParameterCombination(parameterCombination)) {
-          logger.fine(
-            '--- Database: ${databaseProvider.name} [SKIPPED] '
-                .padRight(80, '-'),
-          );
+        final databaseSupportsArguments =
+            databaseProvider.supportsParameterArguments(arguments);
+
+        logger.info(
+          '--- Database:  ${databaseProvider.name} '
+                  '${databaseSupportsArguments ? '' : '[SKIPPED] '} '
+              .padRight(80, '-'),
+        );
+
+        if (!databaseSupportsArguments) {
+          logger.info('Parameter arguments not supported by database');
+          logger.info('');
           continue;
         }
-
-        logger
-            .info('--- Database:  ${databaseProvider.name} '.padRight(80, '-'));
 
         try {
           final result = await _runBenchmark(
             benchmark: benchmark,
             databaseProvider: databaseProvider,
-            parameterCombination: parameterCombination,
+            parameterArguments: arguments,
             logger: logger,
           );
 
@@ -277,7 +297,7 @@ Future<List<BenchmarkRun>> runBenchmarks({
           runs.add(BenchmarkRun(
             benchmark: benchmark.name,
             database: databaseProvider.name,
-            parameterCombination: parameterCombination,
+            parameterArguments: arguments,
             result: result,
           ));
         } catch (e, s) {
@@ -294,9 +314,15 @@ Future<List<BenchmarkRun>> runBenchmarks({
   return runs;
 }
 
-String printRuns(List<BenchmarkRun> runs) {
+Object? _formatParameterArgument(Object? value) {
+  if (value is Enum) {
+    return value.name;
+  }
+  return value;
+}
+
   final allParameters = runs
-      .expand((run) => run.parameterCombination.parameters)
+      .expand((run) => run.parameterArguments.parameters)
       .toSet()
       .toList()
     ..sort((a, b) => a.name.compareTo(b.name));
@@ -311,13 +337,6 @@ String printRuns(List<BenchmarkRun> runs) {
     ...allParameters.map((p) => p.name)
   ];
 
-  Object? _formatParameterValue(Object? value) {
-    if (value is Enum) {
-      return value.name;
-    }
-    return value;
-  }
-
   final rows = runs.map((run) => <Object?>[
         run.benchmark,
         run.database,
@@ -326,8 +345,8 @@ String printRuns(List<BenchmarkRun> runs) {
         '${(run.result.duration.inMicroseconds / 10e5).toStringAsFixed(3)}s',
         '${run.result.timePerOperationInMicroseconds.ceil()}us',
         for (final parameter in allParameters)
-          _formatParameterValue(
-                run.parameterCombination.get<Object?>(parameter),
+          _formatParameterArgument(
+                run.parameterArguments.get<Object?>(parameter),
               ) ??
               '',
       ]);
