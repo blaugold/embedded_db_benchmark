@@ -8,15 +8,16 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^1.0.3
+  cbl: ^1.0.5
   cbl_flutter: ^1.0.0+2
-  cbl_flutter_ce: ^1.0.0
+  cbl_flutter_ce: ^1.1.0
   cupertino_icons: ^1.0.4
   flutter:
     sdk: flutter
   isar_flutter_libs: ^2.2.1
   logging: ^1.0.2
   objectbox_flutter_libs: ^1.4.1
+  path_provider: ^2.0.9
   realm: ^0.2.0+alpha
 
 dev_dependencies:

@@ -58,9 +58,8 @@ jobs:
       - name: Install Objectbox binaries
         working-directory: packages/runner_dart
         shell: bash
-        run:
-          eval "$(curl -s
-          https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)"
+        run: |
+          eval "$(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)"
       - name: Run benchmark (JIT)
         if: ${{ matrix.compilation == 'jit' }}
         working-directory: packages/runner_dart
@@ -70,6 +69,13 @@ jobs:
         shell: bash
         working-directory: packages/runner_dart
         run: bin/runner_dart_aot.sh
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name:
+            benchmark_results_dart_${{ matrix.os }}_${{ matrix.compilation
+            }}.csv
+          path: packages/runner_dart/benchmark_results_*.csv
 
   run-benchmark-flutter:
     strategy:
@@ -114,4 +120,9 @@ jobs:
               device=windows
               ;;
           esac
-          flutter test -d $device integration_test/benchmark_test.dart
+          flutter drive --profile -d $device integration_test/benchmark_test.dart
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark_results_flutter_${{ matrix.os }}.csv
+          path: packages/runner_flutter/benchmark_results_*.csv
