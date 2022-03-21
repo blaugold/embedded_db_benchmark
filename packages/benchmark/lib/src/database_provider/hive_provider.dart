@@ -4,12 +4,10 @@ import 'package:benchmark_document/benchmark_document.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_document/hive_document.dart';
 
-import '../../benchmark.dart';
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../parameter.dart';
-
-// TODO: Introduce hooks to init and dispose DatabaseProviders
+import 'database_provider.dart';
 
 var _typeAdaptersRegistered = false;
 
