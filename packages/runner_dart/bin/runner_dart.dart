@@ -45,14 +45,29 @@ Future<void> main() async {
 }
 
 OnBenchmarkRunnerChange _consoleProgressHandler() {
+  var progress = -1;
+  BenchmarkRunner? currentRunner;
   return (runner) {
+    if (currentRunner != runner) {
+      currentRunner = runner;
+      progress = -1;
+    }
+
     if (runner.lifecycle != BenchmarkRunnerLifecycle.executeOperations) {
       return;
     }
-    final progress = runner.progress;
+
+    final newProgress = (runner.progress * 100).toInt();
+    if (newProgress != progress) {
+      progress = newProgress;
+    } else {
+      // Don't print the same progress multiple times.
+      return;
+    }
+
     if (progress != 0) {
       stdout.write('\u001B[A\u001B[K\r');
     }
-    stdout.write('Progress ${(progress * 100).toInt()}%\n');
+    stdout.write('Progress ${(progress).toInt()}%\n');
   };
 }
