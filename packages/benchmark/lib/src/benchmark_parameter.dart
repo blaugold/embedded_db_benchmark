@@ -25,7 +25,7 @@ Future<List<BenchmarkRun>> runParameterMatrix({
   const warmUpDuration = FixedTimedDuration(Duration(milliseconds: 500));
   const runDuration = FixedTimedDuration(Duration(seconds: 2));
   final allArguments = <ParameterRange<Object?>>[
-    ParameterRange.single(execution, Execution.sync),
+    ParameterRange.all(execution),
     ListParameterRange(batchSize, [1, 10, 100, 1000, 10000]),
   ].crossProduct();
 
