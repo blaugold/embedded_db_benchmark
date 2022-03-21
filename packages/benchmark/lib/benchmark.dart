@@ -1,5 +1,17 @@
 export 'src/benchmark.dart'
-    show BenchmarkRun, BenchmarkResult, Benchmark, runBenchmarks, printRuns;
+    show
+        Benchmark,
+        BenchmarkDuration,
+        BenchmarkResult,
+        BenchmarkRun,
+        BenchmarkRunner,
+        BenchmarkRunnerLifecycle,
+        FixedOperationsDuration,
+        FixedTimedDuration,
+        OnBenchmarkRunnerChange,
+        runBenchmark,
+        runsToAsciiTable,
+        runsToCsv;
 export 'src/benchmark/create_document_benchmark.dart'
     show CreateDocumentBenchmark;
 export 'src/benchmark/delete_document_benchmark.dart'
@@ -7,6 +19,8 @@ export 'src/benchmark/delete_document_benchmark.dart'
 export 'src/benchmark/read_document_benchmark.dart' show ReadDocumentBenchmark;
 export 'src/benchmark/update_document_benchmark.dart'
     show UpdateDocumentBenchmark;
+export 'src/benchmark_parameter.dart'
+    show Execution, batchSize, execution, runParameterMatrix;
 export 'src/database_provider/cbl_provider.dart' show CblProvider;
 export 'src/database_provider/database_provider.dart' show DatabaseProvider;
 export 'src/database_provider/hive_provider.dart' show HiveProvider;

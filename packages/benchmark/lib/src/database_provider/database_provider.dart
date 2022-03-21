@@ -16,16 +16,10 @@ abstract class DatabaseProvider<ID extends Object, T extends BenchmarkDoc<ID>> {
 
   String get name;
 
-  Iterable<ParameterCombination> get supportedParameterCombinations;
-
-  bool supportsParameterCombination(ParameterCombination combination) =>
-      supportedParameterCombinations.any(
-        (supportedCombination) =>
-            supportedCombination.containsCombination(combination),
-      );
+  bool supportsParameterArguments(ParameterArguments arguments);
 
   FutureOr<BenchmarkDatabase<ID, T>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   );
 }

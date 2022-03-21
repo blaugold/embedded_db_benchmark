@@ -5,26 +5,26 @@ import 'package:path/path.dart' as p;
 import 'package:realm_dart/realm.dart';
 import 'package:realm_document/realm_document.dart';
 
-import '../../benchmark.dart';
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../parameter.dart';
+import 'database_provider.dart';
 
 class RealmProvider extends DatabaseProvider<String, RealmDoc> {
   @override
   String get name => 'Realm';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.single(execution, Execution.sync),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgumentOf(execution, [Execution.sync]),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   FutureOr<BenchmarkDatabase<String, RealmDoc>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) {
     final config = Configuration([
       RealmDoc.schema,

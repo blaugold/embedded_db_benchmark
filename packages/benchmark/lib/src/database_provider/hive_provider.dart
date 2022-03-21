@@ -4,12 +4,10 @@ import 'package:benchmark_document/benchmark_document.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_document/hive_document.dart';
 
-import '../../benchmark.dart';
 import '../benchmark_database.dart';
 import '../benchmark_parameter.dart';
 import '../parameter.dart';
-
-// TODO: Introduce hooks to init and dispose DatabaseProviders
+import 'database_provider.dart';
 
 var _typeAdaptersRegistered = false;
 
@@ -28,16 +26,16 @@ class HiveProvider extends DatabaseProvider<String, HiveDoc> {
   String get name => 'Hive';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.single(execution, Execution.async),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgumentOf(execution, [Execution.async]),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   FutureOr<BenchmarkDatabase<String, HiveDoc>> openDatabase(
     String directory,
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) async {
     _registerTypeAdapters();
 

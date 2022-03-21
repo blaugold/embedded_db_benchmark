@@ -12,20 +12,20 @@ class CreateDocumentBenchmark extends Benchmark {
   String get name => 'CreateDocument';
 
   @override
-  Iterable<ParameterCombination> get supportedParameterCombinations =>
-      ParameterCombination.allCombinations([
-        ParameterRange.all(execution),
-        ParameterRange.all(batchSize),
-      ]);
+  bool supportsParameterArguments(ParameterArguments arguments) =>
+      andPredicates([
+        anyArgument(execution),
+        anyArgument(batchSize),
+      ])(arguments);
 
   @override
   BenchmarkRunner<ID, T>
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
-    ParameterCombination parameterCombination,
+    ParameterArguments arguments,
   ) {
     return _CreateDocumentBenchmark(
-      parameterCombination.get(execution)!,
-      parameterCombination.get(batchSize)!,
+      arguments.get(execution)!,
+      arguments.get(batchSize)!,
     );
   }
 }

@@ -126,28 +126,28 @@ packages:
       name: cbl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.5"
   cbl_dart:
     dependency: "direct main"
     description:
       name: cbl_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0+2"
+    version: "1.1.0"
   cbl_ffi:
     dependency: transitive
     description:
       name: cbl_ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.0+1"
+    version: "0.7.1"
   cbl_libcblite_api:
     dependency: transitive
     description:
       name: cbl_libcblite_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   cbl_libcblitedart_api:
     dependency: transitive
     description:
@@ -218,6 +218,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
+  csv:
+    dependency: transitive
+    description:
+      name: csv
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.1"
   dart_style:
     dependency: transitive
     description:
