@@ -9,6 +9,9 @@ import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
 
+/// The number of documents that are in the database when the benchmark is run.
+const _documentsInDatabase = 10000;
+
 class ReadDocumentBenchmark extends Benchmark {
   @override
   String get name => 'ReadDocument';
@@ -51,8 +54,15 @@ class _ReadDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
   Future<void> setup() async {
     await super.setup();
 
-    List<BenchmarkDoc<ID>> documents = createBenchmarkDocs(1000);
-    assert(_batchSize <= documents.length);
+    List<BenchmarkDoc<ID>> documents =
+        createBenchmarkDocs(_documentsInDatabase);
+    if (_batchSize > documents.length) {
+      throw Exception(
+        'Batch size is larger than the number of documents inserted during '
+        'setup. Increase the _documentsInDatabase constant or decrees the '
+        'batch size.',
+      );
+    }
 
     // Insert documents.
     _documents = documents = await database.createDocuments(

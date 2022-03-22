@@ -13,6 +13,9 @@ dependencies:
   cbl_dart: ^1.1.0
   collection: ^1.15.0
   csv: ^5.0.1
+  drift: ^1.5.0
+  drift_document:
+    path: ../drift_document
   hive: ^2.0.6
   hive_document:
     path: ../hive_document

@@ -56,7 +56,12 @@ Future<List<BenchmarkRun>> runParameterMatrix({
                 '${benchmarkSupportsArguments ? '' : '[SKIPPED] '}'
             .padRight(80, '*'),
       );
-      logger.info(arguments.toString());
+
+      final parameters = arguments.parameters.toList()
+        ..sort((a, b) => a.name.compareTo(b.name));
+      for (final parameter in parameters) {
+        logger.info('${parameter.name}: ${arguments.get(parameter)}');
+      }
 
       if (!benchmarkSupportsArguments) {
         logger.info('Parameter arguments not supported by benchmark');
@@ -72,7 +77,7 @@ Future<List<BenchmarkRun>> runParameterMatrix({
 
         logger.info(
           '--- Database:  ${databaseProvider.name} '
-                  '${databaseSupportsArguments ? '' : '[SKIPPED] '} '
+                  '${databaseSupportsArguments ? '' : '[SKIPPED] '}'
               .padRight(80, '-'),
         );
 

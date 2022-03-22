@@ -23,6 +23,7 @@ export 'src/benchmark_parameter.dart'
     show Execution, batchSize, execution, runParameterMatrix;
 export 'src/database_provider/cbl_provider.dart' show CblProvider;
 export 'src/database_provider/database_provider.dart' show DatabaseProvider;
+export 'src/database_provider/drift_provider.dart' show DriftProvider;
 export 'src/database_provider/hive_provider.dart' show HiveProvider;
 export 'src/database_provider/isar_provider.dart' show IsarProvider;
 export 'src/database_provider/objectbox_provider.dart' show ObjectBoxProvider;

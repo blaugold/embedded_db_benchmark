@@ -12,6 +12,7 @@ dependencies:
   cbl_flutter: ^1.0.0+2
   cbl_flutter_ce: ^1.1.0
   cupertino_icons: ^1.0.4
+  drift: ^1.5.0
   flutter:
     sdk: flutter
   isar_flutter_libs: ^2.2.1
@@ -19,6 +20,7 @@ dependencies:
   objectbox_flutter_libs: ^1.4.1
   path_provider: ^2.0.9
   realm: ^0.2.0+alpha
+  sqlite3_flutter_libs: ^0.5.4
 
 dev_dependencies:
   flutter_lints: ^1.0.4
