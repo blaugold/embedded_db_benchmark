@@ -1,4 +1,4 @@
-abstract class Parameter<T> {
+abstract class Parameter<T extends Object?> {
   Parameter(this.name);
 
   final String name;
@@ -46,7 +46,7 @@ class NumericParameter<T extends num> extends Parameter<T> {
   String toString() => 'NumericParameter($name, min: $min, max: $max)';
 }
 
-abstract class ParameterRange<T> {
+abstract class ParameterRange<T extends Object?> {
   ParameterRange(this.parameter);
 
   factory ParameterRange.all(Parameter<T> parameter) {
@@ -65,7 +65,7 @@ abstract class ParameterRange<T> {
   Iterable<T> get values;
 }
 
-class ListParameterRange<T> extends ParameterRange<T> {
+class ListParameterRange<T extends Object?> extends ParameterRange<T> {
   ListParameterRange(Parameter<T> parameter, this.values)
       : assert(values.every(parameter.isValidArgument)),
         super(parameter);
@@ -106,7 +106,7 @@ extension ParameterRangeListExt on List<ParameterRange<Object?>> {
 class ParameterArgumentsBuilder {
   final _arguments = <Parameter, Object?>{};
 
-  void add<T>(Parameter<T> parameter, T argument) {
+  void add<T extends Object>(Parameter<T> parameter, T argument) {
     if (_arguments.containsKey(parameter)) {
       throw ArgumentError('Parameter $parameter already added.');
     }

@@ -29,6 +29,7 @@ Future<Map<String, String>> main() async {
     ],
     databasesProviders: [
       CblProvider(),
+      if (!Platform.isLinux && !Platform.isWindows) DriftProvider(),
       // Realm is not supported on Linux.
       if (!Platform.isLinux) RealmProvider(),
       HiveProvider(),

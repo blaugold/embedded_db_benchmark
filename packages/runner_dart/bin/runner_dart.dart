@@ -27,6 +27,7 @@ Future<void> main() async {
     ],
     databasesProviders: [
       CblProvider(),
+      if (!Platform.isWindows) DriftProvider(),
       RealmProvider(),
       HiveProvider(),
       // Isar is currently not easy to use with standalone Dart.
