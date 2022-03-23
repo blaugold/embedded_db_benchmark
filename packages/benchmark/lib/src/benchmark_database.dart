@@ -1,7 +1,6 @@
 import 'dart:async';
 
-import 'package:benchmark_document/benchmark_document.dart';
-
+import 'benchmark_document.dart';
 import 'benchmark_parameter.dart';
 
 abstract class BenchmarkDatabase<ID extends Object,

@@ -1,10 +1,16 @@
 import 'dart:io';
 
 import 'package:benchmark/benchmark.dart';
+import 'package:cbl_provider/cbl_provider.dart';
+import 'package:drift_provider/drift_provider.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hive_provider/hive_provider.dart';
+import 'package:isar_provider/isar_provider.dart';
 import 'package:logging/logging.dart';
+import 'package:objectbox_provider/objectbox_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:realm_provider/realm_provider.dart';
 
 import 'setup.dart';
 
@@ -21,12 +27,6 @@ Future<Map<String, String>> main() async {
     ..level = Level.INFO;
 
   final runs = await runParameterMatrix(
-    benchmarks: [
-      CreateDocumentBenchmark(),
-      ReadDocumentBenchmark(),
-      UpdateDocumentBenchmark(),
-      DeleteDocumentBenchmark(),
-    ],
     databasesProviders: [
       CblProvider(),
       if (!Platform.isLinux && !Platform.isWindows) DriftProvider(),

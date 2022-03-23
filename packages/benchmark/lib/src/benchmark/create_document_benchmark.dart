@@ -1,13 +1,14 @@
 import 'dart:async';
 
-import 'package:benchmark_document/benchmark_document.dart';
-
 import '../benchmark.dart';
+import '../benchmark_document.dart';
 import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
 
 class CreateDocumentBenchmark extends Benchmark {
+  const CreateDocumentBenchmark();
+
   @override
   String get name => 'CreateDocument';
 

@@ -6,31 +6,11 @@ environment:
   sdk: '>=2.16.0 <3.0.0'
 
 dependencies:
-  benchmark_document:
-    path: ../benchmark_document
-  benchmark_harness: ^2.0.0
-  cbl: ^1.0.5
-  cbl_dart: ^1.1.0
   collection: ^1.15.0
   csv: ^5.0.1
-  drift: ^1.5.0
-  drift_document:
-    path: ../drift_document
-  hive: ^2.0.6
-  hive_document:
-    path: ../hive_document
-  isar: ^2.2.1
-  isar_document:
-    path: ../isar_document
   logging: ^1.0.2
   meta: ^1.7.0
-  objectbox: ^1.4.1
-  objectbox_document:
-    path: ../objectbox_document
   path: ^1.8.0
-  realm_dart: ^0.2.0+alpha
-  realm_document:
-    path: ../realm_document
   tabular: ^0.6.3+1
   test: ^1.19.0
 
