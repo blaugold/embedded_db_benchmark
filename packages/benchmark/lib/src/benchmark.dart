@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:benchmark_document/benchmark_document.dart';
 import 'package:csv/csv.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
 import 'package:tabular/tabular.dart';
 
 import 'benchmark_database.dart';
+import 'benchmark_document.dart';
 import 'benchmark_parameter.dart';
-import 'database_provider/database_provider.dart';
+import 'database_provider.dart';
 import 'parameter.dart';
 
 /// Record of a single benchmark run. Contains the benchmark configuration
@@ -78,6 +78,8 @@ class BenchmarkResult {
 /// must check if the benchmark supports the given [ParameterArguments] with
 /// [supportsParameterArguments].
 abstract class Benchmark {
+  const Benchmark();
+
   /// The name of the benchmark.
   String get name;
 

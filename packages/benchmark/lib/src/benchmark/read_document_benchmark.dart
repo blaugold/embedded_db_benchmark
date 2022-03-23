@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:benchmark_document/benchmark_document.dart';
 import 'package:test/expect.dart';
 
 import '../benchmark.dart';
+import '../benchmark_document.dart';
 import '../benchmark_parameter.dart';
 import '../fixture/document.dart';
 import '../parameter.dart';
@@ -13,6 +13,8 @@ import '../parameter.dart';
 const _documentsInDatabase = 10000;
 
 class ReadDocumentBenchmark extends Benchmark {
+  const ReadDocumentBenchmark();
+
   @override
   String get name => 'ReadDocument';
 

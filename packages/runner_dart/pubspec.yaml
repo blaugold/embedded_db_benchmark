@@ -10,9 +10,21 @@ dependencies:
     path: ../benchmark
   cbl: ^1.0.5
   cbl_dart: ^1.1.0
+  cbl_provider:
+    path: ../cbl_provider
+  drift_provider:
+    path: ../drift_provider
+  hive_provider:
+    path: ../hive_provider
+  isar_provider:
+    path: ../isar_provider
   logging: ^1.0.2
+  objectbox_provider:
+    path: ../objectbox_provider
   path: ^1.8.1
   realm_dart: ^0.2.0+alpha
+  realm_provider:
+    path: ../realm_provider
 
 dev_dependencies:
   flutter_lints: ^1.0.4

@@ -1,7 +1,8 @@
 import 'package:logging/logging.dart';
 
 import 'benchmark.dart';
-import 'database_provider/database_provider.dart';
+import 'benchmark/all_benchmarks.dart';
+import 'database_provider.dart';
 import 'parameter.dart';
 
 enum Execution {
@@ -15,7 +16,7 @@ final batchSize = NumericParameter<int>('batch-size', min: 1);
 
 /// Runs every benchmark for every database and every combination of parameters.
 Future<List<BenchmarkRun>> runParameterMatrix({
-  required List<Benchmark> benchmarks,
+  List<Benchmark> benchmarks = allBenchmarks,
   required List<DatabaseProvider> databasesProviders,
   bool catchExceptions = false,
   OnBenchmarkRunnerChange? onRunnerChange,

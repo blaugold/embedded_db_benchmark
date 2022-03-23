@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:benchmark_document/benchmark_document.dart';
-
 import '../benchmark.dart';
+import '../benchmark_document.dart';
 
 late final Future<String> Function() loadDocumentsJson;
 
