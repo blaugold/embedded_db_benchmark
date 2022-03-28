@@ -18,6 +18,7 @@ final batchSize = NumericParameter<int>('batch-size', min: 1);
 Future<List<BenchmarkRun>> runParameterMatrix({
   List<Benchmark> benchmarks = allBenchmarks,
   required List<DatabaseProvider> databasesProviders,
+  List<ParameterArguments>? arguments,
   bool catchExceptions = false,
   OnBenchmarkRunnerChange? onRunnerChange,
   Logger? logger,
@@ -25,10 +26,11 @@ Future<List<BenchmarkRun>> runParameterMatrix({
   logger ??= Logger('BenchmarkRunner');
   const warmUpDuration = FixedTimedDuration(Duration(milliseconds: 500));
   const runDuration = FixedTimedDuration(Duration(seconds: 2));
-  final allArguments = <ParameterRange<Object?>>[
-    ParameterRange.all(execution),
-    ListParameterRange(batchSize, [1, 10, 100, 1000, 10000]),
-  ].crossProduct();
+  final allArguments = arguments ??
+      <ParameterRange<Object?>>[
+        ParameterRange.all(execution),
+        ListParameterRange(batchSize, [1, 10, 100, 1000, 10000]),
+      ].crossProduct();
 
   [
     'Running the following benchmarks:',
@@ -119,6 +121,7 @@ Future<List<BenchmarkRun>> runParameterMatrix({
         } catch (e, s) {
           if (catchExceptions) {
             logger.severe('Error running benchmark: $e', e, s);
+            logger.severe('');
           } else {
             rethrow;
           }

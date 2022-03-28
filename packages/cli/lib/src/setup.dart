@@ -5,12 +5,16 @@ import 'package:cbl/cbl.dart';
 import 'package:cbl_dart/cbl_dart.dart';
 import 'package:path/path.dart' as p;
 
-Future<void> setup() async {
+Future<void> setup({bool localCblLibs = false}) async {
   loadDocumentsJson = _loadDocumentsFromFile;
 
   // await TracingDelegate.install(DevToolsTracing());
-  // await _initCblWithLocalLibs();
-  await _initCblWithHostedLibs();
+  if (localCblLibs) {
+    await _initCblWithLocalLibs();
+  } else {
+    await _initCblWithHostedLibs();
+  }
+
   Database.log.console.level = LogLevel.error;
 }
 
@@ -18,13 +22,13 @@ Future<void> _initCblWithHostedLibs() async {
   await CouchbaseLiteDart.init(edition: Edition.enterprise);
 }
 
-// ignore: unused_element
 Future<void> _initCblWithLocalLibs() async {
   await CouchbaseLite.init(
     libraries: LibrariesConfiguration(
-      enterpriseEdition: true,
-      directory:
-          '../../../cbl-dart/packages/cbl_e2e_tests_standalone_dart/lib/',
+      enterpriseEdition: false,
+      directory: p.absolute(
+        '../../../cbl-dart/packages/cbl_e2e_tests_standalone_dart/lib',
+      ),
       cbl: LibraryConfiguration.dynamic(
         'libcblite',
       ),

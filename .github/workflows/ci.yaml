@@ -50,32 +50,32 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
       - name: Run pub get
-        working-directory: packages/runner_dart
+        working-directory: packages/cli
         run: dart pub get
       - name: Install Realm binaries
-        working-directory: packages/runner_dart
+        working-directory: packages/cli
         run: dart run realm_dart install
       - name: Install Objectbox binaries
-        working-directory: packages/runner_dart
+        working-directory: packages/cli
         shell: bash
         run: |
           eval "$(curl -s https://raw.githubusercontent.com/objectbox/objectbox-dart/main/install.sh)"
       - name: Run benchmark (JIT)
         if: ${{ matrix.compilation == 'jit' }}
-        working-directory: packages/runner_dart
-        run: dart run
+        working-directory: packages/cli
+        run: dart bin/cli.dart run --abort-on-exception
       - name: Run benchmark (AOT)
         if: ${{ matrix.compilation == 'aot' }}
         shell: bash
-        working-directory: packages/runner_dart
-        run: bin/runner_dart_aot.sh
+        working-directory: packages/cli
+        run: bin/cli_aot.sh run --abort-on-exception
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
           name:
             benchmark_results_dart_${{ matrix.os }}_${{ matrix.compilation
             }}.csv
-          path: packages/runner_dart/benchmark_results_*.csv
+          path: packages/cli/benchmark_results_*.csv
 
   run-benchmark-flutter:
     strategy:
