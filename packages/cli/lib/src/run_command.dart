@@ -1,0 +1,196 @@
+import 'dart:io';
+
+import 'package:args/command_runner.dart';
+import 'package:benchmark/benchmark.dart';
+import 'package:cbl_provider/cbl_provider.dart';
+import 'package:drift_provider/drift_provider.dart';
+import 'package:hive_provider/hive_provider.dart';
+import 'package:isar_provider/isar_provider.dart';
+import 'package:logging/logging.dart';
+import 'package:objectbox_provider/objectbox_provider.dart';
+import 'package:path/path.dart' as p;
+import 'package:realm_provider/realm_provider.dart';
+
+import 'setup.dart';
+
+const _allBenchmarksByName = {
+  'create': CreateDocumentBenchmark(),
+  'read': ReadDocumentBenchmark(),
+  'update': UpdateDocumentBenchmark(),
+  'delete': DeleteDocumentBenchmark(),
+};
+
+final _allDatabaseProvidersByName = <String, DatabaseProvider>{
+  'cbl': CblProvider(),
+  if (!Platform.isWindows) 'drift': DriftProvider(),
+  'realm': RealmProvider(),
+  'hive': HiveProvider(),
+  'isar': IsarProvider(),
+  'object-box': ObjectBoxProvider(),
+};
+
+final _allExecutionsByName = {for (final e in Execution.values) e.name: e};
+
+class RunCommand extends Command<void> {
+  RunCommand() {
+    argParser
+      ..addMultiOption(
+        'benchmark',
+        abbr: 'b',
+        help: 'The benchmarks to run.',
+        allowed: _allBenchmarksByName.keys,
+        defaultsTo: _allBenchmarksByName.keys,
+      )
+      ..addMultiOption(
+        'database',
+        abbr: 'd',
+        help: 'The databases to benchmark.',
+        allowed: [..._allDatabaseProvidersByName.keys, 'all'],
+        defaultsTo: _allDatabaseProvidersByName.keys
+            // For isar and standalone Dart the binaries have to be installed
+            // manually. This is why we don't include isar in the default list.
+            .where((name) => name != 'isar'),
+      )
+      ..addMultiOption(
+        'execution',
+        abbr: 'e',
+        help:
+            'The types of execution to run benchmarks for. If a database does '
+            'not support the given execution type, it will be skipped.',
+        allowed: _allExecutionsByName.keys,
+        defaultsTo: _allExecutionsByName.keys,
+      )
+      ..addMultiOption(
+        'batch-size',
+        abbr: 's',
+        help: 'The number of documents to process in a batch.',
+        defaultsTo: ['1', '10', '100', '1000', '10000'],
+        callback: (values) {
+          for (final value in values) {
+            final number = int.tryParse(value);
+            if (number == null) {
+              usageException(
+                'Invalid batch size: "$value". Could not be parsed as an '
+                'integer.',
+              );
+            }
+            if (number <= 0) {
+              usageException(
+                'Invalid batch size: "$value". Must be greater than zero.',
+              );
+            }
+          }
+        },
+      )
+      ..addFlag(
+        'abort-on-exception',
+        abbr: 'c',
+        help: 'Abort if a benchmark throws an exception instead of continuing '
+            'with the next benchmark.',
+        defaultsTo: false,
+      )
+      ..addFlag(
+        'local-cbl-libs',
+        help: 'Use local cbl-dart libraries.',
+        hide: true,
+        defaultsTo: false,
+      );
+  }
+
+  @override
+  String get name => 'run';
+
+  @override
+  String get description => 'Run database benchmarks.';
+
+  List<Benchmark> get _benchmarks => (argResults!['benchmark'] as List<String>)
+      .map((value) => _allBenchmarksByName[value]!)
+      .toList();
+
+  List<DatabaseProvider> get _databaseProviders {
+    final databases = argResults!['database'] as List<String>;
+    if (databases.contains('all')) {
+      return _allDatabaseProvidersByName.values.toList();
+    }
+    return databases
+        .map((value) => _allDatabaseProvidersByName[value]!)
+        .toList();
+  }
+
+  List<Execution> get _executions => (argResults!['execution'] as List<String>)
+      .map((value) => _allExecutionsByName[value]!)
+      .toList();
+
+  List<int> get _batchSizes =>
+      (argResults!['batch-size'] as List<String>).map(int.parse).toList();
+
+  bool get abortOnException => argResults!['abort-on-exception'] as bool;
+
+  bool get localCblLibs => argResults!['local-cbl-libs'] as bool;
+
+  OnBenchmarkRunnerChange? get _progressHandler =>
+      stdout.hasTerminal ? _consoleProgressHandler() : null;
+
+  @override
+  Future<void> run() async {
+    await setup(localCblLibs: localCblLibs);
+
+    Logger.root
+      ..onRecord.listen((LogRecord rec) {
+        // ignore: avoid_print
+        print(rec.message);
+      })
+      ..level = Level.INFO;
+
+    final runs = await runParameterMatrix(
+      benchmarks: _benchmarks,
+      databasesProviders: _databaseProviders,
+      arguments: [
+        ListParameterRange(execution, _executions),
+        ListParameterRange(batchSize, _batchSizes)
+      ].crossProduct().toList(),
+      onRunnerChange: _progressHandler,
+      catchExceptions: !abortOnException,
+    );
+
+    Logger.root.info(runsToAsciiTable(runs));
+
+    await _writeCsvResultsTable(runs);
+  }
+
+  Future<void> _writeCsvResultsTable(List<BenchmarkRun> runs) async {
+    final now = DateTime.now();
+    final resultsFileName =
+        'benchmark_results_${now.millisecondsSinceEpoch}.csv';
+    final resultsFile = File(p.join(Directory.current.path, resultsFileName));
+    await resultsFile.writeAsString(runsToCsv(runs));
+  }
+}
+
+OnBenchmarkRunnerChange _consoleProgressHandler() {
+  var progress = -1;
+  BenchmarkRunner? currentRunner;
+  return (runner) {
+    if (currentRunner != runner) {
+      currentRunner = runner;
+      progress = -1;
+    }
+
+    if (runner.lifecycle != BenchmarkRunnerLifecycle.executeOperations) {
+      return;
+    }
+
+    final newProgress = (runner.progress * 100).toInt();
+    if (newProgress != progress) {
+      progress = newProgress;
+    } else {
+      // Don't print the same progress multiple times.
+      return;
+    }
+
+    if (progress != 0) {
+      stdout.write('\u001B[A\u001B[K\r');
+    }
+    stdout.write('Progress ${(progress).toInt()}%\n');
+  };
+}
