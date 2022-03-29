@@ -26,7 +26,7 @@ Future<Map<String, String>> main() async {
     })
     ..level = Level.INFO;
 
-  final runs = await runParameterMatrix(
+  final results = await runParameterMatrix(
     databasesProviders: [
       CblProvider(),
       if (!Platform.isLinux && !Platform.isWindows) DriftProvider(),
@@ -42,17 +42,17 @@ Future<Map<String, String>> main() async {
     ],
   );
 
-  runsToAsciiTable(runs).split('\n').forEach(Logger.root.info);
+  results.toAsciiTable().split('\n').forEach(Logger.root.info);
 
   final documentsDir = await getApplicationDocumentsDirectory();
   final now = DateTime.now();
   final resultsFileName = 'benchmark_results_${now.millisecondsSinceEpoch}.csv';
   final resultsFile = File(p.join(documentsDir.path, resultsFileName));
-  final results = runsToCsv(runs);
-  await resultsFile.writeAsString(results);
+  final resultsTable = results.toCsvTable();
+  await resultsFile.writeAsString(resultsTable);
 
   return {
     'benchmark_results_filename': resultsFileName,
-    'benchmark_results': results,
+    'benchmark_results': resultsTable,
   };
 }

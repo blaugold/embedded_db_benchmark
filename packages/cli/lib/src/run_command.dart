@@ -128,9 +128,6 @@ class RunCommand extends Command<void> {
 
   bool get localCblLibs => argResults!['local-cbl-libs'] as bool;
 
-  OnBenchmarkRunnerChange? get _progressHandler =>
-      stdout.hasTerminal ? _consoleProgressHandler() : null;
-
   @override
   Future<void> run() async {
     await setup(localCblLibs: localCblLibs);
@@ -142,55 +139,26 @@ class RunCommand extends Command<void> {
       })
       ..level = Level.INFO;
 
-    final runs = await runParameterMatrix(
+    final results = await runParameterMatrix(
       benchmarks: _benchmarks,
       databasesProviders: _databaseProviders,
       arguments: [
         ListParameterRange(execution, _executions),
         ListParameterRange(batchSize, _batchSizes)
       ].crossProduct().toList(),
-      onRunnerChange: _progressHandler,
       catchExceptions: !abortOnException,
     );
 
-    Logger.root.info(runsToAsciiTable(runs));
+    Logger.root.info(results.toAsciiTable());
 
-    await _writeCsvResultsTable(runs);
+    await _writeCsvResultsTable(results);
   }
 
-  Future<void> _writeCsvResultsTable(List<BenchmarkRun> runs) async {
+  Future<void> _writeCsvResultsTable(BenchmarkResults results) async {
     final now = DateTime.now();
     final resultsFileName =
         'benchmark_results_${now.millisecondsSinceEpoch}.csv';
     final resultsFile = File(p.join(Directory.current.path, resultsFileName));
-    await resultsFile.writeAsString(runsToCsv(runs));
+    await resultsFile.writeAsString(results.toCsvTable());
   }
-}
-
-OnBenchmarkRunnerChange _consoleProgressHandler() {
-  var progress = -1;
-  BenchmarkRunner? currentRunner;
-  return (runner) {
-    if (currentRunner != runner) {
-      currentRunner = runner;
-      progress = -1;
-    }
-
-    if (runner.lifecycle != BenchmarkRunnerLifecycle.executeOperations) {
-      return;
-    }
-
-    final newProgress = (runner.progress * 100).toInt();
-    if (newProgress != progress) {
-      progress = newProgress;
-    } else {
-      // Don't print the same progress multiple times.
-      return;
-    }
-
-    if (progress != 0) {
-      stdout.write('\u001B[A\u001B[K\r');
-    }
-    stdout.write('Progress ${(progress).toInt()}%\n');
-  };
 }

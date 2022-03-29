@@ -2,16 +2,17 @@ export 'src/benchmark.dart'
     show
         Benchmark,
         BenchmarkDuration,
+        BenchmarkPlanObserver,
+        BenchmarkPlan,
+        BenchmarkPlanRunner,
         BenchmarkResult,
-        BenchmarkRun,
+        BenchmarkResults,
+        BenchmarkRunConfiguration,
         BenchmarkRunner,
         BenchmarkRunnerLifecycle,
+        BenchmarkThrewException,
         FixedOperationsDuration,
-        FixedTimedDuration,
-        OnBenchmarkRunnerChange,
-        runBenchmark,
-        runsToAsciiTable,
-        runsToCsv;
+        FixedTimedDuration;
 export 'src/benchmark/all_benchmarks.dart';
 export 'src/benchmark/create_document_benchmark.dart'
     show CreateDocumentBenchmark;
