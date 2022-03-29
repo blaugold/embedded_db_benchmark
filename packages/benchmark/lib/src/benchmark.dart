@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:csv/csv.dart';
 import 'package:logging/logging.dart';
 import 'package:meta/meta.dart';
@@ -12,32 +13,145 @@ import 'benchmark_parameter.dart';
 import 'database_provider.dart';
 import 'parameter.dart';
 
-/// Record of a single benchmark run. Contains the benchmark configuration
-/// and the results of the run.
-class BenchmarkRun {
-  BenchmarkRun({
+@immutable
+class BenchmarkRunConfiguration {
+  const BenchmarkRunConfiguration({
     required this.benchmark,
-    required this.database,
+    required this.databaseProvider,
     required this.arguments,
-    required this.result,
   });
 
-  /// The name of the executed benchmark.
-  final String benchmark;
-
-  /// The name of the database which was benchmarked.
-  final String database;
-
-  /// The parameter arguments which were used to execute the benchmark.
+  final Benchmark benchmark;
+  final DatabaseProvider databaseProvider;
   final ParameterArguments arguments;
 
-  /// The results of this benchmark run.
-  final BenchmarkResult result;
+  bool get isRunnable =>
+      benchmark.supportsParameterArguments(arguments) &&
+      databaseProvider.supportsParameterArguments(arguments);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BenchmarkRunConfiguration &&
+          runtimeType == other.runtimeType &&
+          benchmark == other.benchmark &&
+          databaseProvider == other.databaseProvider &&
+          arguments == other.arguments;
+
+  @override
+  int get hashCode =>
+      benchmark.hashCode ^ databaseProvider.hashCode ^ arguments.hashCode;
+
+  @override
+  String toString() => 'BenchmarkRunConfiguration('
+      'benchmark: $benchmark, '
+      'databaseProvider: $databaseProvider, '
+      'arguments: $arguments'
+      ')';
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'benchmark': benchmark.name,
+        'databaseProvider': databaseProvider.name,
+        'arguments': arguments.toJson(),
+      };
+
+  factory BenchmarkRunConfiguration.fromJson(
+    Map<String, Object?> json, {
+    required Map<String, Benchmark> benchmarks,
+    required Map<String, DatabaseProvider> databaseProviders,
+    required Map<String, Parameter> parameters,
+  }) =>
+      BenchmarkRunConfiguration(
+        benchmark: benchmarks[json['benchmark']! as String]!,
+        databaseProvider:
+            databaseProviders[json['databaseProvider']! as String]!,
+        arguments: ParameterArguments.fromJson(
+          json['arguments']! as Map<String, Object?>,
+          parameters: parameters,
+        ),
+      );
+}
+
+@immutable
+class BenchmarkPlan {
+  const BenchmarkPlan({
+    required this.warmUpDuration,
+    required this.benchmarkDuration,
+    required this.runConfigurations,
+  });
+
+  final BenchmarkDuration warmUpDuration;
+  final BenchmarkDuration benchmarkDuration;
+  final List<BenchmarkRunConfiguration> runConfigurations;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BenchmarkPlan &&
+          runtimeType == other.runtimeType &&
+          warmUpDuration == other.warmUpDuration &&
+          benchmarkDuration == other.benchmarkDuration &&
+          const DeepCollectionEquality()
+              .equals(runConfigurations, other.runConfigurations);
+
+  @override
+  int get hashCode =>
+      warmUpDuration.hashCode ^
+      benchmarkDuration.hashCode ^
+      const DeepCollectionEquality().hash(runConfigurations);
+
+  @override
+  String toString() => 'BenchmarkPlan('
+      'warmUpDuration: $warmUpDuration, '
+      'benchmarkDuration: $benchmarkDuration, '
+      'runConfigurations: $runConfigurations'
+      ')';
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'warmUpDuration': warmUpDuration.toJson(),
+        'benchmarkDuration': benchmarkDuration.toJson(),
+        'runConfigurations': [
+          for (final runConfiguration in runConfigurations)
+            runConfiguration.toJson()
+        ],
+      };
+
+  factory BenchmarkPlan.fromJson(
+    Map<String, Object?> json, {
+    required Map<String, Benchmark> benchmarks,
+    required Map<String, DatabaseProvider> databaseProviders,
+    required Map<String, Parameter> parameters,
+  }) =>
+      BenchmarkPlan(
+        warmUpDuration: BenchmarkDuration.fromJson(
+          json['warmUpDuration']! as Map<String, Object?>,
+        ),
+        benchmarkDuration: BenchmarkDuration.fromJson(
+          json['benchmarkDuration']! as Map<String, Object?>,
+        ),
+        runConfigurations: (json['runConfigurations']! as List<Object?>)
+            .map(
+              (runConfiguration) => BenchmarkRunConfiguration.fromJson(
+                runConfiguration as Map<String, Object?>,
+                benchmarks: benchmarks,
+                databaseProviders: databaseProviders,
+                parameters: parameters,
+              ),
+            )
+            .toList(),
+      );
+
+  List<Parameter> get allParameters => runConfigurations
+      .expand((runConfiguration) => runConfiguration.arguments.parameters)
+      .toSet()
+      .toList()
+    ..sort((a, b) => a.name.compareTo(b.name));
 }
 
 /// The result of a single benchmark run.
+@immutable
 class BenchmarkResult {
-  BenchmarkResult({
+  const BenchmarkResult({
     required this.operations,
     required this.operationsRunTime,
     required this.benchmarkRunTime,
@@ -65,6 +179,284 @@ class BenchmarkResult {
   /// average.
   double get timePerOperationInMicroseconds =>
       operationsRunTime.inMicroseconds / operations;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BenchmarkResult &&
+          runtimeType == other.runtimeType &&
+          operations == other.operations &&
+          operationsRunTime == other.operationsRunTime &&
+          benchmarkRunTime == other.benchmarkRunTime;
+
+  @override
+  int get hashCode =>
+      operations.hashCode ^
+      operationsRunTime.hashCode ^
+      benchmarkRunTime.hashCode;
+
+  @override
+  String toString() => 'BenchmarkResult('
+      'operations: $operations, '
+      'operationsRunTime: $operationsRunTime, '
+      'benchmarkRunTime: $benchmarkRunTime'
+      ')';
+
+  Map<String, Object?> toJson() => {
+        'operations': operations,
+        'operationsRunTime': operationsRunTime.inMicroseconds,
+        'benchmarkRunTime': benchmarkRunTime.inMicroseconds,
+      };
+
+  factory BenchmarkResult.fromJson(Map<String, Object?> json) =>
+      BenchmarkResult(
+        operations: json['operations']! as int,
+        operationsRunTime:
+            Duration(microseconds: json['operationsRunTime']! as int),
+        benchmarkRunTime:
+            Duration(microseconds: json['benchmarkRunTime']! as int),
+      );
+}
+
+@immutable
+class BenchmarkThrewException extends Error {
+  BenchmarkThrewException(this.message, this.stackTrace);
+
+  final String message;
+
+  @override
+  final StackTrace stackTrace;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BenchmarkThrewException &&
+          runtimeType == other.runtimeType &&
+          message == other.message &&
+          const DeepCollectionEquality().equals(stackTrace, other.stackTrace);
+
+  @override
+  int get hashCode => message.hashCode ^ stackTrace.hashCode;
+
+  @override
+  String toString() => 'BenchmarkThrewException: $message';
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'message': message,
+        'stackTrace': stackTrace.toString(),
+      };
+
+  factory BenchmarkThrewException.fromJson(Map<String, Object?> json) =>
+      BenchmarkThrewException(
+        json['message']! as String,
+        StackTrace.fromString(json['stackTrace']! as String),
+      );
+}
+
+@immutable
+class BenchmarkResults {
+  BenchmarkResults({
+    required this.plan,
+    required Map<BenchmarkRunConfiguration, BenchmarkThrewException> failedRuns,
+    required Map<BenchmarkRunConfiguration, BenchmarkResult> successfulRuns,
+  })  : failedRuns = Map.unmodifiable(failedRuns),
+        successfulRuns = Map.unmodifiable(successfulRuns) {
+    for (final runConfiguration in [
+      ...failedRuns.keys,
+      ...successfulRuns.keys
+    ]) {
+      if (!plan.runConfigurations.contains(runConfiguration)) {
+        throw ArgumentError.value(
+          runConfiguration,
+          null,
+          'Run configuration is not part of the benchmark plan.',
+        );
+      }
+    }
+  }
+
+  final BenchmarkPlan plan;
+  final Map<BenchmarkRunConfiguration, BenchmarkThrewException> failedRuns;
+  final Map<BenchmarkRunConfiguration, BenchmarkResult> successfulRuns;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BenchmarkResults &&
+          runtimeType == other.runtimeType &&
+          plan == other.plan &&
+          const DeepCollectionEquality().equals(failedRuns, other.failedRuns) &&
+          const DeepCollectionEquality()
+              .equals(successfulRuns, other.successfulRuns);
+
+  @override
+  int get hashCode =>
+      plan.hashCode ^
+      const DeepCollectionEquality().hash(failedRuns) ^
+      const DeepCollectionEquality().hash(successfulRuns);
+
+  @override
+  String toString() => 'BenchmarkResults('
+      'plan: $plan, '
+      'failedRuns: $failedRuns, '
+      'successfulRuns: $successfulRuns'
+      ')';
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'plan': plan.toJson(),
+        'failedRuns': [
+          for (final failedRun in failedRuns.entries)
+            <String, Object?>{
+              'runConfiguration': plan.runConfigurations.indexOf(failedRun.key),
+              'error': failedRun.value.toJson(),
+            }
+        ],
+        'successfulRuns': [
+          for (final successfulRun in successfulRuns.entries)
+            <String, Object?>{
+              'runConfiguration':
+                  plan.runConfigurations.indexOf(successfulRun.key),
+              'result': successfulRun.value.toJson(),
+            }
+        ],
+      };
+
+  factory BenchmarkResults.fromJson(
+    Map<String, Object?> json, {
+    required Map<String, Benchmark> benchmarks,
+    required Map<String, DatabaseProvider> databaseProviders,
+    required Map<String, Parameter> parameters,
+  }) {
+    final plan = BenchmarkPlan.fromJson(
+      json['plan']! as Map<String, Object?>,
+      benchmarks: benchmarks,
+      databaseProviders: databaseProviders,
+      parameters: parameters,
+    );
+
+    final failedRuns = <BenchmarkRunConfiguration, BenchmarkThrewException>{};
+    for (final failedRun in (json['failedRuns']! as List<Object?>)
+        .cast<Map<String, Object?>>()) {
+      final runConfiguration =
+          plan.runConfigurations[failedRun['runConfiguration']! as int];
+      failedRuns[runConfiguration] = BenchmarkThrewException.fromJson(
+          failedRun['error']! as Map<String, Object?>);
+    }
+
+    final successfulRuns = <BenchmarkRunConfiguration, BenchmarkResult>{};
+    for (final successfulRun in (json['successfulRuns']! as List<Object?>)
+        .cast<Map<String, Object?>>()) {
+      final runConfiguration =
+          plan.runConfigurations[successfulRun['runConfiguration']! as int];
+      successfulRuns[runConfiguration] = BenchmarkResult.fromJson(
+        successfulRun['result']! as Map<String, Object?>,
+      );
+    }
+    return BenchmarkResults(
+      plan: plan,
+      failedRuns: failedRuns,
+      successfulRuns: successfulRuns,
+    );
+  }
+
+  String toAsciiTable() {
+    final allParameters = plan.allParameters;
+
+    final header = [
+      '', // Success or error column.
+      'Benchmark',
+      'Database',
+      'Ops',
+      'Ops/s',
+      'Time',
+      'Time/Op',
+      ...allParameters.map((parameter) => parameter.name)
+    ];
+
+    final rows = plan.runConfigurations.map((runConfiguration) {
+      final error = failedRuns[runConfiguration];
+      if (error != null) {
+        return <Object?>[
+          '✘',
+          runConfiguration.benchmark.name,
+          runConfiguration.databaseProvider.name,
+          '',
+          '',
+          '',
+          '',
+          for (final _ in allParameters) '',
+        ];
+      }
+
+      final result = successfulRuns[runConfiguration];
+      if (result != null) {
+        return <Object?>[
+          '✔',
+          runConfiguration.benchmark.name,
+          runConfiguration.databaseProvider.name,
+          result.operations,
+          result.operationsPerSecond.floor(),
+          '${(result.operationsRunTime.inMicroseconds / 10e5).toStringAsFixed(3)}s',
+          '${result.timePerOperationInMicroseconds.ceil()}us',
+          ...allParameters.map((parameter) {
+            final argument = runConfiguration.arguments.get<Object?>(parameter);
+            return argument == null ? '' : parameter.describe(argument);
+          }),
+        ];
+      }
+
+      return null;
+    }).whereType<List<Object?>>();
+
+    return tabular(
+      [header, ...rows],
+      align: <String, Side>{
+        'Ops': Side.end,
+        'Ops/s': Side.end,
+        'Time': Side.end,
+        'Time/Op': Side.end,
+        for (final parameter in allParameters) parameter.name: Side.end,
+      },
+      sort: [
+        Sort('Benchmark'),
+        Sort('Database'),
+        Sort(execution.name),
+        Sort(batchSize.name),
+      ],
+    );
+  }
+
+  String toCsvTable() {
+    final allParameters = plan.allParameters;
+
+    final header = <String>[
+      'benchmark',
+      'database',
+      for (final parameter in allParameters) parameter.name,
+      'duration',
+      'operations',
+      'operationsPerSecond',
+      'timePerOperationInMicroseconds',
+    ];
+
+    final rows = [
+      for (final run in successfulRuns.entries)
+        [
+          run.key.benchmark.name,
+          run.key.databaseProvider.name,
+          for (final parameter in allParameters)
+            parameter.describe(
+              run.key.arguments.get<Object?>(parameter),
+            ),
+          run.value.operationsRunTime.inMicroseconds,
+          run.value.operations,
+          run.value.operationsPerSecond,
+          run.value.timePerOperationInMicroseconds,
+        ],
+    ];
+
+    return const ListToCsvConverter().convert([header, ...rows]);
+  }
 }
 
 /// A benchmark which measures the performance of an operation of a database.
@@ -91,6 +483,9 @@ abstract class Benchmark {
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterArguments arguments,
   );
+
+  @override
+  String toString() => 'Benchmark(name)';
 }
 
 /// The duration for which to run a benchmark.
@@ -103,6 +498,7 @@ abstract class Benchmark {
 /// * [FixedTimedDuration], which runs the benchmark for a fixed amount of time.
 /// * [FixedOperationsDuration], which runs the benchmark for a fixed number of
 ///   operations.
+@immutable
 abstract class BenchmarkDuration {
   const BenchmarkDuration();
 
@@ -113,9 +509,22 @@ abstract class BenchmarkDuration {
   int? maxAdditionalOperations(BenchmarkRunner runner);
 
   double progress(BenchmarkRunner runner);
+
+  Map<String, Object?> toJson();
+
+  factory BenchmarkDuration.fromJson(Map<String, Object?> json) {
+    final duration = json['duration'] as int?;
+    if (duration != null) {
+      return FixedTimedDuration(Duration(microseconds: duration));
+    } else {
+      final operations = json['operations']! as int;
+      return FixedOperationsDuration(operations);
+    }
+  }
 }
 
 /// Executes a benchmark for a fixed amount of time.
+@immutable
 class FixedTimedDuration extends BenchmarkDuration {
   const FixedTimedDuration(this.duration);
 
@@ -132,9 +541,26 @@ class FixedTimedDuration extends BenchmarkDuration {
   @override
   double progress(BenchmarkRunner runner) =>
       runner.executionTimeInMicroseconds / duration.inMicroseconds;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FixedTimedDuration &&
+          runtimeType == other.runtimeType &&
+          duration == other.duration;
+
+  @override
+  int get hashCode => duration.hashCode;
+
+  @override
+  String toString() => 'FixedTimedDuration(duration: $duration)';
+
+  @override
+  Map<String, Object?> toJson() => {'duration': duration.inMicroseconds};
 }
 
 /// Executes a benchmark for a fixed number of operations.
+@immutable
 class FixedOperationsDuration extends BenchmarkDuration {
   const FixedOperationsDuration(this.operations);
 
@@ -152,6 +578,22 @@ class FixedOperationsDuration extends BenchmarkDuration {
   @override
   double progress(BenchmarkRunner runner) =>
       runner.executedOperations / operations;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is FixedOperationsDuration &&
+          runtimeType == other.runtimeType &&
+          operations == other.operations;
+
+  @override
+  int get hashCode => operations.hashCode;
+
+  @override
+  String toString() => 'FixedOperationsDuration(operations: $operations)';
+
+  @override
+  Map<String, Object?> toJson() => {'operations': operations};
 }
 
 enum BenchmarkRunnerLifecycle {
@@ -163,7 +605,7 @@ enum BenchmarkRunnerLifecycle {
   done,
 }
 
-typedef OnBenchmarkRunnerChange = void Function(BenchmarkRunner runner);
+typedef _OnBenchmarkRunnerChange = void Function(BenchmarkRunner runner);
 
 /// Parameterized implementation of a [Benchmark] which actually executes it.
 ///
@@ -174,7 +616,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   late final ParameterArguments _arguments;
   late final BenchmarkDuration _duration;
   late final Directory _tempDirectory;
-  late final OnBenchmarkRunnerChange? _onChange;
+  late final _OnBenchmarkRunnerChange? _onChange;
 
   BenchmarkRunnerLifecycle get lifecycle => _lifecycle;
   var _lifecycle = BenchmarkRunnerLifecycle.created;
@@ -275,7 +717,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
     DatabaseProvider<ID, T> databaseProvider,
     ParameterArguments arguments,
     BenchmarkDuration duration,
-    OnBenchmarkRunnerChange? onChange,
+    _OnBenchmarkRunnerChange? onChange,
     Logger logger,
   ) async {
     assert(_executedOperations == 0);
@@ -332,119 +774,279 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   }
 }
 
-/// Runs a benchmark against a database.
-Future<BenchmarkResult> runBenchmark({
-  required Benchmark benchmark,
-  required DatabaseProvider databaseProvider,
-  required ParameterArguments arguments,
-  required BenchmarkDuration warmUpDuration,
-  required BenchmarkDuration runDuration,
-  OnBenchmarkRunnerChange? onRunnerChange,
-  required Logger logger,
-}) async {
-  Future<BenchmarkResult> _runBenchmarkRunner(BenchmarkDuration duration) =>
-      databaseProvider.runWith(
-        <ID extends Object, T extends BenchmarkDoc<ID>>(provider) {
-          final runner = benchmark.createRunner<ID, T>(arguments);
-          return runner._run(
-              provider, arguments, duration, onRunnerChange, logger);
-        },
+enum PlanRunnerStatus {
+  notRunning,
+  running,
+  stopping,
+  done,
+  failed,
+}
+
+class BenchmarkPlanRunner {
+  BenchmarkPlanRunner({
+    required this.plan,
+    required this.catchExceptions,
+    BenchmarkPlanObserver? observer,
+    required Logger logger,
+  })  : _observer = observer,
+        _logger = logger,
+        _runConfigurations = List.from(plan.runConfigurations);
+
+  final BenchmarkPlan plan;
+
+  final bool catchExceptions;
+
+  PlanRunnerStatus get status => _status;
+  PlanRunnerStatus _status = PlanRunnerStatus.notRunning;
+
+  BenchmarkResults get results => BenchmarkResults(
+        plan: plan,
+        successfulRuns: _successfulRuns,
+        failedRuns: _failedRuns,
       );
 
-  logger.info('Warming up');
-  await _runBenchmarkRunner(warmUpDuration);
-  logger.info('Running benchmark');
-  return _runBenchmarkRunner(runDuration);
-}
+  Future<BenchmarkResults> get done => _done.future;
+  final _done = Completer<BenchmarkResults>();
 
-Object? _formatParameterArgument(Object? value) {
-  if (value is Enum) {
-    return value.name;
+  final BenchmarkPlanObserver? _observer;
+  final Logger _logger;
+  final List<BenchmarkRunConfiguration> _runConfigurations;
+  final _failedRuns = <BenchmarkRunConfiguration, BenchmarkThrewException>{};
+  final _successfulRuns = <BenchmarkRunConfiguration, BenchmarkResult>{};
+  Future<void>? _currentExecution;
+
+  Future<BenchmarkResults> runUntilDone() {
+    start();
+    return done;
   }
-  return value;
+
+  void start() {
+    assert(_status == PlanRunnerStatus.notRunning);
+
+    _status = PlanRunnerStatus.running;
+    _observer?.didChangePlanRunner(this);
+
+    _currentExecution = _runPlan().onError((error, stackTrace) {
+      _status = PlanRunnerStatus.failed;
+      _done.completeError(error!, stackTrace);
+    });
+  }
+
+  Future<void> stop() async {
+    assert(_status == PlanRunnerStatus.running);
+
+    _status = PlanRunnerStatus.stopping;
+    _observer?.didChangePlanRunner(this);
+
+    await _currentExecution;
+    _currentExecution = null;
+
+    if (_status != PlanRunnerStatus.done &&
+        _status != PlanRunnerStatus.failed) {
+      _status = PlanRunnerStatus.notRunning;
+      _observer?.didChangePlanRunner(this);
+    }
+  }
+
+  Future<void> _runPlan() async {
+    while (
+        _status == PlanRunnerStatus.running && _runConfigurations.isNotEmpty) {
+      final runConfiguration = _runConfigurations.removeAt(0);
+
+      if (!runConfiguration.isRunnable) {
+        _observer?.didSkipRun(this, runConfiguration);
+        continue;
+      }
+
+      _observer?.willStartRun(this, runConfiguration);
+
+      try {
+        final result = _successfulRuns[runConfiguration] =
+            await _runBenchmark(runConfiguration);
+
+        _observer?.didFinishRun(this, runConfiguration, result);
+      } catch (e, s) {
+        if (!catchExceptions) {
+          rethrow;
+        }
+
+        _failedRuns[runConfiguration] =
+            BenchmarkThrewException(e.toString(), s);
+
+        _observer?.didFinishRunWithError(this, runConfiguration, e, s);
+      }
+    }
+
+    if (_runConfigurations.isEmpty) {
+      _status = PlanRunnerStatus.done;
+      _observer?.didChangePlanRunner(this);
+
+      _done.complete(results);
+    }
+  }
+
+  Future<BenchmarkResult> _runBenchmark(
+    BenchmarkRunConfiguration configuration,
+  ) async {
+    Future<BenchmarkResult> _runBenchmarkRunner(
+      BenchmarkDuration duration,
+      bool isWarmUp,
+    ) =>
+        configuration.databaseProvider.runWith(
+          <ID extends Object, T extends BenchmarkDoc<ID>>(provider) {
+            final runner = configuration.benchmark
+                .createRunner<ID, T>(configuration.arguments);
+
+            return runner._run(
+              provider,
+              configuration.arguments,
+              duration,
+              (runner) => _observer?.didChangeBenchmarkRunner(
+                this,
+                configuration,
+                runner,
+                isWarmUp,
+              ),
+              _logger,
+            );
+          },
+        );
+
+    await _runBenchmarkRunner(plan.warmUpDuration, true);
+    return _runBenchmarkRunner(plan.benchmarkDuration, false);
+  }
 }
 
-String runsToAsciiTable(List<BenchmarkRun> runs) {
-  final allParameters = runs
-      .expand((run) => run.arguments.parameters)
-      .toSet()
-      .toList()
-    ..sort((a, b) => a.name.compareTo(b.name));
+abstract class BenchmarkPlanObserver {
+  void didChangePlanRunner(BenchmarkPlanRunner runner) {}
 
-  final header = [
-    'Benchmark',
-    'Database',
-    'Ops',
-    'Ops/s',
-    'Time',
-    'Time/Op',
-    ...allParameters.map((p) => p.name)
-  ];
+  void didSkipRun(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+  ) {}
 
-  final rows = runs.map((run) => <Object?>[
-        run.benchmark,
-        run.database,
-        run.result.operations,
-        run.result.operationsPerSecond.floor(),
-        '${(run.result.operationsRunTime.inMicroseconds / 10e5).toStringAsFixed(3)}s',
-        '${run.result.timePerOperationInMicroseconds.ceil()}us',
-        for (final parameter in allParameters)
-          _formatParameterArgument(
-                run.arguments.get<Object?>(parameter),
-              ) ??
-              '',
-      ]);
+  void willStartRun(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+  ) {}
 
-  return tabular(
-    [header, ...rows],
-    align: <String, Side>{
-      'Ops': Side.end,
-      'Ops/s': Side.end,
-      'Time': Side.end,
-      'Time/Op': Side.end,
-      for (final parameter in allParameters) parameter.name: Side.end,
-    },
-    sort: [
-      Sort('Benchmark'),
-      Sort('Database'),
-      Sort(execution.name),
-      Sort(batchSize.name),
-    ],
-  );
+  void didChangeBenchmarkRunner(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+    BenchmarkRunner benchmarkRunner,
+    bool isWarmUp,
+  ) {}
+
+  void didFinishRun(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+    BenchmarkResult result,
+  ) {}
+
+  void didFinishRunWithError(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+    Object error,
+    StackTrace stackTrace,
+  ) {}
 }
 
-String runsToCsv(List<BenchmarkRun> runs) {
-  final allParameters = runs
-      .expand((run) => run.arguments.parameters)
-      .toSet()
-      .toList()
-    ..sort((a, b) => a.name.compareTo(b.name));
+class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
+  LoggerBenchmarkPlanObserver(this._logger);
 
-  final header = <String>[
-    'benchmark',
-    'database',
-    for (final parameter in allParameters) parameter.name,
-    'duration',
-    'operations',
-    'operationsPerSecond',
-    'timePerOperationInMicroseconds',
-  ];
+  final Logger _logger;
+  final _hasTerminal = stdout.hasTerminal;
+  int? _lastProgress;
 
-  final rows = [
-    for (final run in runs)
-      [
-        run.benchmark,
-        run.database,
-        for (final parameter in allParameters)
-          _formatParameterArgument(
-            run.arguments.get<Object?>(parameter),
-          ),
-        run.result.operationsRunTime.inMicroseconds,
-        run.result.operations,
-        run.result.operationsPerSecond,
-        run.result.timePerOperationInMicroseconds,
-      ],
-  ];
+  @override
+  void didSkipRun(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+  ) {
+    _logBenchmarkConfig(configuration);
+    _logger.info(
+      'Skipping run configuration because the combination of benchmark, '
+      'database and arguments is not runnable.',
+    );
+    _logger.info('');
+  }
 
-  return const ListToCsvConverter().convert([header, ...rows]);
+  @override
+  void willStartRun(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+  ) {
+    _logBenchmarkConfig(configuration);
+    _logger.info('Starting ${configuration.benchmark.name}');
+  }
+
+  @override
+  void didChangeBenchmarkRunner(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+    BenchmarkRunner benchmarkRunner,
+    bool isWarmUp,
+  ) {
+    if (_hasTerminal) {
+      _reportProgressOnConsole(benchmarkRunner, isWarmUp);
+    }
+  }
+
+  @override
+  void didFinishRun(
+    BenchmarkPlanRunner runner,
+    BenchmarkRunConfiguration configuration,
+    BenchmarkResult result,
+  ) {
+    [
+      'Ops:     ${result.operations}',
+      'Ops/s:   ${result.operationsPerSecond.floor()}',
+      'Time:    ${result.operationsRunTime.inMicroseconds / 10e5}s',
+      'Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
+    ].forEach(_logger.info);
+    _logger.info('');
+  }
+
+  @override
+  void didFinishRunWithError(
+      BenchmarkPlanRunner runner,
+      BenchmarkRunConfiguration configuration,
+      Object error,
+      StackTrace stackTrace) {
+    _logger.severe('Benchmark threw an exception', error, stackTrace);
+    _logger.info('');
+  }
+
+  void _logBenchmarkConfig(BenchmarkRunConfiguration configuration) {
+    final arguments = configuration.arguments;
+    _logger.info([
+      configuration.benchmark.name,
+      configuration.databaseProvider.name,
+      for (final parameter in arguments.parameters)
+        '${parameter.name}: ${parameter.describe(arguments.get<Object?>(parameter))}',
+    ].join(' - '));
+  }
+
+  void _reportProgressOnConsole(BenchmarkRunner runner, bool isWarmUp) {
+    if (runner.lifecycle != BenchmarkRunnerLifecycle.executeOperations) {
+      _lastProgress = null;
+      return;
+    }
+
+    final newProgress = (runner.progress * 100).toInt();
+    if (newProgress == _lastProgress) {
+      // Don't print the same progress multiple times.
+      return;
+    }
+
+    _lastProgress = newProgress;
+
+    if (_lastProgress != 0) {
+      stdout.write('\u001B[A\u001B[K\r');
+    }
+
+    stdout.write(isWarmUp ? 'Warm-up' : 'Benchmark');
+    stdout.write('${newProgress.toInt()}%'.padLeft(5));
+    stdout.write('\n');
+  }
 }

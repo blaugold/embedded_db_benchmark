@@ -1,11 +1,20 @@
+import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
+
 abstract class Parameter<T extends Object?> {
-  Parameter(this.name);
+  const Parameter(this.name);
 
   final String name;
 
   Iterable<T>? get enumerableValues => null;
 
   bool isValidArgument(T value);
+
+  Object? toJson(T value);
+
+  T fromJson(Object? value);
+
+  String describe(T value);
 }
 
 class EnumParameter<T extends Enum> extends Parameter<T> {
@@ -21,6 +30,16 @@ class EnumParameter<T extends Enum> extends Parameter<T> {
 
   @override
   String toString() => 'EnumParameter($name, $enumerableValues)';
+
+  @override
+  Object? toJson(T value) => value.name;
+
+  @override
+  T fromJson(Object? value) =>
+      enumerableValues.firstWhere((enumValue) => enumValue.name == value);
+
+  @override
+  String describe(T value) => value.name;
 }
 
 class NumericParameter<T extends num> extends Parameter<T> {
@@ -44,6 +63,15 @@ class NumericParameter<T extends num> extends Parameter<T> {
 
   @override
   String toString() => 'NumericParameter($name, min: $min, max: $max)';
+
+  @override
+  Object? toJson(T value) => value;
+
+  @override
+  T fromJson(Object? value) => value as T;
+
+  @override
+  String describe(T value) => value.toString();
 }
 
 abstract class ParameterRange<T extends Object?> {
@@ -118,6 +146,7 @@ class ParameterArgumentsBuilder {
       ParameterArguments._(Map.unmodifiable(_arguments));
 }
 
+@immutable
 class ParameterArguments {
   factory ParameterArguments(
     void Function(ParameterArgumentsBuilder) build,
@@ -127,7 +156,7 @@ class ParameterArguments {
     return builder.build();
   }
 
-  ParameterArguments._(this._arguments);
+  const ParameterArguments._(this._arguments);
 
   final Map<Parameter, Object?> _arguments;
 
@@ -149,6 +178,16 @@ class ParameterArguments {
       );
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ParameterArguments &&
+          runtimeType == other.runtimeType &&
+          const DeepCollectionEquality().equals(_arguments, other._arguments);
+
+  @override
+  int get hashCode => const DeepCollectionEquality().hash(_arguments);
+
+  @override
   String toString() {
     final sortedParameters = _arguments.keys.toList()
       ..sort(((a, b) => a.name.compareTo(b.name)));
@@ -162,6 +201,21 @@ class ParameterArguments {
       ')'
     ].join('');
   }
+
+  Map<String, Object?> toJson() => {
+        for (final parameter in _arguments.keys)
+          parameter.name: parameter.toJson(_arguments[parameter]),
+      };
+
+  factory ParameterArguments.fromJson(
+    Map<String, Object?> json, {
+    required Map<String, Parameter> parameters,
+  }) =>
+      ParameterArguments._({
+        for (final argument in json.entries)
+          parameters[argument.key]!:
+              parameters[argument.key]!.fromJson(argument.value),
+      });
 }
 
 typedef ParameterArgumentsPredicate = bool Function(ParameterArguments);

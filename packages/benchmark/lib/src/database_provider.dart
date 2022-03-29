@@ -21,4 +21,7 @@ abstract class DatabaseProvider<ID extends Object, T extends BenchmarkDoc<ID>> {
     String directory,
     ParameterArguments arguments,
   );
+
+  @override
+  String toString() => 'DatabaseProvider($name)';
 }
