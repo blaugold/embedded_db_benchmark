@@ -363,7 +363,7 @@ class BenchmarkResults {
     final allParameters = plan.allParameters;
 
     final header = [
-      '', // Success or error column.
+      '', // Status column (skipped, success, error).
       'Benchmark',
       'Database',
       'Ops',
@@ -374,48 +374,41 @@ class BenchmarkResults {
     ];
 
     final rows = plan.runConfigurations.map((runConfiguration) {
+      List<Object?> buildRow(String status, [BenchmarkResult? result]) =>
+          <Object?>[
+            status,
+            runConfiguration.benchmark.name,
+            runConfiguration.databaseProvider.name,
+            if (result != null) ...[
+              result.operations,
+              result.operationsPerSecond.floor(),
+              '${(result.operationsRunTime.inMicroseconds / 10e5).toStringAsFixed(3)}s',
+              '${result.timePerOperationInMicroseconds.ceil()}us'
+            ] else ...[
+              '',
+              '',
+              '',
+              ''
+            ],
+            ...allParameters.map((parameter) {
+              final argument =
+                  runConfiguration.arguments.get<Object?>(parameter);
+              return argument == null ? '' : parameter.describe(argument);
+            }),
+          ];
+
       final error = failedRuns[runConfiguration];
       if (error != null) {
-        return <Object?>[
-          '✘',
-          runConfiguration.benchmark.name,
-          runConfiguration.databaseProvider.name,
-          '',
-          '',
-          '',
-          '',
-          for (final _ in allParameters) '',
-        ];
+        return buildRow('✘');
       }
 
       final result = successfulRuns[runConfiguration];
       if (result != null) {
-        return <Object?>[
-          '✔',
-          runConfiguration.benchmark.name,
-          runConfiguration.databaseProvider.name,
-          result.operations,
-          result.operationsPerSecond.floor(),
-          '${(result.operationsRunTime.inMicroseconds / 10e5).toStringAsFixed(3)}s',
-          '${result.timePerOperationInMicroseconds.ceil()}us',
-          ...allParameters.map((parameter) {
-            final argument = runConfiguration.arguments.get<Object?>(parameter);
-            return argument == null ? '' : parameter.describe(argument);
-          }),
-        ];
+        return buildRow('✔', result);
       }
 
       // Skipped run configuration.
-      return <Object?>[
-        '-',
-        runConfiguration.benchmark.name,
-        runConfiguration.databaseProvider.name,
-        '',
-        '',
-        '',
-        '',
-        for (final _ in allParameters) '',
-      ];
+      return buildRow('-');
     });
 
     return tabular(
