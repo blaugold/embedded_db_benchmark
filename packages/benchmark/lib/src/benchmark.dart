@@ -405,8 +405,18 @@ class BenchmarkResults {
         ];
       }
 
-      return null;
-    }).whereType<List<Object?>>();
+      // Skipped run configuration.
+      return <Object?>[
+        '-',
+        runConfiguration.benchmark.name,
+        runConfiguration.databaseProvider.name,
+        '',
+        '',
+        '',
+        '',
+        for (final _ in allParameters) '',
+      ];
+    });
 
     return tabular(
       [header, ...rows],
@@ -977,7 +987,6 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
     BenchmarkRunConfiguration configuration,
   ) {
     _logBenchmarkConfig(configuration);
-    _logger.info('Starting ${configuration.benchmark.name}');
   }
 
   @override
