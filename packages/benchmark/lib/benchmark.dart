@@ -12,7 +12,8 @@ export 'src/benchmark.dart'
         BenchmarkRunnerLifecycle,
         BenchmarkThrewException,
         FixedOperationsDuration,
-        FixedTimedDuration;
+        FixedTimedDuration,
+        PlanRunnerStatus;
 export 'src/benchmark/all_benchmarks.dart';
 export 'src/benchmark/create_document_benchmark.dart'
     show CreateDocumentBenchmark;

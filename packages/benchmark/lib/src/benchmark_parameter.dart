@@ -23,8 +23,8 @@ Future<BenchmarkResults> runParameterMatrix({
   Logger? logger,
 }) async {
   logger ??= Logger('BenchmarkRunner');
-  const warmUpDuration = FixedTimedDuration(Duration(milliseconds: 500));
-  const benchmarkDuration = FixedTimedDuration(Duration(seconds: 2));
+  const warmUpDuration = FixedTimedDuration(Duration(milliseconds: 100));
+  const benchmarkDuration = FixedTimedDuration(Duration(seconds: 1));
   arguments ??= <ParameterRange<Object?>>[
     ParameterRange.all(execution),
     ListParameterRange(batchSize, [1, 10, 100, 1000, 10000]),

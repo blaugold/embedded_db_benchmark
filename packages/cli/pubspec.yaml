@@ -33,3 +33,5 @@ dev_dependencies:
 # dependency_overrides:
 #   cbl:
 #     path: ../../../cbl-dart/packages/cbl
+#   cbl_ffi:
+#     path: ../../../cbl-dart/packages/cbl_ffi

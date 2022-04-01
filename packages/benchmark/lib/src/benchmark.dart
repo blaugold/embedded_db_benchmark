@@ -743,17 +743,17 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
     _lifecycle = BenchmarkRunnerLifecycle.setup;
     _notifyChangeHandler();
-    await setup();
+    await Future(setup);
 
     _lifecycle = BenchmarkRunnerLifecycle.validateDatabase;
     _notifyChangeHandler();
-    await validateDatabase();
+    await Future(validateDatabase);
     _resetMeasuredOperations();
 
     _lifecycle = BenchmarkRunnerLifecycle.warmUp;
     _notifyChangeHandler();
     while (!_warmUpDuration.isDone(this)) {
-      await executeOperations();
+      await Future(executeOperations);
       _progress = _warmUpDuration.progress(this);
       _notifyChangeHandler();
     }
@@ -763,14 +763,14 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
     _progress = 0;
     _notifyChangeHandler();
     while (!_runDuration.isDone(this)) {
-      await executeOperations();
+      await Future(executeOperations);
       _progress = _runDuration.progress(this);
       _notifyChangeHandler();
     }
 
     _lifecycle = BenchmarkRunnerLifecycle.teardown;
     _notifyChangeHandler();
-    await teardown();
+    await Future(teardown);
 
     stopwatch.stop();
 
