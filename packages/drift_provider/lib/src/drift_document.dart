@@ -217,6 +217,9 @@ class DriftFriend with BenchmarkFriend implements Insertable<DriftFriend> {
 class DriftBenchmarkDatabase extends _$DriftBenchmarkDatabase {
   DriftBenchmarkDatabase(QueryExecutor queryExecutor) : super(queryExecutor);
 
+  DriftBenchmarkDatabase.connect(DatabaseConnection connection)
+      : super.connect(connection);
+
   @override
   int get schemaVersion => 1;
 }

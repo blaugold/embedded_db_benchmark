@@ -869,6 +869,7 @@ class $DriftFriendsTable extends DriftFriends
 abstract class _$DriftBenchmarkDatabase extends GeneratedDatabase {
   _$DriftBenchmarkDatabase(QueryExecutor e)
       : super(SqlTypeSystem.defaultInstance, e);
+  _$DriftBenchmarkDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $DriftDocsTable driftDocs = $DriftDocsTable(this);
   late final $DriftNamesTable driftNames = $DriftNamesTable(this);
   late final $DriftFriendsTable driftFriends = $DriftFriendsTable(this);

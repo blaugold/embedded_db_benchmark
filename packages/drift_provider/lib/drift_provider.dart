@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:benchmark/benchmark.dart';
 import 'package:drift/drift.dart';
+import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 
@@ -25,26 +27,54 @@ class DriftProvider extends DatabaseProvider<int, DriftDoc> {
     String directory,
     ParameterArguments arguments,
   ) async {
-    final dbFile = File(p.join(directory, 'db.sqlite'));
-    final queryExecutor = NativeDatabase(
-      dbFile,
-      // logStatements: true,
-    );
-    final driftDb = DriftBenchmarkDatabase(queryExecutor);
-    return _DriftDatabase(driftDb);
+    final dbFile = p.join(directory, 'db.sqlite');
+    final driftIsolate = await _createDriftIsolate(dbFile);
+    final connection = await driftIsolate.connect();
+    final driftDb = DriftBenchmarkDatabase.connect(connection);
+    return _DriftDatabase(driftDb, driftIsolate);
   }
 }
 
+Future<DriftIsolate> _createDriftIsolate(String path) async {
+  final receivePort = ReceivePort();
+
+  await Isolate.spawn(
+    _startBackground,
+    _IsolateStartRequest(receivePort.sendPort, path),
+  );
+
+  return await receivePort.first as DriftIsolate;
+}
+
+void _startBackground(_IsolateStartRequest request) {
+  final executor = NativeDatabase(File(request.targetPath));
+  final driftIsolate = DriftIsolate.inCurrent(
+    () => DatabaseConnection.fromExecutor(executor),
+  );
+  request.sendDriftIsolate.send(driftIsolate);
+}
+
+class _IsolateStartRequest {
+  final SendPort sendDriftIsolate;
+  final String targetPath;
+
+  _IsolateStartRequest(this.sendDriftIsolate, this.targetPath);
+}
+
 class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
-  _DriftDatabase(this.db);
+  _DriftDatabase(this.db, this.isolate);
 
   final DriftBenchmarkDatabase db;
+  final DriftIsolate isolate;
 
   @override
   DriftDoc createBenchmarkDocImpl(BenchmarkDoc<int> doc) => doc.toDriftDoc();
 
   @override
-  FutureOr<void> close() => db.close();
+  FutureOr<void> close() async {
+    await db.close();
+    await isolate.shutdownAll();
+  }
 
   @override
   FutureOr<void> clear() => db.transaction(() => Future.wait([
