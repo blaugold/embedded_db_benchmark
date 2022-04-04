@@ -10,7 +10,7 @@ class DeleteDocumentBenchmark extends Benchmark {
   const DeleteDocumentBenchmark();
 
   @override
-  String get name => 'DeleteDocument';
+  String get name => 'Delete Document';
 
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>
