@@ -27,29 +27,39 @@ class DriftProvider extends DatabaseProvider<int, DriftDoc> {
     String directory,
     ParameterArguments arguments,
   ) async {
-    final dbFile = p.join(directory, 'db.sqlite');
-    final driftIsolate = await _createDriftIsolate(dbFile);
-    final connection = await driftIsolate.connect();
-    final driftDb = DriftBenchmarkDatabase.connect(connection);
-    return _DriftDatabase(driftDb, driftIsolate);
+    final path = p.join(directory, 'db.sqlite');
+    return _createDB(path, backgroundIsolate: true);
   }
 }
 
-Future<DriftIsolate> _createDriftIsolate(String path) async {
-  final receivePort = ReceivePort();
+Future<_DriftDatabase> _createDB(
+  String path, {
+  required bool backgroundIsolate,
+}) async {
+  DriftBenchmarkDatabase db;
+  Isolate? isolate;
+  DriftIsolate? driftIsolate;
 
-  await Isolate.spawn(
-    _startBackground,
-    _IsolateStartRequest(receivePort.sendPort, path),
-  );
+  if (backgroundIsolate) {
+    final receivePort = ReceivePort();
+    isolate = await Isolate.spawn(
+      _startBackground,
+      _IsolateStartRequest(receivePort.sendPort, path),
+    );
+    driftIsolate = await receivePort.first as DriftIsolate;
+    db = DriftBenchmarkDatabase.connect(await driftIsolate.connect());
+  } else {
+    db = DriftBenchmarkDatabase(NativeDatabase(File(path)));
+  }
 
-  return await receivePort.first as DriftIsolate;
+  return _DriftDatabase(db, driftIsolate: driftIsolate, isolate: isolate);
 }
 
 void _startBackground(_IsolateStartRequest request) {
   final executor = NativeDatabase(File(request.targetPath));
   final driftIsolate = DriftIsolate.inCurrent(
     () => DatabaseConnection.fromExecutor(executor),
+    killIsolateWhenDone: true,
   );
   request.sendDriftIsolate.send(driftIsolate);
 }
@@ -62,10 +72,12 @@ class _IsolateStartRequest {
 }
 
 class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
-  _DriftDatabase(this.db, this.isolate);
+  _DriftDatabase(this.db, {this.driftIsolate, this.isolate});
 
   final DriftBenchmarkDatabase db;
-  final DriftIsolate isolate;
+  final DriftIsolate? driftIsolate;
+  // TODO: Remove isolate field when `DriftIsolate.shutdownAll` is fixed.
+  final Isolate? isolate;
 
   @override
   DriftDoc createBenchmarkDocImpl(BenchmarkDoc<int> doc) => doc.toDriftDoc();
@@ -73,7 +85,8 @@ class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
   @override
   FutureOr<void> close() async {
     await db.close();
-    await isolate.shutdownAll();
+    // await driftIsolate?.shutdownAll();
+    isolate?.kill();
   }
 
   @override
