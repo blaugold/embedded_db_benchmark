@@ -603,7 +603,8 @@ enum BenchmarkRunnerLifecycle {
   created,
   setup,
   validateDatabase,
-  executeOperations,
+  warmUp,
+  run,
   teardown,
   done,
 }
@@ -617,7 +618,8 @@ typedef _OnBenchmarkRunnerChange = void Function(BenchmarkRunner runner);
 abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   late final DatabaseProvider<ID, T> _databaseProvider;
   late final ParameterArguments _arguments;
-  late final BenchmarkDuration _duration;
+  late final BenchmarkDuration _warmUpDuration;
+  late final BenchmarkDuration _runDuration;
   late final Directory _tempDirectory;
   late final _OnBenchmarkRunnerChange? _onChange;
 
@@ -639,7 +641,10 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   /// The maximal number of operations that should be executed the next time
   /// this runner executes measured operations.
   // TODO: Make benchmarks actually take maxAdditionalOperations into account.
-  int? get maxAdditionalOperations => _duration.maxAdditionalOperations(this);
+  int? get maxAdditionalOperations =>
+      _lifecycle == BenchmarkRunnerLifecycle.warmUp
+          ? _warmUpDuration.maxAdditionalOperations(this)
+          : _runDuration.maxAdditionalOperations(this);
 
   /// The total time it took to execute all [executedOperations].
   int get executionTimeInMicroseconds => _stopwatch.elapsedMicroseconds;
@@ -719,14 +724,16 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   Future<BenchmarkResult> _run(
     DatabaseProvider<ID, T> databaseProvider,
     ParameterArguments arguments,
-    BenchmarkDuration duration,
+    BenchmarkDuration warmUpDuration,
+    BenchmarkDuration runDuration,
     _OnBenchmarkRunnerChange? onChange,
     Logger logger,
   ) async {
     assert(_executedOperations == 0);
     assert(_stopwatch.elapsedTicks == 0);
 
-    _duration = duration;
+    _warmUpDuration = warmUpDuration;
+    _runDuration = runDuration;
     _arguments = arguments;
     _databaseProvider = databaseProvider;
     _onChange = onChange;
@@ -736,24 +743,34 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
     _lifecycle = BenchmarkRunnerLifecycle.setup;
     _notifyChangeHandler();
-    await setup();
+    await Future(setup);
 
     _lifecycle = BenchmarkRunnerLifecycle.validateDatabase;
     _notifyChangeHandler();
-    await validateDatabase();
+    await Future(validateDatabase);
     _resetMeasuredOperations();
 
-    _lifecycle = BenchmarkRunnerLifecycle.executeOperations;
+    _lifecycle = BenchmarkRunnerLifecycle.warmUp;
     _notifyChangeHandler();
-    while (!_duration.isDone(this)) {
-      await executeOperations();
-      _progress = _duration.progress(this);
+    while (!_warmUpDuration.isDone(this)) {
+      await Future(executeOperations);
+      _progress = _warmUpDuration.progress(this);
+      _notifyChangeHandler();
+    }
+    _resetMeasuredOperations();
+
+    _lifecycle = BenchmarkRunnerLifecycle.run;
+    _progress = 0;
+    _notifyChangeHandler();
+    while (!_runDuration.isDone(this)) {
+      await Future(executeOperations);
+      _progress = _runDuration.progress(this);
       _notifyChangeHandler();
     }
 
     _lifecycle = BenchmarkRunnerLifecycle.teardown;
     _notifyChangeHandler();
-    await teardown();
+    await Future(teardown);
 
     stopwatch.stop();
 
@@ -890,34 +907,26 @@ class BenchmarkPlanRunner {
 
   Future<BenchmarkResult> _runBenchmark(
     BenchmarkRunConfiguration configuration,
-  ) async {
-    Future<BenchmarkResult> _runBenchmarkRunner(
-      BenchmarkDuration duration,
-      bool isWarmUp,
-    ) =>
-        configuration.databaseProvider.runWith(
-          <ID extends Object, T extends BenchmarkDoc<ID>>(provider) {
-            final runner = configuration.benchmark
-                .createRunner<ID, T>(configuration.arguments);
+  ) =>
+      configuration.databaseProvider.runWith(
+        <ID extends Object, T extends BenchmarkDoc<ID>>(provider) {
+          final runner = configuration.benchmark
+              .createRunner<ID, T>(configuration.arguments);
 
-            return runner._run(
-              provider,
-              configuration.arguments,
-              duration,
-              (runner) => _observer?.didChangeBenchmarkRunner(
-                this,
-                configuration,
-                runner,
-                isWarmUp,
-              ),
-              _logger,
-            );
-          },
-        );
-
-    await _runBenchmarkRunner(plan.warmUpDuration, true);
-    return _runBenchmarkRunner(plan.benchmarkDuration, false);
-  }
+          return runner._run(
+            provider,
+            configuration.arguments,
+            plan.warmUpDuration,
+            plan.benchmarkDuration,
+            (runner) => _observer?.didChangeBenchmarkRunner(
+              this,
+              configuration,
+              runner,
+            ),
+            _logger,
+          );
+        },
+      );
 }
 
 abstract class BenchmarkPlanObserver {
@@ -937,7 +946,6 @@ abstract class BenchmarkPlanObserver {
     BenchmarkPlanRunner runner,
     BenchmarkRunConfiguration configuration,
     BenchmarkRunner benchmarkRunner,
-    bool isWarmUp,
   ) {}
 
   void didFinishRun(
@@ -987,10 +995,9 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
     BenchmarkPlanRunner runner,
     BenchmarkRunConfiguration configuration,
     BenchmarkRunner benchmarkRunner,
-    bool isWarmUp,
   ) {
     if (_hasTerminal) {
-      _reportProgressOnConsole(benchmarkRunner, isWarmUp);
+      _reportProgressOnConsole(benchmarkRunner);
     }
   }
 
@@ -1029,8 +1036,9 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
     ].join(' - '));
   }
 
-  void _reportProgressOnConsole(BenchmarkRunner runner, bool isWarmUp) {
-    if (runner.lifecycle != BenchmarkRunnerLifecycle.executeOperations) {
+  void _reportProgressOnConsole(BenchmarkRunner runner) {
+    if (runner.lifecycle != BenchmarkRunnerLifecycle.warmUp &&
+        runner.lifecycle != BenchmarkRunnerLifecycle.run) {
       _lastProgress = null;
       return;
     }
@@ -1047,6 +1055,7 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
       stdout.write('\u001B[A\u001B[K\r');
     }
 
+    final isWarmUp = runner.lifecycle == BenchmarkRunnerLifecycle.warmUp;
     stdout.write(isWarmUp ? 'Warm-up' : 'Benchmark');
     stdout.write('${newProgress.toInt()}%'.padLeft(5));
     stdout.write('\n');

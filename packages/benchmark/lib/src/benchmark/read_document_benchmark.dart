@@ -58,13 +58,6 @@ class _ReadDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
 
     List<BenchmarkDoc<ID>> documents =
         createBenchmarkDocs(_documentsInDatabase);
-    if (_batchSize > documents.length) {
-      throw Exception(
-        'Batch size is larger than the number of documents inserted during '
-        'setup. Increase the _documentsInDatabase constant or decrees the '
-        'batch size.',
-      );
-    }
 
     // Insert documents.
     _documents = documents = await database.createDocuments(
