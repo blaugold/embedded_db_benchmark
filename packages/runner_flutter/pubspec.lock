@@ -119,14 +119,14 @@ packages:
       name: cbl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.5"
+    version: "1.1.1"
   cbl_ffi:
     dependency: transitive
     description:
       name: cbl_ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.1"
+    version: "0.7.2+1"
   cbl_flutter:
     dependency: "direct main"
     description:
