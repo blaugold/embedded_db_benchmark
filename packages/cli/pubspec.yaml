@@ -9,7 +9,7 @@ dependencies:
   args: ^2.3.0
   benchmark:
     path: ../benchmark
-  cbl: ^1.0.5
+  cbl: ^1.1.1
   cbl_dart: ^1.1.0
   cbl_provider:
     path: ../cbl_provider
