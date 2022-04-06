@@ -10,7 +10,7 @@ class CreateDocumentBenchmark extends Benchmark {
   const CreateDocumentBenchmark();
 
   @override
-  String get name => 'CreateDocument';
+  String get name => 'Create Document';
 
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>

@@ -10,7 +10,7 @@ class UpdateDocumentBenchmark extends Benchmark {
   const UpdateDocumentBenchmark();
 
   @override
-  String get name => 'UpdateDocument';
+  String get name => 'Update Document';
 
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>

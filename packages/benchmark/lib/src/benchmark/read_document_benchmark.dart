@@ -16,7 +16,7 @@ class ReadDocumentBenchmark extends Benchmark {
   const ReadDocumentBenchmark();
 
   @override
-  String get name => 'ReadDocument';
+  String get name => 'Read Document';
 
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>
