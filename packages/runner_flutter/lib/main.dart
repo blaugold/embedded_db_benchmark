@@ -36,9 +36,7 @@ Future<Map<String, String>> main() async {
       // Isar is broken on iOS currently.
       // https://github.com/isar/isar/issues/225
       if (!Platform.isIOS) IsarProvider(),
-      // Requires Application Group in sandboxed apps, which macOS Flutter apps
-      // are.
-      if (!Platform.isMacOS) ObjectBoxProvider(),
+      ObjectBoxProvider(),
     ],
   );
 
