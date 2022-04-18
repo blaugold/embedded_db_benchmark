@@ -55,7 +55,7 @@ class _DatabasesCharts extends StatelessWidget {
     RunController runController,
   ) sync* {
     for (final benchmark in settingsController.benchmarks) {
-      for (final batchSizeValue in settingsController.batchSizes) {
+      for (final batchSizeValue in settingsController.enabledBatchSize) {
         yield _DatabaseChart(
           benchmark: benchmark.name,
           arguments: ParameterArguments((builder) {
@@ -185,7 +185,7 @@ class _BatchSizeCharts extends StatelessWidget {
           databaseProvider: databaseProvider,
           batchSizes: settingsController.enabledBatchSize,
           operationsPerSecond: {
-            for (final batchSizeValue in settingsController.batchSizes)
+            for (final batchSizeValue in settingsController.enabledBatchSize)
               batchSizeValue: {
                 for (final execution in Execution.values)
                   execution: _operationsPerSecond(
