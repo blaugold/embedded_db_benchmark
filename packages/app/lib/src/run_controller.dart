@@ -239,12 +239,5 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
     for (final configuration in plan.runConfigurations) {
       _resultsByConfiguration[configuration] ??= <Object>[];
     }
-
-    // Remove results for configurations that are no longer in the plan.
-    for (final configuration in _resultsByConfiguration.keys.toList()) {
-      if (!plan.runConfigurations.contains(configuration)) {
-        _resultsByConfiguration.remove(configuration);
-      }
-    }
   }
 }
