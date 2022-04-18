@@ -55,32 +55,27 @@ class _DatabasesCharts extends StatelessWidget {
     RunController runController,
   ) sync* {
     for (final benchmark in settingsController.benchmarks) {
-      for (final executionValue in settingsController.executions) {
-        for (final batchSizeValue in settingsController.batchSizes) {
-          final runConfigurations =
-              runController.runnableRunConfigurations.where((runConfiguration) {
-            final arguments = runConfiguration.arguments;
-            return runConfiguration.benchmark == benchmark &&
-                arguments.get(execution) == executionValue &&
-                arguments.get(batchSize) == batchSizeValue;
-          }).toList();
-
-          if (runConfigurations.isEmpty) {
-            continue;
-          }
-
-          yield _DatabaseChart(
-            benchmark: benchmark.name,
-            arguments: runConfigurations.first.arguments,
-            databaseProviders: settingsController.databaseProviders,
-            operationsPerSecond: {
-              for (final runConfiguration in runConfigurations)
-                runConfiguration.databaseProvider:
-                    _benchmarkResult(runController, runConfiguration)
-                        ?.operationsPerSecond,
-            },
-          );
-        }
+      for (final batchSizeValue in settingsController.batchSizes) {
+        yield _DatabaseChart(
+          benchmark: benchmark.name,
+          arguments: ParameterArguments((builder) {
+            builder.add(batchSize, batchSizeValue);
+          }),
+          databaseProviders: settingsController.databaseProviders,
+          operationsPerSecond: {
+            for (final databaseProvider in settingsController.databaseProviders)
+              databaseProvider: {
+                for (final execution in Execution.values)
+                  execution: _operationsPerSecond(
+                    runController,
+                    benchmark,
+                    databaseProvider,
+                    execution,
+                    batchSizeValue,
+                  ),
+              },
+          },
+        );
       }
     }
   }
@@ -101,7 +96,7 @@ class _DatabaseChart extends StatelessWidget {
 
   final List<DatabaseProvider> databaseProviders;
 
-  final Map<DatabaseProvider, double?> operationsPerSecond;
+  final Map<DatabaseProvider, Map<Execution, double?>> operationsPerSecond;
 
   @override
   Widget build(BuildContext context) {
@@ -139,13 +134,10 @@ class _DatabaseChart extends StatelessWidget {
                   return BarChartGroupData(
                     x: index,
                     barRods: [
-                      BarChartRodData(
-                        toY: operationsPerSecond[databaseProvider] ?? 0,
-                        width: 30,
-                        color: databaseProviderColors[databaseProvider]!,
-                        borderRadius: BorderRadius.zero,
-                      ),
+                      _buildBarChardRod(databaseProvider, Execution.sync),
+                      _buildBarChardRod(databaseProvider, Execution.async),
                     ],
+                    barsSpace: 0,
                   );
                 }),
                 barTouchData: _barTouchData(),
@@ -156,6 +148,17 @@ class _DatabaseChart extends StatelessWidget {
       ),
     );
   }
+
+  BarChartRodData _buildBarChardRod(
+    DatabaseProvider databaseProvider,
+    Execution execution,
+  ) =>
+      BarChartRodData(
+        toY: operationsPerSecond[databaseProvider]![execution] ?? 0,
+        width: 10,
+        color: _databaseProviderColor(databaseProvider, execution),
+        borderRadius: BorderRadius.zero,
+      );
 }
 
 class _BatchSizeCharts extends StatelessWidget {
@@ -177,32 +180,24 @@ class _BatchSizeCharts extends StatelessWidget {
   ) sync* {
     for (final databaseProvider in settingsController.databaseProviders) {
       for (final benchmark in settingsController.benchmarks) {
-        for (final executionValue in settingsController.executions) {
-          final runConfigurations =
-              runController.runnableRunConfigurations.where((runConfiguration) {
-            final arguments = runConfiguration.arguments;
-            return runConfiguration.benchmark == benchmark &&
-                runConfiguration.databaseProvider == databaseProvider &&
-                arguments.get(execution) == executionValue;
-          }).toList();
-
-          if (runConfigurations.isEmpty) {
-            continue;
-          }
-
-          yield _BatchSizeChart(
-            benchmark: benchmark.name,
-            execution: executionValue,
-            databaseProvider: databaseProvider,
-            batchSizes: settingsController.enabledBatchSize,
-            operationsPerSecond: {
-              for (final runConfiguration in runConfigurations)
-                runConfiguration.arguments.get(batchSize)!:
-                    _benchmarkResult(runController, runConfiguration)
-                        ?.operationsPerSecond,
-            },
-          );
-        }
+        yield _BatchSizeChart(
+          benchmark: benchmark.name,
+          databaseProvider: databaseProvider,
+          batchSizes: settingsController.enabledBatchSize,
+          operationsPerSecond: {
+            for (final batchSizeValue in settingsController.batchSizes)
+              batchSizeValue: {
+                for (final execution in Execution.values)
+                  execution: _operationsPerSecond(
+                    runController,
+                    benchmark,
+                    databaseProvider,
+                    execution,
+                    batchSizeValue,
+                  ),
+              },
+          },
+        );
       }
     }
   }
@@ -212,7 +207,6 @@ class _BatchSizeChart extends StatelessWidget {
   const _BatchSizeChart({
     Key? key,
     required this.benchmark,
-    required this.execution,
     required this.databaseProvider,
     required this.batchSizes,
     required this.operationsPerSecond,
@@ -220,13 +214,11 @@ class _BatchSizeChart extends StatelessWidget {
 
   final String benchmark;
 
-  final Execution execution;
-
   final DatabaseProvider databaseProvider;
 
   final List<int> batchSizes;
 
-  final Map<int, double?> operationsPerSecond;
+  final Map<int, Map<Execution, double?>> operationsPerSecond;
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +231,6 @@ class _BatchSizeChart extends StatelessWidget {
             '${databaseProvider.name} - $benchmark',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          Text.rich(executionTextSpan(execution)),
           const SizedBox(height: 16),
           Expanded(
             child: BarChart(
@@ -264,13 +255,10 @@ class _BatchSizeChart extends StatelessWidget {
                     BarChartGroupData(
                       x: batchSize,
                       barRods: [
-                        BarChartRodData(
-                          toY: operationsPerSecond[batchSize] ?? 0,
-                          width: 30,
-                          color: databaseProviderColors[databaseProvider]!,
-                          borderRadius: BorderRadius.zero,
-                        ),
+                        _buildBarChardRod(batchSize, Execution.sync),
+                        _buildBarChardRod(batchSize, Execution.async),
                       ],
+                      barsSpace: 0,
                     )
                 ],
                 barTouchData: _barTouchData(),
@@ -281,6 +269,17 @@ class _BatchSizeChart extends StatelessWidget {
       ),
     );
   }
+
+  BarChartRodData _buildBarChardRod(
+    int batchSize,
+    Execution execution,
+  ) =>
+      BarChartRodData(
+        toY: operationsPerSecond[batchSize]![execution] ?? 0,
+        width: 10,
+        color: _databaseProviderColor(databaseProvider, execution),
+        borderRadius: BorderRadius.zero,
+      );
 }
 
 class _ChartsGrid extends StatelessWidget {
@@ -294,12 +293,27 @@ class _ChartsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: GridView.extent(
-        maxCrossAxisExtent: 342,
-        padding: const EdgeInsets.all(16),
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        children: children,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                Text('Left bar: sync execution; Right bar: async execution'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.extent(
+              maxCrossAxisExtent: 342,
+              padding: const EdgeInsets.all(16),
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              children: children,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -419,4 +433,44 @@ BenchmarkResult? _benchmarkResult(
     return null;
   }
   return lastResult;
+}
+
+Color _databaseProviderColor(
+  DatabaseProvider databaseProvider,
+  Execution execution,
+) {
+  final color = databaseProviderColors[databaseProvider]!;
+  switch (execution) {
+    case Execution.sync:
+      return color;
+    case Execution.async:
+      // return color;
+
+      final hslColor = HSLColor.fromColor(color);
+      return hslColor.withLightness(hslColor.lightness + .1).toColor();
+  }
+}
+
+double? _operationsPerSecond(
+  RunController runController,
+  Benchmark benchmark,
+  DatabaseProvider databaseProvider,
+  Execution executionValue,
+  int batchSizeValue,
+) {
+  final runConfiguration =
+      runController.runnableRunConfigurations.where((runConfiguration) {
+    final arguments = runConfiguration.arguments;
+    return runConfiguration.benchmark == benchmark &&
+        runConfiguration.databaseProvider == databaseProvider &&
+        arguments.get(execution) == executionValue &&
+        arguments.get(batchSize) == batchSizeValue;
+  }).firstOrNull;
+
+  if (runConfiguration != null) {
+    return _benchmarkResult(runController, runConfiguration)
+        ?.operationsPerSecond;
+  }
+
+  return null;
 }

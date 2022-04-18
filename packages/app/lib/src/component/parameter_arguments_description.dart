@@ -14,11 +14,16 @@ class ParameterArgumentsDescription extends StatelessWidget {
     return Text.rich(
       TextSpan(
         children: [
-          executionTextSpan(arguments.get(execution)!),
-          const TextSpan(text: ', batch size: '),
-          TextSpan(
-            text: batchSize.describe(arguments.get(batchSize)!),
-          )
+          if (arguments.contains(execution)) ...[
+            executionTextSpan(arguments.get(execution)!),
+            const TextSpan(text: ', '),
+          ],
+          if (arguments.contains(batchSize)) ...[
+            const TextSpan(text: 'batch size: '),
+            TextSpan(
+              text: batchSize.describe(arguments.get(batchSize)!),
+            )
+          ]
         ],
       ),
     );
