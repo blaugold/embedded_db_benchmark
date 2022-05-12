@@ -119,7 +119,7 @@ class _RunConfigurationViewState extends State<_RunConfigurationView> {
     if (isRunning != _isRunning) {
       _isRunning = isRunning;
       if (_isRunning) {
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           Scrollable.ensureVisible(
             context,
             duration: const Duration(milliseconds: 200),

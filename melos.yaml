@@ -6,6 +6,10 @@ packages:
 ide:
   intellij: false
 
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
 scripts:
   format: dart format .
   format:check: dart format --set-exit-if-changed .
