@@ -9,6 +9,3 @@ dependencies:
   benchmark:
     path: ../benchmark
   realm_dart: ^0.2.0+alpha
-
-dev_dependencies:
-  flutter_lints: ^1.0.4

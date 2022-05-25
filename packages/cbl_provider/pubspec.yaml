@@ -10,6 +10,3 @@ dependencies:
     path: ../benchmark
   cbl: ^1.1.1
   path: ^1.8.0
-
-dev_dependencies:
-  flutter_lints: ^1.0.4
