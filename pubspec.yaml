@@ -1,0 +1,7 @@
+name: embedded_db_benchmark
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+
+dev_dependencies:
+  flutter_lints: ^2.0.1

@@ -1,0 +1,47 @@
+name: app
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.17.0 <3.0.0'
+
+dependencies:
+  benchmark:
+    path: ../benchmark
+  cbl: ^1.1.1
+  cbl_flutter: ^1.0.0+2
+  cbl_flutter_ce: ^1.1.0
+  cbl_provider:
+    path: ../cbl_provider
+  collection: ^1.15.0
+  cupertino_icons: ^1.0.4
+  drift_provider:
+    path: ../drift_provider
+  fl_chart: ^0.50.1
+  flutter:
+    sdk: flutter
+  hive_provider:
+    path: ../hive_provider
+  isar_flutter_libs: ^2.2.1
+  isar_provider:
+    path: ../isar_provider
+  logging: ^1.0.2
+  objectbox_flutter_libs: ^1.4.1
+  objectbox_provider:
+    path: ../objectbox_provider
+  path_provider: ^2.0.9
+  provider: ^6.0.2
+  realm: ^0.2.0+alpha
+  realm_provider:
+    path: ../realm_provider
+  sqlite3_flutter_libs: ^0.5.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - packages/benchmark/src/fixture/documents.json

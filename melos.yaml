@@ -2,9 +2,14 @@ name: embedded_db_benchmark
 repository: https://github.com/blaugold/embedded_db_benchmark
 packages:
   - packages/**
+  - '*'
 
 ide:
   intellij: false
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
 
 scripts:
   format: dart format .
