@@ -8,8 +8,8 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  isar: ^2.2.1
+  isar: ^2.5.0
 
 dev_dependencies:
   build_runner: any
-  isar_generator: ^2.2.1
+  isar_generator: ^2.5.0

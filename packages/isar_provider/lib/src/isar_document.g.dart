@@ -6,20 +6,16 @@ part of 'isar_document.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetIsarDocCollection on Isar {
-  IsarCollection<IsarDoc> get isarDocs {
-    return getCollection('IsarDoc');
-  }
+  IsarCollection<IsarDoc> get isarDocs => getCollection();
 }
 
-final IsarDocSchema = CollectionSchema(
+const IsarDocSchema = CollectionSchema(
   name: 'IsarDoc',
   schema:
       '{"name":"IsarDoc","idName":"id","properties":[{"name":"about","type":"String"},{"name":"address","type":"String"},{"name":"age","type":"Long"},{"name":"balance","type":"String"},{"name":"company","type":"String"},{"name":"email","type":"String"},{"name":"eyeColor","type":"String"},{"name":"favoriteFruit","type":"String"},{"name":"greeting","type":"String"},{"name":"guid","type":"String"},{"name":"index","type":"Long"},{"name":"isActive","type":"Bool"},{"name":"latitude","type":"String"},{"name":"longitude","type":"String"},{"name":"phone","type":"String"},{"name":"picture","type":"String"},{"name":"range","type":"LongList"},{"name":"registered","type":"String"},{"name":"tags","type":"StringList"}],"indexes":[],"links":[{"name":"isarFriends","target":"IsarFriend"},{"name":"isarName","target":"IsarName"}]}',
-  nativeAdapter: const _IsarDocNativeAdapter(),
-  webAdapter: const _IsarDocWebAdapter(),
   idName: 'id',
   propertyIds: {
     'about': 0,
@@ -44,418 +40,378 @@ final IsarDocSchema = CollectionSchema(
   },
   listProperties: {'range', 'tags'},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {'isarFriends': 0, 'isarName': 1},
-  backlinkIds: {},
-  linkedCollections: ['IsarFriend', 'IsarName'],
-  getId: (obj) {
-    if (obj.id == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.id;
-    }
-  },
-  setId: (obj, id) => obj.id = id,
-  getLinks: (obj) => [obj.isarFriends, obj.isarName],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _isarDocGetId,
+  setId: _isarDocSetId,
+  getLinks: _isarDocGetLinks,
+  attachLinks: _isarDocAttachLinks,
+  serializeNative: _isarDocSerializeNative,
+  deserializeNative: _isarDocDeserializeNative,
+  deserializePropNative: _isarDocDeserializePropNative,
+  serializeWeb: _isarDocSerializeWeb,
+  deserializeWeb: _isarDocDeserializeWeb,
+  deserializePropWeb: _isarDocDeserializePropWeb,
+  version: 3,
 );
 
-class _IsarDocWebAdapter extends IsarWebTypeAdapter<IsarDoc> {
-  const _IsarDocWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<IsarDoc> collection, IsarDoc object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'about', object.about);
-    IsarNative.jsObjectSet(jsObj, 'address', object.address);
-    IsarNative.jsObjectSet(jsObj, 'age', object.age);
-    IsarNative.jsObjectSet(jsObj, 'balance', object.balance);
-    IsarNative.jsObjectSet(jsObj, 'company', object.company);
-    IsarNative.jsObjectSet(jsObj, 'email', object.email);
-    IsarNative.jsObjectSet(jsObj, 'eyeColor', object.eyeColor);
-    IsarNative.jsObjectSet(jsObj, 'favoriteFruit', object.favoriteFruit);
-    IsarNative.jsObjectSet(jsObj, 'greeting', object.greeting);
-    IsarNative.jsObjectSet(jsObj, 'guid', object.guid);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'index', object.index);
-    IsarNative.jsObjectSet(jsObj, 'isActive', object.isActive);
-    IsarNative.jsObjectSet(jsObj, 'latitude', object.latitude);
-    IsarNative.jsObjectSet(jsObj, 'longitude', object.longitude);
-    IsarNative.jsObjectSet(jsObj, 'phone', object.phone);
-    IsarNative.jsObjectSet(jsObj, 'picture', object.picture);
-    IsarNative.jsObjectSet(jsObj, 'range', object.range);
-    IsarNative.jsObjectSet(jsObj, 'registered', object.registered);
-    IsarNative.jsObjectSet(jsObj, 'tags', object.tags);
-    return jsObj;
-  }
-
-  @override
-  IsarDoc deserialize(IsarCollection<IsarDoc> collection, dynamic jsObj) {
-    final object = IsarDoc();
-    object.about = IsarNative.jsObjectGet(jsObj, 'about') ?? '';
-    object.address = IsarNative.jsObjectGet(jsObj, 'address') ?? '';
-    object.age =
-        IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity;
-    object.balance = IsarNative.jsObjectGet(jsObj, 'balance') ?? '';
-    object.company = IsarNative.jsObjectGet(jsObj, 'company') ?? '';
-    object.email = IsarNative.jsObjectGet(jsObj, 'email') ?? '';
-    object.eyeColor = IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '';
-    object.favoriteFruit = IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '';
-    object.greeting = IsarNative.jsObjectGet(jsObj, 'greeting') ?? '';
-    object.guid = IsarNative.jsObjectGet(jsObj, 'guid') ?? '';
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.index =
-        IsarNative.jsObjectGet(jsObj, 'index') ?? double.negativeInfinity;
-    object.isActive = IsarNative.jsObjectGet(jsObj, 'isActive') ?? false;
-    object.latitude = IsarNative.jsObjectGet(jsObj, 'latitude') ?? '';
-    object.longitude = IsarNative.jsObjectGet(jsObj, 'longitude') ?? '';
-    object.phone = IsarNative.jsObjectGet(jsObj, 'phone') ?? '';
-    object.picture = IsarNative.jsObjectGet(jsObj, 'picture') ?? '';
-    object.range = (IsarNative.jsObjectGet(jsObj, 'range') as List?)
-            ?.map((e) => e ?? double.negativeInfinity)
-            .toList()
-            .cast<int>() ??
-        [];
-    object.registered = IsarNative.jsObjectGet(jsObj, 'registered') ?? '';
-    object.tags = (IsarNative.jsObjectGet(jsObj, 'tags') as List?)
-            ?.map((e) => e ?? '')
-            .toList()
-            .cast<String>() ??
-        [];
-    attachLinks(collection.isar,
-        IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'about':
-        return (IsarNative.jsObjectGet(jsObj, 'about') ?? '') as P;
-      case 'address':
-        return (IsarNative.jsObjectGet(jsObj, 'address') ?? '') as P;
-      case 'age':
-        return (IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity)
-            as P;
-      case 'balance':
-        return (IsarNative.jsObjectGet(jsObj, 'balance') ?? '') as P;
-      case 'company':
-        return (IsarNative.jsObjectGet(jsObj, 'company') ?? '') as P;
-      case 'email':
-        return (IsarNative.jsObjectGet(jsObj, 'email') ?? '') as P;
-      case 'eyeColor':
-        return (IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '') as P;
-      case 'favoriteFruit':
-        return (IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '') as P;
-      case 'greeting':
-        return (IsarNative.jsObjectGet(jsObj, 'greeting') ?? '') as P;
-      case 'guid':
-        return (IsarNative.jsObjectGet(jsObj, 'guid') ?? '') as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'index':
-        return (IsarNative.jsObjectGet(jsObj, 'index') ??
-            double.negativeInfinity) as P;
-      case 'isActive':
-        return (IsarNative.jsObjectGet(jsObj, 'isActive') ?? false) as P;
-      case 'latitude':
-        return (IsarNative.jsObjectGet(jsObj, 'latitude') ?? '') as P;
-      case 'longitude':
-        return (IsarNative.jsObjectGet(jsObj, 'longitude') ?? '') as P;
-      case 'phone':
-        return (IsarNative.jsObjectGet(jsObj, 'phone') ?? '') as P;
-      case 'picture':
-        return (IsarNative.jsObjectGet(jsObj, 'picture') ?? '') as P;
-      case 'range':
-        return ((IsarNative.jsObjectGet(jsObj, 'range') as List?)
-                ?.map((e) => e ?? double.negativeInfinity)
-                .toList()
-                .cast<int>() ??
-            []) as P;
-      case 'registered':
-        return (IsarNative.jsObjectGet(jsObj, 'registered') ?? '') as P;
-      case 'tags':
-        return ((IsarNative.jsObjectGet(jsObj, 'tags') as List?)
-                ?.map((e) => e ?? '')
-                .toList()
-                .cast<String>() ??
-            []) as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, IsarDoc object) {
-    object.isarFriends.attach(
-      id,
-      isar.isarDocs,
-      isar.getCollection<IsarFriend>('IsarFriend'),
-      'isarFriends',
-      false,
-    );
-    object.isarName.attach(
-      id,
-      isar.isarDocs,
-      isar.getCollection<IsarName>('IsarName'),
-      'isarName',
-      false,
-    );
+int? _isarDocGetId(IsarDoc object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
   }
 }
 
-class _IsarDocNativeAdapter extends IsarNativeTypeAdapter<IsarDoc> {
-  const _IsarDocNativeAdapter();
+void _isarDocSetId(IsarDoc object, int id) {
+  object.id = id;
+}
 
-  @override
-  void serialize(IsarCollection<IsarDoc> collection, IsarRawObject rawObj,
-      IsarDoc object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.about;
-    final _about = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_about.length) as int;
-    final value1 = object.address;
-    final _address = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_address.length) as int;
-    final value2 = object.age;
-    final _age = value2;
-    final value3 = object.balance;
-    final _balance = IsarBinaryWriter.utf8Encoder.convert(value3);
-    dynamicSize += (_balance.length) as int;
-    final value4 = object.company;
-    final _company = IsarBinaryWriter.utf8Encoder.convert(value4);
-    dynamicSize += (_company.length) as int;
-    final value5 = object.email;
-    final _email = IsarBinaryWriter.utf8Encoder.convert(value5);
-    dynamicSize += (_email.length) as int;
-    final value6 = object.eyeColor;
-    final _eyeColor = IsarBinaryWriter.utf8Encoder.convert(value6);
-    dynamicSize += (_eyeColor.length) as int;
-    final value7 = object.favoriteFruit;
-    final _favoriteFruit = IsarBinaryWriter.utf8Encoder.convert(value7);
-    dynamicSize += (_favoriteFruit.length) as int;
-    final value8 = object.greeting;
-    final _greeting = IsarBinaryWriter.utf8Encoder.convert(value8);
-    dynamicSize += (_greeting.length) as int;
-    final value9 = object.guid;
-    final _guid = IsarBinaryWriter.utf8Encoder.convert(value9);
-    dynamicSize += (_guid.length) as int;
-    final value10 = object.index;
-    final _index = value10;
-    final value11 = object.isActive;
-    final _isActive = value11;
-    final value12 = object.latitude;
-    final _latitude = IsarBinaryWriter.utf8Encoder.convert(value12);
-    dynamicSize += (_latitude.length) as int;
-    final value13 = object.longitude;
-    final _longitude = IsarBinaryWriter.utf8Encoder.convert(value13);
-    dynamicSize += (_longitude.length) as int;
-    final value14 = object.phone;
-    final _phone = IsarBinaryWriter.utf8Encoder.convert(value14);
-    dynamicSize += (_phone.length) as int;
-    final value15 = object.picture;
-    final _picture = IsarBinaryWriter.utf8Encoder.convert(value15);
-    dynamicSize += (_picture.length) as int;
-    final value16 = object.range;
-    dynamicSize += (value16.length) * 8;
-    final _range = value16;
-    final value17 = object.registered;
-    final _registered = IsarBinaryWriter.utf8Encoder.convert(value17);
-    dynamicSize += (_registered.length) as int;
-    final value18 = object.tags;
-    dynamicSize += (value18.length) * 8;
-    final bytesList18 = <IsarUint8List>[];
-    for (var str in value18) {
-      final bytes = IsarBinaryWriter.utf8Encoder.convert(str);
-      bytesList18.add(bytes);
-      dynamicSize += bytes.length as int;
-    }
-    final _tags = bytesList18;
-    final size = staticSize + dynamicSize;
+List<IsarLinkBase> _isarDocGetLinks(IsarDoc object) {
+  return [object.isarFriends, object.isarName];
+}
 
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _about);
-    writer.writeBytes(offsets[1], _address);
-    writer.writeLong(offsets[2], _age);
-    writer.writeBytes(offsets[3], _balance);
-    writer.writeBytes(offsets[4], _company);
-    writer.writeBytes(offsets[5], _email);
-    writer.writeBytes(offsets[6], _eyeColor);
-    writer.writeBytes(offsets[7], _favoriteFruit);
-    writer.writeBytes(offsets[8], _greeting);
-    writer.writeBytes(offsets[9], _guid);
-    writer.writeLong(offsets[10], _index);
-    writer.writeBool(offsets[11], _isActive);
-    writer.writeBytes(offsets[12], _latitude);
-    writer.writeBytes(offsets[13], _longitude);
-    writer.writeBytes(offsets[14], _phone);
-    writer.writeBytes(offsets[15], _picture);
-    writer.writeLongList(offsets[16], _range);
-    writer.writeBytes(offsets[17], _registered);
-    writer.writeStringList(offsets[18], _tags);
+void _isarDocSerializeNative(
+    IsarCollection<IsarDoc> collection,
+    IsarRawObject rawObj,
+    IsarDoc object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.about;
+  final _about = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_about.length) as int;
+  final value1 = object.address;
+  final _address = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_address.length) as int;
+  final value2 = object.age;
+  final _age = value2;
+  final value3 = object.balance;
+  final _balance = IsarBinaryWriter.utf8Encoder.convert(value3);
+  dynamicSize += (_balance.length) as int;
+  final value4 = object.company;
+  final _company = IsarBinaryWriter.utf8Encoder.convert(value4);
+  dynamicSize += (_company.length) as int;
+  final value5 = object.email;
+  final _email = IsarBinaryWriter.utf8Encoder.convert(value5);
+  dynamicSize += (_email.length) as int;
+  final value6 = object.eyeColor;
+  final _eyeColor = IsarBinaryWriter.utf8Encoder.convert(value6);
+  dynamicSize += (_eyeColor.length) as int;
+  final value7 = object.favoriteFruit;
+  final _favoriteFruit = IsarBinaryWriter.utf8Encoder.convert(value7);
+  dynamicSize += (_favoriteFruit.length) as int;
+  final value8 = object.greeting;
+  final _greeting = IsarBinaryWriter.utf8Encoder.convert(value8);
+  dynamicSize += (_greeting.length) as int;
+  final value9 = object.guid;
+  final _guid = IsarBinaryWriter.utf8Encoder.convert(value9);
+  dynamicSize += (_guid.length) as int;
+  final value10 = object.index;
+  final _index = value10;
+  final value11 = object.isActive;
+  final _isActive = value11;
+  final value12 = object.latitude;
+  final _latitude = IsarBinaryWriter.utf8Encoder.convert(value12);
+  dynamicSize += (_latitude.length) as int;
+  final value13 = object.longitude;
+  final _longitude = IsarBinaryWriter.utf8Encoder.convert(value13);
+  dynamicSize += (_longitude.length) as int;
+  final value14 = object.phone;
+  final _phone = IsarBinaryWriter.utf8Encoder.convert(value14);
+  dynamicSize += (_phone.length) as int;
+  final value15 = object.picture;
+  final _picture = IsarBinaryWriter.utf8Encoder.convert(value15);
+  dynamicSize += (_picture.length) as int;
+  final value16 = object.range;
+  dynamicSize += (value16.length) * 8;
+  final _range = value16;
+  final value17 = object.registered;
+  final _registered = IsarBinaryWriter.utf8Encoder.convert(value17);
+  dynamicSize += (_registered.length) as int;
+  final value18 = object.tags;
+  dynamicSize += (value18.length) * 8;
+  final bytesList18 = <IsarUint8List>[];
+  for (var str in value18) {
+    final bytes = IsarBinaryWriter.utf8Encoder.convert(str);
+    bytesList18.add(bytes);
+    dynamicSize += bytes.length as int;
   }
+  final _tags = bytesList18;
+  final size = staticSize + dynamicSize;
 
-  @override
-  IsarDoc deserialize(IsarCollection<IsarDoc> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = IsarDoc();
-    object.about = reader.readString(offsets[0]);
-    object.address = reader.readString(offsets[1]);
-    object.age = reader.readLong(offsets[2]);
-    object.balance = reader.readString(offsets[3]);
-    object.company = reader.readString(offsets[4]);
-    object.email = reader.readString(offsets[5]);
-    object.eyeColor = reader.readString(offsets[6]);
-    object.favoriteFruit = reader.readString(offsets[7]);
-    object.greeting = reader.readString(offsets[8]);
-    object.guid = reader.readString(offsets[9]);
-    object.id = id;
-    object.index = reader.readLong(offsets[10]);
-    object.isActive = reader.readBool(offsets[11]);
-    object.latitude = reader.readString(offsets[12]);
-    object.longitude = reader.readString(offsets[13]);
-    object.phone = reader.readString(offsets[14]);
-    object.picture = reader.readString(offsets[15]);
-    object.range = reader.readLongList(offsets[16]) ?? [];
-    object.registered = reader.readString(offsets[17]);
-    object.tags = reader.readStringList(offsets[18]) ?? [];
-    attachLinks(collection.isar, id, object);
-    return object;
-  }
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _about);
+  writer.writeBytes(offsets[1], _address);
+  writer.writeLong(offsets[2], _age);
+  writer.writeBytes(offsets[3], _balance);
+  writer.writeBytes(offsets[4], _company);
+  writer.writeBytes(offsets[5], _email);
+  writer.writeBytes(offsets[6], _eyeColor);
+  writer.writeBytes(offsets[7], _favoriteFruit);
+  writer.writeBytes(offsets[8], _greeting);
+  writer.writeBytes(offsets[9], _guid);
+  writer.writeLong(offsets[10], _index);
+  writer.writeBool(offsets[11], _isActive);
+  writer.writeBytes(offsets[12], _latitude);
+  writer.writeBytes(offsets[13], _longitude);
+  writer.writeBytes(offsets[14], _phone);
+  writer.writeBytes(offsets[15], _picture);
+  writer.writeLongList(offsets[16], _range);
+  writer.writeBytes(offsets[17], _registered);
+  writer.writeStringList(offsets[18], _tags);
+}
 
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      case 2:
-        return (reader.readLong(offset)) as P;
-      case 3:
-        return (reader.readString(offset)) as P;
-      case 4:
-        return (reader.readString(offset)) as P;
-      case 5:
-        return (reader.readString(offset)) as P;
-      case 6:
-        return (reader.readString(offset)) as P;
-      case 7:
-        return (reader.readString(offset)) as P;
-      case 8:
-        return (reader.readString(offset)) as P;
-      case 9:
-        return (reader.readString(offset)) as P;
-      case 10:
-        return (reader.readLong(offset)) as P;
-      case 11:
-        return (reader.readBool(offset)) as P;
-      case 12:
-        return (reader.readString(offset)) as P;
-      case 13:
-        return (reader.readString(offset)) as P;
-      case 14:
-        return (reader.readString(offset)) as P;
-      case 15:
-        return (reader.readString(offset)) as P;
-      case 16:
-        return (reader.readLongList(offset) ?? []) as P;
-      case 17:
-        return (reader.readString(offset)) as P;
-      case 18:
-        return (reader.readStringList(offset) ?? []) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
+IsarDoc _isarDocDeserializeNative(IsarCollection<IsarDoc> collection, int id,
+    IsarBinaryReader reader, List<int> offsets) {
+  final object = IsarDoc();
+  object.about = reader.readString(offsets[0]);
+  object.address = reader.readString(offsets[1]);
+  object.age = reader.readLong(offsets[2]);
+  object.balance = reader.readString(offsets[3]);
+  object.company = reader.readString(offsets[4]);
+  object.email = reader.readString(offsets[5]);
+  object.eyeColor = reader.readString(offsets[6]);
+  object.favoriteFruit = reader.readString(offsets[7]);
+  object.greeting = reader.readString(offsets[8]);
+  object.guid = reader.readString(offsets[9]);
+  object.id = id;
+  object.index = reader.readLong(offsets[10]);
+  object.isActive = reader.readBool(offsets[11]);
+  object.latitude = reader.readString(offsets[12]);
+  object.longitude = reader.readString(offsets[13]);
+  object.phone = reader.readString(offsets[14]);
+  object.picture = reader.readString(offsets[15]);
+  object.range = reader.readLongList(offsets[16]) ?? [];
+  object.registered = reader.readString(offsets[17]);
+  object.tags = reader.readStringList(offsets[18]) ?? [];
+  _isarDocAttachLinks(collection, id, object);
+  return object;
+}
 
-  @override
-  void attachLinks(Isar isar, int id, IsarDoc object) {
-    object.isarFriends.attach(
-      id,
-      isar.isarDocs,
-      isar.getCollection<IsarFriend>('IsarFriend'),
-      'isarFriends',
-      false,
-    );
-    object.isarName.attach(
-      id,
-      isar.isarDocs,
-      isar.getCollection<IsarName>('IsarName'),
-      'isarName',
-      false,
-    );
+P _isarDocDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
+      return (reader.readString(offset)) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
+      return (reader.readString(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
+    case 9:
+      return (reader.readString(offset)) as P;
+    case 10:
+      return (reader.readLong(offset)) as P;
+    case 11:
+      return (reader.readBool(offset)) as P;
+    case 12:
+      return (reader.readString(offset)) as P;
+    case 13:
+      return (reader.readString(offset)) as P;
+    case 14:
+      return (reader.readString(offset)) as P;
+    case 15:
+      return (reader.readString(offset)) as P;
+    case 16:
+      return (reader.readLongList(offset) ?? []) as P;
+    case 17:
+      return (reader.readString(offset)) as P;
+    case 18:
+      return (reader.readStringList(offset) ?? []) as P;
+    default:
+      throw 'Illegal propertyIndex';
   }
+}
+
+dynamic _isarDocSerializeWeb(
+    IsarCollection<IsarDoc> collection, IsarDoc object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'about', object.about);
+  IsarNative.jsObjectSet(jsObj, 'address', object.address);
+  IsarNative.jsObjectSet(jsObj, 'age', object.age);
+  IsarNative.jsObjectSet(jsObj, 'balance', object.balance);
+  IsarNative.jsObjectSet(jsObj, 'company', object.company);
+  IsarNative.jsObjectSet(jsObj, 'email', object.email);
+  IsarNative.jsObjectSet(jsObj, 'eyeColor', object.eyeColor);
+  IsarNative.jsObjectSet(jsObj, 'favoriteFruit', object.favoriteFruit);
+  IsarNative.jsObjectSet(jsObj, 'greeting', object.greeting);
+  IsarNative.jsObjectSet(jsObj, 'guid', object.guid);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'index', object.index);
+  IsarNative.jsObjectSet(jsObj, 'isActive', object.isActive);
+  IsarNative.jsObjectSet(jsObj, 'latitude', object.latitude);
+  IsarNative.jsObjectSet(jsObj, 'longitude', object.longitude);
+  IsarNative.jsObjectSet(jsObj, 'phone', object.phone);
+  IsarNative.jsObjectSet(jsObj, 'picture', object.picture);
+  IsarNative.jsObjectSet(jsObj, 'range', object.range);
+  IsarNative.jsObjectSet(jsObj, 'registered', object.registered);
+  IsarNative.jsObjectSet(jsObj, 'tags', object.tags);
+  return jsObj;
+}
+
+IsarDoc _isarDocDeserializeWeb(
+    IsarCollection<IsarDoc> collection, dynamic jsObj) {
+  final object = IsarDoc();
+  object.about = IsarNative.jsObjectGet(jsObj, 'about') ?? '';
+  object.address = IsarNative.jsObjectGet(jsObj, 'address') ?? '';
+  object.age = IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity;
+  object.balance = IsarNative.jsObjectGet(jsObj, 'balance') ?? '';
+  object.company = IsarNative.jsObjectGet(jsObj, 'company') ?? '';
+  object.email = IsarNative.jsObjectGet(jsObj, 'email') ?? '';
+  object.eyeColor = IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '';
+  object.favoriteFruit = IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '';
+  object.greeting = IsarNative.jsObjectGet(jsObj, 'greeting') ?? '';
+  object.guid = IsarNative.jsObjectGet(jsObj, 'guid') ?? '';
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.index =
+      IsarNative.jsObjectGet(jsObj, 'index') ?? double.negativeInfinity;
+  object.isActive = IsarNative.jsObjectGet(jsObj, 'isActive') ?? false;
+  object.latitude = IsarNative.jsObjectGet(jsObj, 'latitude') ?? '';
+  object.longitude = IsarNative.jsObjectGet(jsObj, 'longitude') ?? '';
+  object.phone = IsarNative.jsObjectGet(jsObj, 'phone') ?? '';
+  object.picture = IsarNative.jsObjectGet(jsObj, 'picture') ?? '';
+  object.range = (IsarNative.jsObjectGet(jsObj, 'range') as List?)
+          ?.map((e) => e ?? double.negativeInfinity)
+          .toList()
+          .cast<int>() ??
+      [];
+  object.registered = IsarNative.jsObjectGet(jsObj, 'registered') ?? '';
+  object.tags = (IsarNative.jsObjectGet(jsObj, 'tags') as List?)
+          ?.map((e) => e ?? '')
+          .toList()
+          .cast<String>() ??
+      [];
+  _isarDocAttachLinks(collection,
+      IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
+  return object;
+}
+
+P _isarDocDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'about':
+      return (IsarNative.jsObjectGet(jsObj, 'about') ?? '') as P;
+    case 'address':
+      return (IsarNative.jsObjectGet(jsObj, 'address') ?? '') as P;
+    case 'age':
+      return (IsarNative.jsObjectGet(jsObj, 'age') ?? double.negativeInfinity)
+          as P;
+    case 'balance':
+      return (IsarNative.jsObjectGet(jsObj, 'balance') ?? '') as P;
+    case 'company':
+      return (IsarNative.jsObjectGet(jsObj, 'company') ?? '') as P;
+    case 'email':
+      return (IsarNative.jsObjectGet(jsObj, 'email') ?? '') as P;
+    case 'eyeColor':
+      return (IsarNative.jsObjectGet(jsObj, 'eyeColor') ?? '') as P;
+    case 'favoriteFruit':
+      return (IsarNative.jsObjectGet(jsObj, 'favoriteFruit') ?? '') as P;
+    case 'greeting':
+      return (IsarNative.jsObjectGet(jsObj, 'greeting') ?? '') as P;
+    case 'guid':
+      return (IsarNative.jsObjectGet(jsObj, 'guid') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'index':
+      return (IsarNative.jsObjectGet(jsObj, 'index') ?? double.negativeInfinity)
+          as P;
+    case 'isActive':
+      return (IsarNative.jsObjectGet(jsObj, 'isActive') ?? false) as P;
+    case 'latitude':
+      return (IsarNative.jsObjectGet(jsObj, 'latitude') ?? '') as P;
+    case 'longitude':
+      return (IsarNative.jsObjectGet(jsObj, 'longitude') ?? '') as P;
+    case 'phone':
+      return (IsarNative.jsObjectGet(jsObj, 'phone') ?? '') as P;
+    case 'picture':
+      return (IsarNative.jsObjectGet(jsObj, 'picture') ?? '') as P;
+    case 'range':
+      return ((IsarNative.jsObjectGet(jsObj, 'range') as List?)
+              ?.map((e) => e ?? double.negativeInfinity)
+              .toList()
+              .cast<int>() ??
+          []) as P;
+    case 'registered':
+      return (IsarNative.jsObjectGet(jsObj, 'registered') ?? '') as P;
+    case 'tags':
+      return ((IsarNative.jsObjectGet(jsObj, 'tags') as List?)
+              ?.map((e) => e ?? '')
+              .toList()
+              .cast<String>() ??
+          []) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _isarDocAttachLinks(IsarCollection col, int id, IsarDoc object) {
+  object.isarFriends.attach(col, col.isar.isarFriends, 'isarFriends', id);
+  object.isarName.attach(col, col.isar.isarNames, 'isarName', id);
 }
 
 extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhere> anyId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idEqualTo(int id) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
       includeLower: true,
-      upper: [id],
+      upper: id,
       includeUpper: true,
     ));
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idNotEqualTo(int id) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [id],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [id],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
     }
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idGreaterThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [id],
-      includeLower: include,
-    ));
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idGreaterThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idLessThan(
-    int id, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [id],
-      includeUpper: include,
-    ));
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idLessThan(int id,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idBetween(
@@ -464,11 +420,10 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
       includeLower: includeLower,
-      upper: [upperId],
+      upper: upperId,
       includeUpper: includeUpper,
     ));
   }
@@ -2708,194 +2663,178 @@ extension IsarDocQueryProperty
   }
 }
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetIsarNameCollection on Isar {
-  IsarCollection<IsarName> get isarNames {
-    return getCollection('IsarName');
-  }
+  IsarCollection<IsarName> get isarNames => getCollection();
 }
 
-final IsarNameSchema = CollectionSchema(
+const IsarNameSchema = CollectionSchema(
   name: 'IsarName',
   schema:
       '{"name":"IsarName","idName":"dbId","properties":[{"name":"first","type":"String"},{"name":"last","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _IsarNameNativeAdapter(),
-  webAdapter: const _IsarNameWebAdapter(),
   idName: 'dbId',
   propertyIds: {'first': 0, 'last': 1},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.dbId == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.dbId;
-    }
-  },
-  setId: (obj, id) => obj.dbId = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _isarNameGetId,
+  setId: _isarNameSetId,
+  getLinks: _isarNameGetLinks,
+  attachLinks: _isarNameAttachLinks,
+  serializeNative: _isarNameSerializeNative,
+  deserializeNative: _isarNameDeserializeNative,
+  deserializePropNative: _isarNameDeserializePropNative,
+  serializeWeb: _isarNameSerializeWeb,
+  deserializeWeb: _isarNameDeserializeWeb,
+  deserializePropWeb: _isarNameDeserializePropWeb,
+  version: 3,
 );
 
-class _IsarNameWebAdapter extends IsarWebTypeAdapter<IsarName> {
-  const _IsarNameWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<IsarName> collection, IsarName object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
-    IsarNative.jsObjectSet(jsObj, 'first', object.first);
-    IsarNative.jsObjectSet(jsObj, 'last', object.last);
-    return jsObj;
+int? _isarNameGetId(IsarName object) {
+  if (object.dbId == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.dbId;
   }
-
-  @override
-  IsarName deserialize(IsarCollection<IsarName> collection, dynamic jsObj) {
-    final object = IsarName();
-    object.dbId =
-        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
-    object.first = IsarNative.jsObjectGet(jsObj, 'first') ?? '';
-    object.last = IsarNative.jsObjectGet(jsObj, 'last') ?? '';
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'dbId':
-        return (IsarNative.jsObjectGet(jsObj, 'dbId') ??
-            double.negativeInfinity) as P;
-      case 'first':
-        return (IsarNative.jsObjectGet(jsObj, 'first') ?? '') as P;
-      case 'last':
-        return (IsarNative.jsObjectGet(jsObj, 'last') ?? '') as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, IsarName object) {}
 }
 
-class _IsarNameNativeAdapter extends IsarNativeTypeAdapter<IsarName> {
-  const _IsarNameNativeAdapter();
-
-  @override
-  void serialize(IsarCollection<IsarName> collection, IsarRawObject rawObj,
-      IsarName object, int staticSize, List<int> offsets, AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.first;
-    final _first = IsarBinaryWriter.utf8Encoder.convert(value0);
-    dynamicSize += (_first.length) as int;
-    final value1 = object.last;
-    final _last = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_last.length) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeBytes(offsets[0], _first);
-    writer.writeBytes(offsets[1], _last);
-  }
-
-  @override
-  IsarName deserialize(IsarCollection<IsarName> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = IsarName();
-    object.dbId = id;
-    object.first = reader.readString(offsets[0]);
-    object.last = reader.readString(offsets[1]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readString(offset)) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, IsarName object) {}
+void _isarNameSetId(IsarName object, int id) {
+  object.dbId = id;
 }
+
+List<IsarLinkBase> _isarNameGetLinks(IsarName object) {
+  return [];
+}
+
+void _isarNameSerializeNative(
+    IsarCollection<IsarName> collection,
+    IsarRawObject rawObj,
+    IsarName object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.first;
+  final _first = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_first.length) as int;
+  final value1 = object.last;
+  final _last = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_last.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _first);
+  writer.writeBytes(offsets[1], _last);
+}
+
+IsarName _isarNameDeserializeNative(IsarCollection<IsarName> collection, int id,
+    IsarBinaryReader reader, List<int> offsets) {
+  final object = IsarName();
+  object.dbId = id;
+  object.first = reader.readString(offsets[0]);
+  object.last = reader.readString(offsets[1]);
+  return object;
+}
+
+P _isarNameDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _isarNameSerializeWeb(
+    IsarCollection<IsarName> collection, IsarName object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
+  IsarNative.jsObjectSet(jsObj, 'first', object.first);
+  IsarNative.jsObjectSet(jsObj, 'last', object.last);
+  return jsObj;
+}
+
+IsarName _isarNameDeserializeWeb(
+    IsarCollection<IsarName> collection, dynamic jsObj) {
+  final object = IsarName();
+  object.dbId =
+      IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
+  object.first = IsarNative.jsObjectGet(jsObj, 'first') ?? '';
+  object.last = IsarNative.jsObjectGet(jsObj, 'last') ?? '';
+  return object;
+}
+
+P _isarNameDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'dbId':
+      return (IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity)
+          as P;
+    case 'first':
+      return (IsarNative.jsObjectGet(jsObj, 'first') ?? '') as P;
+    case 'last':
+      return (IsarNative.jsObjectGet(jsObj, 'last') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _isarNameAttachLinks(IsarCollection col, int id, IsarName object) {}
 
 extension IsarNameQueryWhereSort on QueryBuilder<IsarName, IsarName, QWhere> {
   QueryBuilder<IsarName, IsarName, QAfterWhere> anyDbId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
 extension IsarNameQueryWhere on QueryBuilder<IsarName, IsarName, QWhereClause> {
   QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdEqualTo(int dbId) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [dbId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: dbId,
       includeLower: true,
-      upper: [dbId],
+      upper: dbId,
       includeUpper: true,
     ));
   }
 
   QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdNotEqualTo(int dbId) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [dbId],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [dbId],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: dbId, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: dbId, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [dbId],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [dbId],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: dbId, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: dbId, includeUpper: false),
+      );
     }
   }
 
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdGreaterThan(
-    int dbId, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [dbId],
-      includeLower: include,
-    ));
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdGreaterThan(int dbId,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: dbId, includeLower: include),
+    );
   }
 
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdLessThan(
-    int dbId, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [dbId],
-      includeUpper: include,
-    ));
+  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdLessThan(int dbId,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: dbId, includeUpper: include),
+    );
   }
 
   QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdBetween(
@@ -2904,11 +2843,10 @@ extension IsarNameQueryWhere on QueryBuilder<IsarName, IsarName, QWhereClause> {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerDbId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerDbId,
       includeLower: includeLower,
-      upper: [upperDbId],
+      upper: upperDbId,
       includeUpper: includeUpper,
     ));
   }
@@ -3260,142 +3198,138 @@ extension IsarNameQueryProperty
   }
 }
 
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetIsarFriendCollection on Isar {
-  IsarCollection<IsarFriend> get isarFriends {
-    return getCollection('IsarFriend');
-  }
+  IsarCollection<IsarFriend> get isarFriends => getCollection();
 }
 
-final IsarFriendSchema = CollectionSchema(
+const IsarFriendSchema = CollectionSchema(
   name: 'IsarFriend',
   schema:
       '{"name":"IsarFriend","idName":"dbId","properties":[{"name":"id","type":"Long"},{"name":"name","type":"String"}],"indexes":[],"links":[]}',
-  nativeAdapter: const _IsarFriendNativeAdapter(),
-  webAdapter: const _IsarFriendWebAdapter(),
   idName: 'dbId',
   propertyIds: {'id': 0, 'name': 1},
   listProperties: {},
   indexIds: {},
-  indexTypes: {},
+  indexValueTypes: {},
   linkIds: {},
-  backlinkIds: {},
-  linkedCollections: [],
-  getId: (obj) {
-    if (obj.dbId == Isar.autoIncrement) {
-      return null;
-    } else {
-      return obj.dbId;
-    }
-  },
-  setId: (obj, id) => obj.dbId = id,
-  getLinks: (obj) => [],
-  version: 2,
+  backlinkLinkNames: {},
+  getId: _isarFriendGetId,
+  setId: _isarFriendSetId,
+  getLinks: _isarFriendGetLinks,
+  attachLinks: _isarFriendAttachLinks,
+  serializeNative: _isarFriendSerializeNative,
+  deserializeNative: _isarFriendDeserializeNative,
+  deserializePropNative: _isarFriendDeserializePropNative,
+  serializeWeb: _isarFriendSerializeWeb,
+  deserializeWeb: _isarFriendDeserializeWeb,
+  deserializePropWeb: _isarFriendDeserializePropWeb,
+  version: 3,
 );
 
-class _IsarFriendWebAdapter extends IsarWebTypeAdapter<IsarFriend> {
-  const _IsarFriendWebAdapter();
-
-  @override
-  Object serialize(IsarCollection<IsarFriend> collection, IsarFriend object) {
-    final jsObj = IsarNative.newJsObject();
-    IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
-    IsarNative.jsObjectSet(jsObj, 'id', object.id);
-    IsarNative.jsObjectSet(jsObj, 'name', object.name);
-    return jsObj;
+int? _isarFriendGetId(IsarFriend object) {
+  if (object.dbId == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.dbId;
   }
-
-  @override
-  IsarFriend deserialize(IsarCollection<IsarFriend> collection, dynamic jsObj) {
-    final object = IsarFriend();
-    object.dbId =
-        IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
-    object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
-    object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(Object jsObj, String propertyName) {
-    switch (propertyName) {
-      case 'dbId':
-        return (IsarNative.jsObjectGet(jsObj, 'dbId') ??
-            double.negativeInfinity) as P;
-      case 'id':
-        return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
-            as P;
-      case 'name':
-        return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
-      default:
-        throw 'Illegal propertyName';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, IsarFriend object) {}
 }
 
-class _IsarFriendNativeAdapter extends IsarNativeTypeAdapter<IsarFriend> {
-  const _IsarFriendNativeAdapter();
-
-  @override
-  void serialize(
-      IsarCollection<IsarFriend> collection,
-      IsarRawObject rawObj,
-      IsarFriend object,
-      int staticSize,
-      List<int> offsets,
-      AdapterAlloc alloc) {
-    var dynamicSize = 0;
-    final value0 = object.id;
-    final _id = value0;
-    final value1 = object.name;
-    final _name = IsarBinaryWriter.utf8Encoder.convert(value1);
-    dynamicSize += (_name.length) as int;
-    final size = staticSize + dynamicSize;
-
-    rawObj.buffer = alloc(size);
-    rawObj.buffer_length = size;
-    final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
-    final writer = IsarBinaryWriter(buffer, staticSize);
-    writer.writeLong(offsets[0], _id);
-    writer.writeBytes(offsets[1], _name);
-  }
-
-  @override
-  IsarFriend deserialize(IsarCollection<IsarFriend> collection, int id,
-      IsarBinaryReader reader, List<int> offsets) {
-    final object = IsarFriend();
-    object.dbId = id;
-    object.id = reader.readLong(offsets[0]);
-    object.name = reader.readString(offsets[1]);
-    return object;
-  }
-
-  @override
-  P deserializeProperty<P>(
-      int id, IsarBinaryReader reader, int propertyIndex, int offset) {
-    switch (propertyIndex) {
-      case -1:
-        return id as P;
-      case 0:
-        return (reader.readLong(offset)) as P;
-      case 1:
-        return (reader.readString(offset)) as P;
-      default:
-        throw 'Illegal propertyIndex';
-    }
-  }
-
-  @override
-  void attachLinks(Isar isar, int id, IsarFriend object) {}
+void _isarFriendSetId(IsarFriend object, int id) {
+  object.dbId = id;
 }
+
+List<IsarLinkBase> _isarFriendGetLinks(IsarFriend object) {
+  return [];
+}
+
+void _isarFriendSerializeNative(
+    IsarCollection<IsarFriend> collection,
+    IsarRawObject rawObj,
+    IsarFriend object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.id;
+  final _id = value0;
+  final value1 = object.name;
+  final _name = IsarBinaryWriter.utf8Encoder.convert(value1);
+  dynamicSize += (_name.length) as int;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeLong(offsets[0], _id);
+  writer.writeBytes(offsets[1], _name);
+}
+
+IsarFriend _isarFriendDeserializeNative(IsarCollection<IsarFriend> collection,
+    int id, IsarBinaryReader reader, List<int> offsets) {
+  final object = IsarFriend();
+  object.dbId = id;
+  object.id = reader.readLong(offsets[0]);
+  object.name = reader.readString(offsets[1]);
+  return object;
+}
+
+P _isarFriendDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
+    case 0:
+      return (reader.readLong(offset)) as P;
+    case 1:
+      return (reader.readString(offset)) as P;
+    default:
+      throw 'Illegal propertyIndex';
+  }
+}
+
+dynamic _isarFriendSerializeWeb(
+    IsarCollection<IsarFriend> collection, IsarFriend object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'dbId', object.dbId);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'name', object.name);
+  return jsObj;
+}
+
+IsarFriend _isarFriendDeserializeWeb(
+    IsarCollection<IsarFriend> collection, dynamic jsObj) {
+  final object = IsarFriend();
+  object.dbId =
+      IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity;
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.name = IsarNative.jsObjectGet(jsObj, 'name') ?? '';
+  return object;
+}
+
+P _isarFriendDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'dbId':
+      return (IsarNative.jsObjectGet(jsObj, 'dbId') ?? double.negativeInfinity)
+          as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'name':
+      return (IsarNative.jsObjectGet(jsObj, 'name') ?? '') as P;
+    default:
+      throw 'Illegal propertyName';
+  }
+}
+
+void _isarFriendAttachLinks(IsarCollection col, int id, IsarFriend object) {}
 
 extension IsarFriendQueryWhereSort
     on QueryBuilder<IsarFriend, IsarFriend, QWhere> {
   QueryBuilder<IsarFriend, IsarFriend, QAfterWhere> anyDbId() {
-    return addWhereClauseInternal(const WhereClause(indexName: null));
+    return addWhereClauseInternal(const IdWhereClause.any());
   }
 }
 
@@ -3403,11 +3337,10 @@ extension IsarFriendQueryWhere
     on QueryBuilder<IsarFriend, IsarFriend, QWhereClause> {
   QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdEqualTo(
       int dbId) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [dbId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: dbId,
       includeLower: true,
-      upper: [dbId],
+      upper: dbId,
       includeUpper: true,
     ));
   }
@@ -3415,48 +3348,33 @@ extension IsarFriendQueryWhere
   QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdNotEqualTo(
       int dbId) {
     if (whereSortInternal == Sort.asc) {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [dbId],
-        includeUpper: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [dbId],
-        includeLower: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: dbId, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: dbId, includeLower: false),
+      );
     } else {
-      return addWhereClauseInternal(WhereClause(
-        indexName: null,
-        lower: [dbId],
-        includeLower: false,
-      )).addWhereClauseInternal(WhereClause(
-        indexName: null,
-        upper: [dbId],
-        includeUpper: false,
-      ));
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: dbId, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: dbId, includeUpper: false),
+      );
     }
   }
 
   QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdGreaterThan(
-    int dbId, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [dbId],
-      includeLower: include,
-    ));
+      int dbId,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: dbId, includeLower: include),
+    );
   }
 
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdLessThan(
-    int dbId, {
-    bool include = false,
-  }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      upper: [dbId],
-      includeUpper: include,
-    ));
+  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdLessThan(int dbId,
+      {bool include = false}) {
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: dbId, includeUpper: include),
+    );
   }
 
   QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdBetween(
@@ -3465,11 +3383,10 @@ extension IsarFriendQueryWhere
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return addWhereClauseInternal(WhereClause(
-      indexName: null,
-      lower: [lowerDbId],
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerDbId,
       includeLower: includeLower,
-      upper: [upperDbId],
+      upper: upperDbId,
       includeUpper: includeUpper,
     ));
   }
