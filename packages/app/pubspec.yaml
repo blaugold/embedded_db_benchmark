@@ -23,7 +23,7 @@ dependencies:
     sdk: flutter
   hive_provider:
     path: ../hive_provider
-  isar_flutter_libs: ^2.2.1
+  isar_flutter_libs: ^2.5.0
   isar_provider:
     path: ../isar_provider
   logging: ^1.0.2
