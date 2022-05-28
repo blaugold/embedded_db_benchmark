@@ -30,12 +30,18 @@ class IsarProvider extends DatabaseProvider<int, IsarDoc> {
       directory: directory,
       relaxedDurability: false,
     );
-    return _IsarDatabase(isar);
+
+    switch (arguments.get(execution)!) {
+      case Execution.sync:
+        return _SyncIsarDatabase(isar);
+      case Execution.async:
+        return _AsyncIsarDatabase(isar);
+    }
   }
 }
 
-class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
-  _IsarDatabase(this.isar);
+class _SyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
+  _SyncIsarDatabase(this.isar);
 
   final Isar isar;
 
@@ -49,7 +55,7 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   Future<void> clear() => isar.writeTxn((isar) => isar.clear());
 
   @override
-  IsarDoc createDocumentSync(IsarDoc doc) => isar.writeTxnSync((isar) {
+  IsarDoc createDocument(IsarDoc doc) => isar.writeTxnSync((isar) {
         isar.isarNames.putSync(doc.isarName.value!);
         isar.isarFriends.putAllSync(doc.friends.toList());
         isar.isarDocs.putSync(doc);
@@ -59,8 +65,89 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
       });
 
   @override
-  Future<IsarDoc> createDocumentAsync(IsarDoc doc) =>
-      isar.writeTxn((isar) async {
+  List<IsarDoc> createDocuments(List<IsarDoc> docs) =>
+      isar.writeTxnSync((isar) => docs.map((doc) {
+            isar.isarNames.putSync(doc.isarName.value!);
+            isar.isarFriends.putAllSync(doc.friends.toList());
+            isar.isarDocs.putSync(doc);
+            doc.isarName.saveSync();
+            doc.isarFriends.saveSync();
+            return doc;
+          }).toList());
+
+  @override
+  IsarDoc getDocumentById(int id) {
+    return getDocumentsById([id]).single;
+  }
+
+  @override
+  List<IsarDoc> getDocumentsById(List<int> ids) =>
+      // For some reason a write transaction is necessary here.
+      isar.writeTxnSync((isar) {
+        final docs = isar.isarDocs.getAllSync(ids).cast<IsarDoc>();
+        for (final doc in docs) {
+          doc.isarName.loadSync();
+          doc.isarFriends.loadSync();
+        }
+        return docs;
+      });
+
+  @override
+  List<IsarDoc> getAllDocuments() =>
+      isar.isarDocs.where().build().findAllSync();
+
+  @override
+  IsarDoc updateDocument(IsarDoc doc) => isar.writeTxnSync((isar) {
+        isar.isarNames.putSync(doc.isarName.value!);
+        isar.isarFriends.putAllSync(doc.friends.toList());
+        isar.isarDocs.putSync(doc);
+        return doc;
+      });
+
+  @override
+  List<IsarDoc> updateDocuments(List<IsarDoc> docs) =>
+      isar.writeTxnSync((isar) => docs.map((doc) {
+            isar.isarNames.putSync(doc.isarName.value!);
+            isar.isarFriends.putAllSync(doc.friends.toList());
+            isar.isarDocs.putSync(doc);
+            return doc;
+          }).toList());
+
+  @override
+  void deleteDocument(IsarDoc doc) {
+    deleteDocuments([doc]);
+  }
+
+  @override
+  void deleteDocuments(List<IsarDoc> docs) {
+    isar.writeTxnSync((isar) {
+      isar.isarDocs.deleteAllSync([
+        for (final doc in docs) ...[
+          doc.id,
+          doc.name.dbId,
+          ...doc.friends.map((friend) => friend.dbId)
+        ]
+      ]);
+    });
+  }
+}
+
+class _AsyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
+  _AsyncIsarDatabase(this.isar);
+
+  final Isar isar;
+
+  @override
+  IsarDoc createBenchmarkDocImpl(BenchmarkDoc<int> doc) => doc.toIsarDoc();
+
+  @override
+  FutureOr<void> close() => isar.close();
+
+  @override
+  Future<void> clear() => isar.writeTxn((isar) => isar.clear());
+
+  @override
+  Future<IsarDoc> createDocument(IsarDoc doc) => isar.writeTxn((isar) async {
         await Future.wait([
           isar.isarNames.put(doc.isarName.value!),
           isar.isarFriends.putAll(doc.friends.toList()),
@@ -74,18 +161,7 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
       });
 
   @override
-  List<IsarDoc> createDocumentsSync(List<IsarDoc> docs) =>
-      isar.writeTxnSync((isar) => docs.map((doc) {
-            isar.isarNames.putSync(doc.isarName.value!);
-            isar.isarFriends.putAllSync(doc.friends.toList());
-            isar.isarDocs.putSync(doc);
-            doc.isarName.saveSync();
-            doc.isarFriends.saveSync();
-            return doc;
-          }).toList());
-
-  @override
-  Future<List<IsarDoc>> createDocumentsAsync(List<IsarDoc> docs) =>
+  Future<List<IsarDoc>> createDocuments(List<IsarDoc> docs) =>
       isar.writeTxn((isar) => Future.wait(docs.map((doc) async {
             await Future.wait([
               isar.isarNames.put(doc.isarName.value!),
@@ -100,29 +176,12 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
           })));
 
   @override
-  IsarDoc getDocumentByIdSync(int id) {
-    return getDocumentsByIdSync([id]).single;
+  Future<IsarDoc> getDocumentById(int id) {
+    return getDocumentsById([id]).then((docs) => docs.single);
   }
 
   @override
-  List<IsarDoc> getDocumentsByIdSync(List<int> ids) =>
-      // For some reason a write transaction is necessary here.
-      isar.writeTxnSync((isar) {
-        final docs = isar.isarDocs.getAllSync(ids).cast<IsarDoc>();
-        for (final doc in docs) {
-          doc.isarName.loadSync();
-          doc.isarFriends.loadSync();
-        }
-        return docs;
-      });
-
-  @override
-  Future<IsarDoc> getDocumentByIdAsync(int id) {
-    return getDocumentsByIdAsync([id]).then((docs) => docs.single);
-  }
-
-  @override
-  Future<List<IsarDoc>> getDocumentsByIdAsync(List<int> ids) =>
+  Future<List<IsarDoc>> getDocumentsById(List<int> ids) =>
       // For some reason a write transaction is necessary here.
       isar.writeTxn((isar) async {
         final docs = await isar.isarDocs
@@ -137,24 +196,11 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
       });
 
   @override
-  List<IsarDoc> getAllDocumentsSync() =>
-      isar.isarDocs.where().build().findAllSync();
-
-  @override
-  Future<List<IsarDoc>> getAllDocumentsAsync() =>
+  Future<List<IsarDoc>> getAllDocuments() =>
       isar.isarDocs.where().build().findAll();
 
   @override
-  IsarDoc updateDocumentSync(IsarDoc doc) => isar.writeTxnSync((isar) {
-        isar.isarNames.putSync(doc.isarName.value!);
-        isar.isarFriends.putAllSync(doc.friends.toList());
-        isar.isarDocs.putSync(doc);
-        return doc;
-      });
-
-  @override
-  Future<IsarDoc> updateDocumentAsync(IsarDoc doc) =>
-      isar.writeTxn((isar) async {
+  Future<IsarDoc> updateDocument(IsarDoc doc) => isar.writeTxn((isar) async {
         await Future.wait([
           isar.isarNames.put(doc.isarName.value!),
           isar.isarFriends.putAll(doc.friends.toList()),
@@ -164,16 +210,7 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
       });
 
   @override
-  List<IsarDoc> updateDocumentsSync(List<IsarDoc> docs) =>
-      isar.writeTxnSync((isar) => docs.map((doc) {
-            isar.isarNames.putSync(doc.isarName.value!);
-            isar.isarFriends.putAllSync(doc.friends.toList());
-            isar.isarDocs.putSync(doc);
-            return doc;
-          }).toList());
-
-  @override
-  Future<List<IsarDoc>> updateDocumentsAsync(List<IsarDoc> docs) =>
+  Future<List<IsarDoc>> updateDocuments(List<IsarDoc> docs) =>
       isar.writeTxn((isar) => Future.wait(docs.map((doc) async {
             await Future.wait([
               isar.isarNames.put(doc.isarName.value!),
@@ -184,30 +221,12 @@ class _IsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
           })));
 
   @override
-  void deleteDocumentSync(IsarDoc doc) {
-    deleteDocumentsSync([doc]);
+  Future<void> deleteDocument(IsarDoc doc) {
+    return deleteDocuments([doc]);
   }
 
   @override
-  Future<void> deleteDocumentAsync(IsarDoc doc) {
-    return deleteDocumentsAsync([doc]);
-  }
-
-  @override
-  void deleteDocumentsSync(List<IsarDoc> docs) {
-    isar.writeTxnSync((isar) {
-      isar.isarDocs.deleteAllSync([
-        for (final doc in docs) ...[
-          doc.id,
-          doc.name.dbId,
-          ...doc.friends.map((friend) => friend.dbId)
-        ]
-      ]);
-    });
-  }
-
-  @override
-  Future<void> deleteDocumentsAsync(List<IsarDoc> docs) =>
+  Future<void> deleteDocuments(List<IsarDoc> docs) =>
       isar.writeTxn((isar) async {
         await isar.isarDocs.deleteAll([
           for (final doc in docs) ...[

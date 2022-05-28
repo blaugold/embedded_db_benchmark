@@ -18,7 +18,7 @@ class DriftProvider extends DatabaseProvider<int, DriftDoc> {
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>
       andPredicates([
-        anyArgumentOf(execution, [Execution.async]),
+        anyArgument(execution),
         anyArgument(batchSize),
       ])(arguments);
 
@@ -28,7 +28,10 @@ class DriftProvider extends DatabaseProvider<int, DriftDoc> {
     ParameterArguments arguments,
   ) async {
     final path = p.join(directory, 'db.sqlite');
-    return _createDB(path, backgroundIsolate: true);
+    return _createDB(
+      path,
+      backgroundIsolate: arguments.get(execution)! == Execution.async,
+    );
   }
 }
 
@@ -37,12 +40,11 @@ Future<_DriftDatabase> _createDB(
   required bool backgroundIsolate,
 }) async {
   DriftBenchmarkDatabase db;
-  Isolate? isolate;
   DriftIsolate? driftIsolate;
 
   if (backgroundIsolate) {
     final receivePort = ReceivePort();
-    isolate = await Isolate.spawn(
+    await Isolate.spawn(
       _startBackground,
       _IsolateStartRequest(receivePort.sendPort, path),
     );
@@ -52,7 +54,7 @@ Future<_DriftDatabase> _createDB(
     db = DriftBenchmarkDatabase(NativeDatabase(File(path)));
   }
 
-  return _DriftDatabase(db, driftIsolate: driftIsolate, isolate: isolate);
+  return _DriftDatabase(db, driftIsolate: driftIsolate);
 }
 
 void _startBackground(_IsolateStartRequest request) {
@@ -72,21 +74,18 @@ class _IsolateStartRequest {
 }
 
 class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
-  _DriftDatabase(this.db, {this.driftIsolate, this.isolate});
+  _DriftDatabase(this.db, {this.driftIsolate});
 
   final DriftBenchmarkDatabase db;
   final DriftIsolate? driftIsolate;
-  // TODO: Remove isolate field when `DriftIsolate.shutdownAll` is fixed.
-  final Isolate? isolate;
 
   @override
   DriftDoc createBenchmarkDocImpl(BenchmarkDoc<int> doc) => doc.toDriftDoc();
 
   @override
-  FutureOr<void> close() async {
+  Future<void> close() async {
     await db.close();
-    // await driftIsolate?.shutdownAll();
-    isolate?.kill();
+    await driftIsolate?.shutdownAll();
   }
 
   @override
@@ -97,7 +96,11 @@ class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
       ]));
 
   @override
-  Future<List<DriftDoc>> createDocumentsAsync(List<DriftDoc> docs) async {
+  Future<DriftDoc> createDocument(DriftDoc doc) async =>
+      (await createDocuments([doc])).first;
+
+  @override
+  Future<List<DriftDoc>> createDocuments(List<DriftDoc> docs) async {
     Future<DriftDoc> _createDocument(DriftDoc doc) async {
       final docId = doc.id = await db.into(db.driftDocs).insert(doc);
 
@@ -119,7 +122,11 @@ class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
   }
 
   @override
-  Future<List<DriftDoc>> getDocumentsByIdAsync(List<int> ids) =>
+  Future<DriftDoc> getDocumentById(int id) async =>
+      (await getDocumentsById([id])).first;
+
+  @override
+  Future<List<DriftDoc>> getDocumentsById(List<int> ids) =>
       _getDocuments((driftDocs) => driftDocs.id.isIn(ids));
 
   Future<List<DriftDoc>> _getDocuments([
@@ -157,10 +164,14 @@ class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
   }
 
   @override
-  Future<List<DriftDoc>> getAllDocumentsAsync() => _getDocuments();
+  Future<List<DriftDoc>> getAllDocuments() => _getDocuments();
 
   @override
-  Future<List<DriftDoc>> updateDocumentsAsync(List<DriftDoc> docs) async {
+  Future<DriftDoc> updateDocument(DriftDoc doc) async =>
+      (await updateDocuments([doc])).first;
+
+  @override
+  Future<List<DriftDoc>> updateDocuments(List<DriftDoc> docs) async {
     Future<DriftDoc> _updateDocument(DriftDoc doc) async {
       await Future.wait<void>([
         (db.update(db.driftDocs)
@@ -185,8 +196,12 @@ class _DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
   }
 
   @override
-  Future<void> deleteDocumentsAsync(List<DriftDoc> docs) =>
-      db.transaction(() async {
+  Future<void> deleteDocument(DriftDoc doc) async {
+    await deleteDocuments([doc]);
+  }
+
+  @override
+  Future<void> deleteDocuments(List<DriftDoc> docs) => db.transaction(() async {
         final docIds = docs.map((doc) => doc.id).toList(growable: false);
         final friendIds = docs
             .map((doc) => doc.driftFriends!)

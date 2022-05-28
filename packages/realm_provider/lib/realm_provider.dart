@@ -50,7 +50,7 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
       });
 
   @override
-  RealmDoc createDocumentSync(RealmDoc doc) {
+  RealmDoc createDocument(RealmDoc doc) {
     realm.write(() {
       realm.add(doc);
     });
@@ -58,7 +58,7 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   }
 
   @override
-  List<RealmDoc> createDocumentsSync(List<RealmDoc> docs) {
+  List<RealmDoc> createDocuments(List<RealmDoc> docs) {
     realm.write(() {
       realm.addAll(docs);
     });
@@ -66,13 +66,17 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   }
 
   @override
-  RealmDoc getDocumentByIdSync(String id) => realm.find<RealmDoc>(id)!;
+  RealmDoc getDocumentById(String id) => realm.find<RealmDoc>(id)!;
 
   @override
-  List<RealmDoc> getAllDocumentsSync() => realm.all<RealmDoc>().toList();
+  List<RealmDoc> getDocumentsById(List<String> ids) =>
+      ids.map(getDocumentById).toList();
 
   @override
-  RealmDoc updateDocumentSync(RealmDoc doc) {
+  List<RealmDoc> getAllDocuments() => realm.all<RealmDoc>().toList();
+
+  @override
+  RealmDoc updateDocument(RealmDoc doc) {
     realm.write(() {
       doc.balance_ = doc.updatedBalance!;
     });
@@ -80,7 +84,7 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   }
 
   @override
-  List<RealmDoc> updateDocumentsSync(List<RealmDoc> docs) {
+  List<RealmDoc> updateDocuments(List<RealmDoc> docs) {
     realm.write(() {
       for (final doc in docs) {
         doc.balance_ = doc.updatedBalance!;
@@ -90,14 +94,14 @@ class _RealmDatabase extends BenchmarkDatabase<String, RealmDoc> {
   }
 
   @override
-  void deleteDocumentSync(RealmDoc doc) {
+  void deleteDocument(RealmDoc doc) {
     realm.write(() {
       realm.delete(doc);
     });
   }
 
   @override
-  void deleteDocumentsSync(List<RealmDoc> docs) {
+  void deleteDocuments(List<RealmDoc> docs) {
     realm.write(() {
       realm.deleteMany(docs);
     });

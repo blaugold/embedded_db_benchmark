@@ -48,20 +48,31 @@ class CblProvider extends DatabaseProvider<String, CblDoc> {
 mixin _CblDatabaseHelper on BenchmarkDatabase<String, CblDoc> {
   Database get database;
 
-  FutureOr<List<String>> allDocIds();
+  late final _syncDatabase = database is SyncDatabase
+      ? database as SyncDatabase
+      : SyncDatabase(database.name, database.config);
+
+  late final _syncAllDocsQuery =
+      Query.fromN1qlSync(_syncDatabase, 'SELECT Meta().id FROM _');
 
   @override
-  Future<void> clear() async {
-    final allDocIds = await this.allDocIds();
+  void clear() {
+    if (_syncDatabase.count == 0) return;
+
+    final allDocIds =
+        _syncAllDocsQuery.execute().map((row) => row.string(0)!).toList();
     if (allDocIds.isEmpty) {
       return;
     }
 
-    await database.inBatch(() async {
-      await Future.wait(
-        allDocIds.map((id) async => database.purgeDocumentById(id)),
-      );
-    });
+    _syncDatabase
+        .inBatchSync(() => allDocIds.forEach(_syncDatabase.purgeDocumentById));
+  }
+
+  @override
+  Future<void> close() {
+    _syncDatabase.close();
+    return database.close();
   }
 }
 
@@ -75,8 +86,7 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   late final _allIdsQuery =
       Query.fromN1qlSync(database, 'SELECT Meta().id FROM _');
 
-  @override
-  List<String> allDocIds() {
+  List<String> _allDocIds() {
     if (database.count == 0) {
       return [];
     }
@@ -88,16 +98,13 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   CblDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toCblDoc();
 
   @override
-  FutureOr<void> close() => database.close();
-
-  @override
-  CblDoc createDocumentSync(CblDoc doc) {
+  CblDoc createDocument(CblDoc doc) {
     database.saveDocument(doc.mutableDoc);
     return doc;
   }
 
   @override
-  List<CblDoc> createDocumentsSync(List<CblDoc> docs) {
+  List<CblDoc> createDocuments(List<CblDoc> docs) {
     database.inBatchSync(() {
       for (final doc in docs) {
         database.saveDocument(doc.mutableDoc);
@@ -107,21 +114,24 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   }
 
   @override
-  CblDoc getDocumentByIdSync(String id) =>
-      CblDoc.fromDoc(database.document(id)!);
+  CblDoc getDocumentById(String id) => CblDoc.fromDoc(database.document(id)!);
 
   @override
-  List<CblDoc> getAllDocumentsSync() =>
-      [for (final id in allDocIds()) getDocumentByIdSync(id)];
+  List<CblDoc> getDocumentsById(List<String> ids) =>
+      ids.map((id) => CblDoc.fromDoc(database.document(id)!)).toList();
 
   @override
-  CblDoc updateDocumentSync(CblDoc doc) {
+  List<CblDoc> getAllDocuments() =>
+      [for (final id in _allDocIds()) getDocumentById(id)];
+
+  @override
+  CblDoc updateDocument(CblDoc doc) {
     database.saveDocument(doc.mutableDoc);
     return doc;
   }
 
   @override
-  List<CblDoc> updateDocumentsSync(List<CblDoc> docs) {
+  List<CblDoc> updateDocuments(List<CblDoc> docs) {
     database.inBatchSync(() {
       for (final doc in docs) {
         database.saveDocument(doc.mutableDoc);
@@ -131,12 +141,12 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   }
 
   @override
-  void deleteDocumentSync(CblDoc doc) {
+  void deleteDocument(CblDoc doc) {
     database.deleteDocument(doc.doc);
   }
 
   @override
-  void deleteDocumentsSync(List<CblDoc> docs) {
+  void deleteDocuments(List<CblDoc> docs) {
     database.inBatchSync(() {
       for (final doc in docs) {
         database.deleteDocument(doc.doc);
@@ -152,33 +162,29 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   @override
   final AsyncDatabase database;
 
-  late final allIdsQuery =
-      Future.value(Query.fromN1ql(database, 'SELECT Meta().id FROM _'));
+  late final _allIdsQuery =
+      Query.fromN1qlAsync(database, 'SELECT Meta().id FROM _');
 
-  @override
-  Future<List<String>> allDocIds() async {
+  Future<List<String>> _allDocIds() async {
     if ((await database.count) == 0) {
       return [];
     }
 
-    final resultSet = await (await allIdsQuery).execute();
+    final resultSet = await (await _allIdsQuery).execute();
     return resultSet.asStream().map((result) => result.string(0)!).toList();
   }
-
-  @override
-  FutureOr<void> close() => database.close();
 
   @override
   CblDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toCblDoc();
 
   @override
-  Future<CblDoc> createDocumentAsync(CblDoc doc) async {
+  Future<CblDoc> createDocument(CblDoc doc) async {
     await database.saveDocument(doc.mutableDoc);
     return doc;
   }
 
   @override
-  Future<List<CblDoc>> createDocumentsAsync(List<CblDoc> docs) async {
+  Future<List<CblDoc>> createDocuments(List<CblDoc> docs) async {
     await database.inBatch(() async {
       await Future.wait(
         docs.map((doc) => database.saveDocument(doc.mutableDoc)),
@@ -188,23 +194,35 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   }
 
   @override
-  Future<CblDoc> getDocumentByIdAsync(String id) async =>
+  Future<CblDoc> getDocumentById(String id) async =>
       CblDoc.fromDoc((await database.document(id))!.toMutable());
 
   @override
-  Future<List<CblDoc>> getAllDocumentsAsync() async {
-    final allDocIds = await this.allDocIds();
-    return Future.wait(allDocIds.map(getDocumentByIdAsync));
+  Future<List<CblDoc>> getDocumentsById(List<String> ids) async {
+    late final List<CblDoc> docs;
+    await database.inBatch(() async {
+      docs = await Future.wait(ids.map((id) async {
+        var doc = (await database.document(id))!.toMutable();
+        return CblDoc.fromDoc(doc);
+      }));
+    });
+    return docs;
   }
 
   @override
-  Future<CblDoc> updateDocumentAsync(CblDoc doc) async {
+  Future<List<CblDoc>> getAllDocuments() async {
+    final allDocIds = await this._allDocIds();
+    return Future.wait(allDocIds.map(getDocumentById));
+  }
+
+  @override
+  Future<CblDoc> updateDocument(CblDoc doc) async {
     await database.saveDocument(doc.mutableDoc);
     return doc;
   }
 
   @override
-  Future<List<CblDoc>> updateDocumentsAsync(List<CblDoc> docs) async {
+  Future<List<CblDoc>> updateDocuments(List<CblDoc> docs) async {
     await database.inBatch(() async {
       await Future.wait(
         docs.map((doc) => database.saveDocument(doc.mutableDoc)),
@@ -214,12 +232,12 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   }
 
   @override
-  Future<void> deleteDocumentAsync(CblDoc doc) {
+  Future<void> deleteDocument(CblDoc doc) {
     return database.deleteDocument(doc.doc);
   }
 
   @override
-  Future<void> deleteDocumentsAsync(List<CblDoc> docs) {
+  Future<void> deleteDocuments(List<CblDoc> docs) {
     return database.inBatch(() async {
       await Future.wait(docs.map((doc) => database.deleteDocument(doc.doc)));
     });

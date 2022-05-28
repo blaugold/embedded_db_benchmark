@@ -44,46 +44,45 @@ class _ObjectBoxDatabase extends BenchmarkDatabase<int, ObjectboxDoc> {
   FutureOr<void> clear() => box.removeAll();
 
   @override
-  ObjectboxDoc createDocumentSync(ObjectboxDoc doc) {
+  ObjectboxDoc createDocument(ObjectboxDoc doc) {
     box.put(doc, mode: PutMode.insert);
     return doc;
   }
 
   @override
-  List<ObjectboxDoc> createDocumentsSync(List<ObjectboxDoc> docs) {
+  List<ObjectboxDoc> createDocuments(List<ObjectboxDoc> docs) {
     box.putMany([for (final doc in docs) doc], mode: PutMode.insert);
     return docs;
   }
 
   @override
-  ObjectboxDoc getDocumentByIdSync(int id) => box.get(id)!;
+  ObjectboxDoc getDocumentById(int id) => box.get(id)!;
 
   @override
-  List<ObjectboxDoc> getDocumentsByIdSync(List<int> ids) =>
-      box.getMany(ids).cast();
+  List<ObjectboxDoc> getDocumentsById(List<int> ids) => box.getMany(ids).cast();
 
   @override
-  List<ObjectboxDoc> getAllDocumentsSync() => box.getAll();
+  List<ObjectboxDoc> getAllDocuments() => box.getAll();
 
   @override
-  ObjectboxDoc updateDocumentSync(ObjectboxDoc doc) {
+  ObjectboxDoc updateDocument(ObjectboxDoc doc) {
     box.put(doc, mode: PutMode.update);
     return doc;
   }
 
   @override
-  List<ObjectboxDoc> updateDocumentsSync(List<ObjectboxDoc> docs) {
+  List<ObjectboxDoc> updateDocuments(List<ObjectboxDoc> docs) {
     box.putMany([for (final doc in docs) doc], mode: PutMode.update);
     return docs;
   }
 
   @override
-  void deleteDocumentSync(ObjectboxDoc doc) {
+  void deleteDocument(ObjectboxDoc doc) {
     box.remove(doc.id);
   }
 
   @override
-  void deleteDocumentsSync(List<ObjectboxDoc> docs) {
+  void deleteDocuments(List<ObjectboxDoc> docs) {
     box.removeMany(docs.map((doc) => doc.id).toList());
   }
 }
