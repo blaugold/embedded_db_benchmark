@@ -689,7 +689,11 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   @mustCallSuper
   FutureOr<void> teardown() async {
     await database.close();
-    await _tempDirectory.delete(recursive: true);
+    try {
+      await _tempDirectory.delete(recursive: true);
+    } catch (e) {
+      logger.warning('Failed to delete temporary directory: $e');
+    }
   }
 
   /// Measures the execution of the benchmarked operations.
