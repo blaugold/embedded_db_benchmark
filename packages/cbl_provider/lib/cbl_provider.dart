@@ -48,27 +48,31 @@ class CblProvider extends DatabaseProvider<String, CblDoc> {
 mixin _CblDatabaseHelper on BenchmarkDatabase<String, CblDoc> {
   Database get database;
 
-  FutureOr<List<String>> allDocIds();
+  late final _syncDatabase = database is SyncDatabase
+      ? database as SyncDatabase
+      : SyncDatabase(database.name, database.config);
+
+  late final _syncAllDocsQuery =
+      Query.fromN1qlSync(_syncDatabase, 'SELECT Meta().id FROM _');
 
   @override
   void clear() {
-    var database = this.database;
-    if (database is! SyncDatabase) {
-      database = SyncDatabase(database.name, database.config);
-    }
+    if (_syncDatabase.count == 0) return;
 
-    final allDocsQuery =
-        Query.fromN1qlSync(database, 'SELECT Meta().id FROM _');
-    final allDocIds = allDocsQuery.execute().map((e) => e.string(0)!).toList();
+    final allDocIds =
+        _syncAllDocsQuery.execute().map((row) => row.string(0)!).toList();
     if (allDocIds.isEmpty) {
       return;
     }
 
-    database.inBatchSync(() => allDocIds.map(database.purgeDocumentById));
+    _syncDatabase.inBatchSync(() => allDocIds.map(database.purgeDocumentById));
   }
 
   @override
-  Future<void> close() => database.close();
+  Future<void> close() {
+    _syncDatabase.close();
+    return database.close();
+  }
 }
 
 class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
@@ -81,8 +85,7 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   late final _allIdsQuery =
       Query.fromN1qlSync(database, 'SELECT Meta().id FROM _');
 
-  @override
-  List<String> allDocIds() {
+  List<String> _allDocIds() {
     if (database.count == 0) {
       return [];
     }
@@ -118,7 +121,7 @@ class _SyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
 
   @override
   List<CblDoc> getAllDocuments() =>
-      [for (final id in allDocIds()) getDocumentById(id)];
+      [for (final id in _allDocIds()) getDocumentById(id)];
 
   @override
   CblDoc updateDocument(CblDoc doc) {
@@ -158,16 +161,15 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
   @override
   final AsyncDatabase database;
 
-  late final allIdsQuery =
-      Future.value(Query.fromN1ql(database, 'SELECT Meta().id FROM _'));
+  late final _allIdsQuery =
+      Query.fromN1qlAsync(database, 'SELECT Meta().id FROM _');
 
-  @override
-  Future<List<String>> allDocIds() async {
+  Future<List<String>> _allDocIds() async {
     if ((await database.count) == 0) {
       return [];
     }
 
-    final resultSet = await (await allIdsQuery).execute();
+    final resultSet = await (await _allIdsQuery).execute();
     return resultSet.asStream().map((result) => result.string(0)!).toList();
   }
 
@@ -208,7 +210,7 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
 
   @override
   Future<List<CblDoc>> getAllDocuments() async {
-    final allDocIds = await this.allDocIds();
+    final allDocIds = await this._allDocIds();
     return Future.wait(allDocIds.map(getDocumentById));
   }
 
