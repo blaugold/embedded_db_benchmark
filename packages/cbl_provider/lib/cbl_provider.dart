@@ -65,7 +65,8 @@ mixin _CblDatabaseHelper on BenchmarkDatabase<String, CblDoc> {
       return;
     }
 
-    _syncDatabase.inBatchSync(() => allDocIds.map(database.purgeDocumentById));
+    _syncDatabase
+        .inBatchSync(() => allDocIds.forEach(_syncDatabase.purgeDocumentById));
   }
 
   @override
