@@ -24,18 +24,14 @@ class DeleteDocumentBenchmark extends Benchmark {
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterArguments arguments,
   ) {
-    return _DeleteDocumentBenchmark(
-      arguments.get(execution)!,
-      arguments.get(batchSize)!,
-    );
+    return _DeleteDocumentBenchmark(arguments.get(batchSize)!);
   }
 }
 
 class _DeleteDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
-  _DeleteDocumentBenchmark(this._execution, this._batchSize);
+  _DeleteDocumentBenchmark(this._batchSize);
 
-  final Execution _execution;
   final int _batchSize;
 
   /// Validates that the database is correctly executing the operations.
@@ -46,7 +42,7 @@ class _DeleteDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     await executeOperations();
 
     // Now check that there are not documents left in the database.
-    final allDocuments = await database.getAllDocuments(_execution);
+    final allDocuments = await database.getAllDocuments();
     if (allDocuments.isNotEmpty) {
       throw Exception('Database is not correctly deleting documents.');
     }
@@ -66,40 +62,20 @@ class _DeleteDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     final documents = createBenchmarkDocs(_batchSize);
     final implDocuments =
         documents.map(database.createBenchmarkDocImpl).toList(growable: false);
-    return database.createDocuments(implDocuments, _execution);
+    return database.createDocuments(implDocuments);
   }
 
   Future<void> _deleteDocumentMeasured(T document) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.deleteDocumentSync(document),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.deleteDocumentAsync(document),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.deleteDocument(document),
+      operations: _batchSize,
+    );
   }
 
   Future<void> _deleteDocumentsMeasured(List<T> documents) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.deleteDocumentsSync(documents),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.deleteDocumentsAsync(documents),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.deleteDocuments(documents),
+      operations: _batchSize,
+    );
   }
 }

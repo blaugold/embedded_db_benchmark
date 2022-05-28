@@ -24,18 +24,14 @@ class CreateDocumentBenchmark extends Benchmark {
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterArguments arguments,
   ) {
-    return _CreateDocumentBenchmark(
-      arguments.get(execution)!,
-      arguments.get(batchSize)!,
-    );
+    return _CreateDocumentBenchmark(arguments.get(batchSize)!);
   }
 }
 
 class _CreateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
-  _CreateDocumentBenchmark(this._execution, this._batchSize);
+  _CreateDocumentBenchmark(this._batchSize);
 
-  final Execution _execution;
   final int _batchSize;
 
   @override
@@ -45,7 +41,7 @@ class _CreateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     // We only check that the number of persisted documents is correct.
     // The ReadDocument benchmark also checks that the content is persisted
     // correctly.
-    final allDocuments = await database.getAllDocuments(_execution);
+    final allDocuments = await database.getAllDocuments();
     if (allDocuments.length != _batchSize) {
       throw Exception(
         'Database did not persist correct number of documents: '
@@ -73,36 +69,16 @@ class _CreateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
   }
 
   Future<void> _createDocumentMeasured(T document) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.createDocumentSync(document),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.createDocumentAsync(document),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.createDocument(document),
+      operations: _batchSize,
+    );
   }
 
   Future<void> _createDocumentsMeasured(List<T> documents) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.createDocumentsSync(documents),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.createDocumentsAsync(documents),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.createDocuments(documents),
+      operations: _batchSize,
+    );
   }
 }

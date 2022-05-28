@@ -692,31 +692,18 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
     await _tempDirectory.delete(recursive: true);
   }
 
-  /// Measures the asynchronous execution of the benchmarked operations.
+  /// Measures the execution of the benchmarked operations.
   ///
   /// You need to provide the number of [operations] that are going to be
   /// executed when [fn] is called.
   @protected
   @pragma('vm:prefer-inline')
-  Future<void> measureOperationsAsync(
-    Future<void> Function() fn, {
+  Future<void> measureOperations(
+    FutureOr<void> Function() fn, {
     int operations = 1,
   }) async {
     _stopwatch.start();
     await fn();
-    _stopwatch.stop();
-    _executedOperations += operations;
-  }
-
-  /// Measures the synchronous execution of the benchmarked operations.
-  ///
-  /// You need to provide the number of [operations] that are going to be
-  /// executed when [fn] is called.
-  @protected
-  @pragma('vm:prefer-inline')
-  void measureOperationsSync(void Function() fn, {int operations = 1}) {
-    _stopwatch.start();
-    fn();
     _stopwatch.stop();
     _executedOperations += operations;
   }

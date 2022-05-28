@@ -55,43 +55,47 @@ class _HiveDatabase extends BenchmarkDatabase<String, HiveDoc> {
   FutureOr<void> clear() => box.clear();
 
   @override
-  Future<HiveDoc> createDocumentAsync(HiveDoc doc) async {
+  Future<HiveDoc> createDocument(HiveDoc doc) async {
     await box.put(doc.id, doc);
     return doc;
   }
 
   @override
-  Future<List<HiveDoc>> createDocumentsAsync(List<HiveDoc> docs) async {
+  Future<List<HiveDoc>> createDocuments(List<HiveDoc> docs) async {
     await box.putAll(<String, HiveDoc>{for (final doc in docs) doc.id: doc});
     return docs;
   }
 
   @override
-  Future<HiveDoc> getDocumentByIdAsync(String id) async => (await box.get(id))!;
+  Future<HiveDoc> getDocumentById(String id) async => (await box.get(id))!;
 
   @override
-  Future<List<HiveDoc>> getAllDocumentsAsync() =>
-      Future.wait(box.keys.cast<String>().map(getDocumentByIdAsync));
+  Future<List<HiveDoc>> getDocumentsById(List<String> ids) =>
+      Future.wait(ids.map(getDocumentById));
 
   @override
-  Future<HiveDoc> updateDocumentAsync(HiveDoc doc) async {
+  Future<List<HiveDoc>> getAllDocuments() =>
+      Future.wait(box.keys.cast<String>().map(getDocumentById));
+
+  @override
+  Future<HiveDoc> updateDocument(HiveDoc doc) async {
     await box.put(doc.id, doc);
     return doc;
   }
 
   @override
-  Future<List<HiveDoc>> updateDocumentsAsync(List<HiveDoc> docs) async {
+  Future<List<HiveDoc>> updateDocuments(List<HiveDoc> docs) async {
     await box.putAll(<String, HiveDoc>{for (final doc in docs) doc.id: doc});
     return docs;
   }
 
   @override
-  Future<void> deleteDocumentAsync(HiveDoc doc) {
+  Future<void> deleteDocument(HiveDoc doc) {
     return box.delete(doc.id);
   }
 
   @override
-  Future<void> deleteDocumentsAsync(List<HiveDoc> docs) {
+  Future<void> deleteDocuments(List<HiveDoc> docs) {
     return box.deleteAll(docs.map<String>((doc) => doc.id));
   }
 }

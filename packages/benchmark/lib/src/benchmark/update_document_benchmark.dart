@@ -24,18 +24,14 @@ class UpdateDocumentBenchmark extends Benchmark {
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterArguments arguments,
   ) {
-    return _UpdateDocumentBenchmark(
-      arguments.get(execution)!,
-      arguments.get(batchSize)!,
-    );
+    return _UpdateDocumentBenchmark(arguments.get(batchSize)!);
   }
 }
 
 class _UpdateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
-  _UpdateDocumentBenchmark(this._execution, this._batchSize);
+  _UpdateDocumentBenchmark(this._batchSize);
 
-  final Execution _execution;
   final int _batchSize;
   int _nextValue = 0;
 
@@ -46,19 +42,17 @@ class _UpdateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     await super.setup();
 
     final implDocuments = createBenchmarkDocsImp(_batchSize);
-    _documents = await database.createDocuments(implDocuments, _execution);
+    _documents = await database.createDocuments(implDocuments);
   }
 
   @override
   FutureOr<void> validateDatabase() async {
-    final document =
-        await database.createDocument(createBenchmarkDocImp(), _execution);
+    final document = await database.createDocument(createBenchmarkDocImp());
 
     document.balance = 'validate';
-    await database.updateDocument(document, _execution);
+    await database.updateDocument(document);
 
-    final loadedDocument =
-        await database.getDocumentById(document.id, _execution);
+    final loadedDocument = await database.getDocumentById(document.id);
     if (loadedDocument.balance != document.balance) {
       throw Exception(
         'Database is not correctly persisting updated document. '
@@ -81,32 +75,15 @@ class _UpdateDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
   }
 
   FutureOr<void> _updateDocumentMeasured(T document) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(() => database.updateDocumentSync(document));
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.updateDocumentAsync(document),
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.updateDocument(document),
+    );
   }
 
   FutureOr<void> _updateDocumentsMeasured(List<T> documents) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.updateDocumentsSync(documents),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.updateDocumentsAsync(documents),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.updateDocuments(documents),
+      operations: _batchSize,
+    );
   }
 }

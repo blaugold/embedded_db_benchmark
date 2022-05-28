@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'benchmark_document.dart';
-import 'benchmark_parameter.dart';
 
 abstract class BenchmarkDatabase<ID extends Object,
     T extends BenchmarkDoc<ID>> {
@@ -11,170 +10,21 @@ abstract class BenchmarkDatabase<ID extends Object,
 
   FutureOr<void> clear();
 
-  // === Create Document =======================================================
+  FutureOr<T> createDocument(T doc);
 
-  T createDocumentSync(T doc) {
-    return createDocumentsSync([doc]).single;
-  }
+  FutureOr<List<T>> createDocuments(List<T> docs);
 
-  Future<T> createDocumentAsync(T doc) async {
-    return createDocumentsAsync([doc]).then((docs) => docs.single);
-  }
+  FutureOr<T> getDocumentById(ID id);
 
-  FutureOr<T> createDocument(T doc, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return createDocumentSync(doc);
-      case Execution.async:
-        return createDocumentAsync(doc);
-    }
-  }
+  FutureOr<List<T>> getDocumentsById(List<ID> ids);
 
-  List<T> createDocumentsSync(List<T> docs) {
-    return [for (final doc in docs) createDocumentSync(doc)];
-  }
+  FutureOr<List<T>> getAllDocuments();
 
-  Future<List<T>> createDocumentsAsync(List<T> docs) async {
-    return Future.wait(docs.map(createDocumentAsync));
-  }
+  FutureOr<T> updateDocument(T doc);
 
-  FutureOr<List<T>> createDocuments(List<T> docs, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return createDocumentsSync(docs);
-      case Execution.async:
-        return createDocumentsAsync(docs);
-    }
-  }
+  FutureOr<List<T>> updateDocuments(List<T> docs);
 
-  // === Get Document By Id ====================================================
+  FutureOr<void> deleteDocument(T doc);
 
-  T getDocumentByIdSync(ID id) {
-    return getDocumentsByIdSync([id]).single;
-  }
-
-  Future<T> getDocumentByIdAsync(ID id) async {
-    return getDocumentsByIdAsync([id]).then((docs) => docs.single);
-  }
-
-  FutureOr<T> getDocumentById(ID id, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return getDocumentByIdSync(id);
-      case Execution.async:
-        return getDocumentByIdAsync(id);
-    }
-  }
-
-  List<T> getDocumentsByIdSync(List<ID> ids) {
-    return [for (final id in ids) getDocumentByIdSync(id)];
-  }
-
-  Future<List<T>> getDocumentsByIdAsync(List<ID> ids) async {
-    return Future.wait(ids.map(getDocumentByIdAsync));
-  }
-
-  FutureOr<List<T>> getDocumentsById(List<ID> ids, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return getDocumentsByIdSync(ids);
-      case Execution.async:
-        return getDocumentsByIdAsync(ids);
-    }
-  }
-
-  // === Get All Documents =====================================================
-
-  List<T> getAllDocumentsSync() {
-    throw UnimplementedError();
-  }
-
-  Future<List<T>> getAllDocumentsAsync() async {
-    throw UnimplementedError();
-  }
-
-  FutureOr<List<T>> getAllDocuments(Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return getAllDocumentsSync();
-      case Execution.async:
-        return getAllDocumentsAsync();
-    }
-  }
-
-  // === Update Document =======================================================
-
-  T updateDocumentSync(T doc) {
-    return updateDocumentsSync([doc]).single;
-  }
-
-  Future<T> updateDocumentAsync(T doc) async {
-    return updateDocumentsAsync([doc]).then((docs) => docs.single);
-  }
-
-  FutureOr<T> updateDocument(T doc, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return updateDocumentSync(doc);
-      case Execution.async:
-        return updateDocumentAsync(doc);
-    }
-  }
-
-  List<T> updateDocumentsSync(List<T> docs) {
-    return [for (final doc in docs) updateDocumentSync(doc)];
-  }
-
-  Future<List<T>> updateDocumentsAsync(List<T> docs) async {
-    return Future.wait(docs.map(updateDocumentAsync));
-  }
-
-  FutureOr<List<T>> updateDocuments(List<T> docs, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        return updateDocumentsSync(docs);
-      case Execution.async:
-        return updateDocumentsAsync(docs);
-    }
-  }
-
-  // === Delete Document =======================================================
-
-  void deleteDocumentSync(T doc) {
-    deleteDocumentsSync([doc]);
-  }
-
-  Future<void> deleteDocumentAsync(T doc) async {
-    await deleteDocumentsAsync([doc]);
-  }
-
-  FutureOr<void> deleteDocument(T doc, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        deleteDocumentSync(doc);
-        break;
-      case Execution.async:
-        return deleteDocumentAsync(doc);
-    }
-  }
-
-  void deleteDocumentsSync(List<T> docs) {
-    for (final doc in docs) {
-      deleteDocumentSync(doc);
-    }
-  }
-
-  Future<void> deleteDocumentsAsync(List<T> docs) async {
-    await Future.wait(docs.map(deleteDocumentAsync));
-  }
-
-  FutureOr<void> deleteDocuments(List<T> docs, Execution execution) {
-    switch (execution) {
-      case Execution.sync:
-        deleteDocumentsSync(docs);
-        break;
-      case Execution.async:
-        return deleteDocumentsAsync(docs);
-    }
-  }
+  FutureOr<void> deleteDocuments(List<T> docs);
 }

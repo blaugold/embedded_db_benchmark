@@ -30,18 +30,14 @@ class ReadDocumentBenchmark extends Benchmark {
       createRunner<ID extends Object, T extends BenchmarkDoc<ID>>(
     ParameterArguments arguments,
   ) {
-    return _ReadDocumentBenchmark(
-      arguments.get(execution)!,
-      arguments.get(batchSize)!,
-    );
+    return _ReadDocumentBenchmark(arguments.get(batchSize)!);
   }
 }
 
 class _ReadDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     extends BenchmarkRunner<ID, T> with BenchmarkDocumentMixin {
-  _ReadDocumentBenchmark(this._execution, this._batchSize);
+  _ReadDocumentBenchmark(this._batchSize);
 
-  final Execution _execution;
   final int _batchSize;
 
   List<T>? _documents;
@@ -62,7 +58,6 @@ class _ReadDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
     // Insert documents.
     _documents = documents = await database.createDocuments(
       documents.map(database.createBenchmarkDocImpl).toList(growable: false),
-      _execution,
     );
     _documentIds = documents.map((doc) => doc.id).toList();
   }
@@ -71,8 +66,7 @@ class _ReadDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
   FutureOr<void> validateDatabase() async {
     // Verify that document can be persisted and loaded correctly.
     for (final document in _documents!) {
-      final loadedDocument =
-          await database.getDocumentById(document.id, _execution);
+      final loadedDocument = await database.getDocumentById(document.id);
 
       final documentJson = document.toJson();
       final loadedDocumentJson = loadedDocument.toJson();
@@ -116,36 +110,16 @@ class _ReadDocumentBenchmark<ID extends Object, T extends BenchmarkDoc<ID>>
   }
 
   FutureOr<void> _getDocumentByIdMeasured(ID id) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.getDocumentByIdSync(id),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.getDocumentByIdAsync(id),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.getDocumentById(id),
+      operations: _batchSize,
+    );
   }
 
   FutureOr<void> _getDocumentsByIdMeasured(List<ID> ids) async {
-    switch (_execution) {
-      case Execution.sync:
-        measureOperationsSync(
-          () => database.getDocumentsByIdSync(ids),
-          operations: _batchSize,
-        );
-        break;
-      case Execution.async:
-        await measureOperationsAsync(
-          () => database.getDocumentsByIdAsync(ids),
-          operations: _batchSize,
-        );
-        break;
-    }
+    await measureOperations(
+      () => database.getDocumentsById(ids),
+      operations: _batchSize,
+    );
   }
 }
