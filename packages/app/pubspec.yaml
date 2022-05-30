@@ -18,6 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.4
   drift_provider:
     path: ../drift_provider
+  file_picker: ^4.6.0
   fl_chart: ^0.50.1
   flutter:
     sdk: flutter

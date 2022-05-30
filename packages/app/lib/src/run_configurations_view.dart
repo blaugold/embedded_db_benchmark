@@ -3,12 +3,15 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'component/error_dialog.dart';
 import 'component/parameter_arguments_description.dart';
 import 'run_controller.dart';
 import 'style.dart';
 
 enum _PopupMenuItem {
   showNonRunnableConfigs,
+  exportResults,
+  importResults,
 }
 
 class RunConfigurationsView extends StatelessWidget {
@@ -28,9 +31,21 @@ class RunConfigurationsView extends StatelessWidget {
           ),
           PopupMenuButton<_PopupMenuItem>(
             onSelected: (item) {
-              if (item == _PopupMenuItem.showNonRunnableConfigs) {
-                runController.showAllRunConfigurations =
-                    !runController.showAllRunConfigurations;
+              switch (item) {
+                case _PopupMenuItem.showNonRunnableConfigs:
+                  runController.showAllRunConfigurations =
+                      !runController.showAllRunConfigurations;
+                  break;
+                case _PopupMenuItem.exportResults:
+                  runController.exportResults().onError((error, stackTrace) {
+                    showErrorAlert(context, error, stackTrace);
+                  });
+                  break;
+                case _PopupMenuItem.importResults:
+                  runController.importResults().onError((error, stackTrace) {
+                    showErrorAlert(context, error, stackTrace);
+                  });
+                  break;
               }
             },
             itemBuilder: (context) => [
@@ -38,7 +53,15 @@ class RunConfigurationsView extends StatelessWidget {
                 value: _PopupMenuItem.showNonRunnableConfigs,
                 checked: runController.showAllRunConfigurations,
                 child: const Text('Show non-runnable configs'),
-              )
+              ),
+              PopupMenuItem(
+                value: _PopupMenuItem.exportResults,
+                child: const Text('Export results'),
+              ),
+              PopupMenuItem(
+                value: _PopupMenuItem.importResults,
+                child: const Text('Import results'),
+              ),
             ],
           )
         ],
