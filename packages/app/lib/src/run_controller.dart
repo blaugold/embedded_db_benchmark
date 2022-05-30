@@ -1,6 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:benchmark/benchmark.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:path/path.dart' as path;
+
+import 'settings_controller.dart';
 
 enum RunControllerStatus {
   notRunning,
@@ -239,5 +246,63 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
     for (final configuration in plan.runConfigurations) {
       _resultsByConfiguration[configuration] ??= <Object>[];
     }
+  }
+
+  Future<void> exportResults() async {
+    final directory = await FilePicker.platform.getDirectoryPath();
+    if (directory == null) {
+      return;
+    }
+
+    final now = DateTime.now().toUtc();
+    final file = File(
+      path.join(directory, 'DB_Bench-${now.millisecondsSinceEpoch}.json'),
+    );
+    final resultsJson = MultiBenchmarkResults(
+      plan: plan,
+      resultsByConfiguration: _resultsByConfiguration,
+    ).toJson();
+
+    await file.writeAsBytes(JsonUtf8Encoder('  ').convert(resultsJson));
+  }
+
+  Future<void> importResults() async {
+    final pickedFiles = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+      withData: true,
+      dialogTitle: 'Select benchmark results file',
+    );
+    final pickedFile = pickedFiles?.files.first;
+
+    if (pickedFile == null) {
+      // User cancelled.
+      return;
+    }
+
+    if (pickedFile.extension != 'json') {
+      throw Exception('Invalid file extension: ${pickedFile.extension}');
+    }
+
+    final resultsAsJson =
+        json.fuse(utf8).decode(pickedFile.bytes!) as Map<String, Object?>;
+
+    final results = MultiBenchmarkResults.fromJson(
+      resultsAsJson,
+      benchmarks: {
+        for (final benchmark in allBenchmarks) benchmark.name: benchmark,
+      },
+      databaseProviders: {
+        for (final databaseProvider in allDatabaseProviders)
+          databaseProvider.name: databaseProvider,
+      },
+      parameters: {
+        for (final parameter in <Parameter>[execution, batchSize])
+          parameter.name: parameter,
+      },
+    );
+
+    _resultsByConfiguration.clear();
+    _resultsByConfiguration.addAll(results.resultsByConfiguration);
+    plan = results.plan;
   }
 }

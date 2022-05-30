@@ -203,6 +203,7 @@ class BenchmarkResult {
       ')';
 
   Map<String, Object?> toJson() => {
+        'type': 'BenchmarkResult',
         'operations': operations,
         'operationsRunTime': operationsRunTime.inMicroseconds,
         'benchmarkRunTime': benchmarkRunTime.inMicroseconds,
@@ -242,6 +243,7 @@ class BenchmarkThrewException extends Error {
   String toString() => 'BenchmarkThrewException: $message';
 
   Map<String, Object?> toJson() => <String, Object?>{
+        'type': 'BenchmarkThrewException',
         'message': message,
         'stackTrace': stackTrace.toString(),
       };
@@ -459,6 +461,82 @@ class BenchmarkResults {
     ];
 
     return const ListToCsvConverter().convert([header, ...rows]);
+  }
+}
+
+@immutable
+class MultiBenchmarkResults {
+  const MultiBenchmarkResults({
+    required this.plan,
+    required this.resultsByConfiguration,
+  });
+
+  factory MultiBenchmarkResults.fromJson(
+    Map<String, Object?> json, {
+    required Map<String, Benchmark> benchmarks,
+    required Map<String, DatabaseProvider> databaseProviders,
+    required Map<String, Parameter> parameters,
+  }) {
+    final plan = BenchmarkPlan.fromJson(
+      json['plan'] as Map<String, Object?>,
+      benchmarks: benchmarks,
+      databaseProviders: databaseProviders,
+      parameters: parameters,
+    );
+
+    final allConfigurationResults = (json['results'] as List<Object?>)
+        .cast<List<Object?>>()
+        .map(
+          (value) => (value)
+              .cast<Map<String, Object?>>()
+              .map(_resultFromJson)
+              .toList(),
+        )
+        .toList();
+
+    final results = plan.runConfigurations
+        .asMap()
+        .map((resultIndex, configuration) => MapEntry(
+              configuration,
+              allConfigurationResults[resultIndex],
+            ));
+
+    return MultiBenchmarkResults(plan: plan, resultsByConfiguration: results);
+  }
+
+  final BenchmarkPlan plan;
+  final Map<BenchmarkRunConfiguration, List<Object>> resultsByConfiguration;
+
+  Map<String, Object?> toJson() {
+    return {
+      'plan': plan.toJson(),
+      'results': plan.runConfigurations
+          .map((configuration) => resultsByConfiguration[configuration]!)
+          .map((results) => results.map(_resultToJson).toList())
+          .toList(),
+    };
+  }
+
+  static Object? _resultToJson(Object result) {
+    if (result is BenchmarkResult) {
+      return result.toJson();
+    } else if (result is BenchmarkThrewException) {
+      return result.toJson();
+    } else {
+      throw ArgumentError('Unknown result type: $result');
+    }
+  }
+
+  static Object _resultFromJson(Map<String, Object?> json) {
+    var type = json['type'] as String;
+    switch (type) {
+      case 'BenchmarkResult':
+        return BenchmarkResult.fromJson(json);
+      case 'BenchmarkThrewException':
+        return BenchmarkThrewException.fromJson(json);
+      default:
+        throw ArgumentError('Unknown benchmark result type: $type');
+    }
   }
 }
 

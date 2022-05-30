@@ -13,6 +13,7 @@ export 'src/benchmark.dart'
         BenchmarkThrewException,
         FixedOperationsDuration,
         FixedTimedDuration,
+        MultiBenchmarkResults,
         PlanRunnerStatus;
 export 'src/benchmark/all_benchmarks.dart';
 export 'src/benchmark/create_document_benchmark.dart'
