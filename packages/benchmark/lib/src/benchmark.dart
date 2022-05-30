@@ -501,7 +501,7 @@ class MultiBenchmarkResults {
               allConfigurationResults[resultIndex],
             ));
 
-    return MultiBenchmarkResults(plan, results);
+    return MultiBenchmarkResults(plan: plan, resultsByConfiguration: results);
   }
 
   final BenchmarkPlan plan;
