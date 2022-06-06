@@ -9,17 +9,17 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^1.1.1
-  cbl_flutter: ^1.0.0+2
-  cbl_flutter_ce: ^1.1.0
+  cbl: ^1.2.0
+  cbl_flutter: ^1.0.0+3
+  cbl_flutter_ce: ^1.1.1
   cbl_provider:
     path: ../cbl_provider
   collection: ^1.15.0
-  cupertino_icons: ^1.0.4
+  cupertino_icons: ^1.0.5
   drift_provider:
     path: ../drift_provider
-  file_picker: ^4.6.0
-  fl_chart: ^0.50.1
+  file_picker: ^4.6.1
+  fl_chart: ^0.51.0
   flutter:
     sdk: flutter
   hive_provider:
@@ -28,12 +28,12 @@ dependencies:
   isar_provider:
     path: ../isar_provider
   logging: ^1.0.2
-  objectbox_flutter_libs: ^1.4.1
+  objectbox_flutter_libs: ^1.5.0
   objectbox_provider:
     path: ../objectbox_provider
-  path_provider: ^2.0.9
-  provider: ^6.0.2
-  realm: ^0.2.0+alpha
+  path_provider: ^2.0.11
+  provider: ^6.0.3
+  realm: 0.2.0+alpha
   realm_provider:
     path: ../realm_provider
   sqlite3_flutter_libs: ^0.5.7
