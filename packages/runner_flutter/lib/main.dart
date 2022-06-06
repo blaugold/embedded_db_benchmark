@@ -33,9 +33,7 @@ Future<Map<String, String>> main() async {
       // Realm is not supported on Linux.
       if (!Platform.isLinux) RealmProvider(),
       HiveProvider(),
-      // Isar is broken on iOS currently.
-      // https://github.com/isar/isar/issues/225
-      if (!Platform.isIOS) IsarProvider(),
+      IsarProvider(),
       ObjectBoxProvider(),
     ],
   );
