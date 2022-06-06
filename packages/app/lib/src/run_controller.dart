@@ -268,7 +268,8 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
 
   Future<void> importResults() async {
     final pickedFiles = await FilePicker.platform.pickFiles(
-      type: FileType.any,
+      type: FileType.custom,
+      allowedExtensions: ['json'],
       withData: true,
       dialogTitle: 'Select benchmark results file',
     );
