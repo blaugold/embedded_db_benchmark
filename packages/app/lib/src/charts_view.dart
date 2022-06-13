@@ -18,18 +18,27 @@ class ChartsView extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Databases'),
-              Tab(text: 'Batch sizes'),
-            ],
-          ),
-        ),
-        body: const TabBarView(
+        body: Column(
           children: [
-            _DatabasesCharts(),
-            _BatchSizeCharts(),
+            Container(
+              color: Theme.of(context).primaryColor,
+              child: SafeArea(
+                child: const TabBar(
+                  tabs: [
+                    Tab(text: 'Databases'),
+                    Tab(text: 'Batch sizes'),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: const TabBarView(
+                children: [
+                  _DatabasesCharts(),
+                  _BatchSizeCharts(),
+                ],
+              ),
+            ),
           ],
         ),
       ),
