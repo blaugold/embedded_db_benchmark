@@ -9,8 +9,8 @@ dependencies:
   args: ^2.3.1
   benchmark:
     path: ../benchmark
-  cbl: ^1.2.0
-  cbl_dart: ^1.1.0+0
+  cbl: ^2.0.0
+  cbl_dart: ^2.0.0
   cbl_provider:
     path: ../cbl_provider
   drift_provider:

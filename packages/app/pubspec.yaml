@@ -9,9 +9,9 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^1.2.0
-  cbl_flutter: ^1.0.0+3
-  cbl_flutter_ce: ^1.1.1
+  cbl: ^2.0.0
+  cbl_flutter: ^2.0.0
+  cbl_flutter_ce: ^2.0.0
   cbl_provider:
     path: ../cbl_provider
   collection: ^1.15.0
