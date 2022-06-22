@@ -120,39 +120,40 @@ class _DatabaseChart extends StatelessWidget {
           ),
           ParameterArgumentsDescription(arguments: arguments),
           const SizedBox(height: 16),
-          Expanded(
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+          if (databaseProviders.isNotEmpty)
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  titlesData: FlTitlesData(
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: _operationsAxisTitles(),
+                    bottomTitles: _categoryAxisTitles(
+                      reservedSize: 74,
+                      title: (value) => databaseProviders[value.toInt()].name,
+                    ),
                   ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  leftTitles: _operationsAxisTitles(),
-                  bottomTitles: _categoryAxisTitles(
-                    reservedSize: 74,
-                    title: (value) => databaseProviders[value.toInt()].name,
-                  ),
+                  gridData: _flGridData(context),
+                  borderData: _flBorderData(context),
+                  barGroups: List.generate(databaseProviders.length, (index) {
+                    final databaseProvider = databaseProviders[index];
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        _buildBarChardRod(databaseProvider, Execution.sync),
+                        _buildBarChardRod(databaseProvider, Execution.async),
+                      ],
+                      barsSpace: 0,
+                    );
+                  }),
+                  barTouchData: _barTouchData(),
                 ),
-                gridData: _flGridData(context),
-                borderData: _flBorderData(context),
-                barGroups: List.generate(databaseProviders.length, (index) {
-                  final databaseProvider = databaseProviders[index];
-                  return BarChartGroupData(
-                    x: index,
-                    barRods: [
-                      _buildBarChardRod(databaseProvider, Execution.sync),
-                      _buildBarChardRod(databaseProvider, Execution.async),
-                    ],
-                    barsSpace: 0,
-                  );
-                }),
-                barTouchData: _barTouchData(),
               ),
-            ),
-          )
+            )
         ],
       ),
     );
@@ -241,39 +242,40 @@ class _BatchSizeChart extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          Expanded(
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
+          if (batchSizes.isNotEmpty)
+            Expanded(
+              child: BarChart(
+                BarChartData(
+                  titlesData: FlTitlesData(
+                    topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: _operationsAxisTitles(),
+                    bottomTitles: _categoryAxisTitles(
+                      reservedSize: 74,
+                      title: (value) => value.floor().toString(),
+                    ),
                   ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  leftTitles: _operationsAxisTitles(),
-                  bottomTitles: _categoryAxisTitles(
-                    reservedSize: 74,
-                    title: (value) => value.floor().toString(),
-                  ),
+                  gridData: _flGridData(context),
+                  borderData: _flBorderData(context),
+                  barGroups: [
+                    for (final batchSize in batchSizes)
+                      BarChartGroupData(
+                        x: batchSize,
+                        barRods: [
+                          _buildBarChardRod(batchSize, Execution.sync),
+                          _buildBarChardRod(batchSize, Execution.async),
+                        ],
+                        barsSpace: 0,
+                      )
+                  ],
+                  barTouchData: _barTouchData(),
                 ),
-                gridData: _flGridData(context),
-                borderData: _flBorderData(context),
-                barGroups: [
-                  for (final batchSize in batchSizes)
-                    BarChartGroupData(
-                      x: batchSize,
-                      barRods: [
-                        _buildBarChardRod(batchSize, Execution.sync),
-                        _buildBarChardRod(batchSize, Execution.async),
-                      ],
-                      barsSpace: 0,
-                    )
-                ],
-                barTouchData: _barTouchData(),
               ),
-            ),
-          )
+            )
         ],
       ),
     );
