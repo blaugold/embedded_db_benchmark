@@ -27,15 +27,14 @@ Future<Map<String, String>> main() async {
     ..level = Level.INFO;
 
   final results = await runParameterMatrix(
-    databasesProviders: [
+    databasesProviders: <DatabaseProvider>[
       CblProvider(),
-      if (!Platform.isLinux && !Platform.isWindows) DriftProvider(),
-      // Realm is not supported on Linux.
-      if (!Platform.isLinux) RealmProvider(),
+      DriftProvider(),
+      RealmProvider(),
       HiveProvider(),
       IsarProvider(),
       ObjectBoxProvider(),
-    ],
+    ].where((provider) => provider.supportsCurrentPlatform).toList(),
   );
 
   results.toAsciiTable().split('\n').forEach(Logger.root.info);
