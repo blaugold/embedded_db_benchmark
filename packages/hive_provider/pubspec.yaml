@@ -8,7 +8,7 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  hive: ^2.2.1
+  hive: ^2.2.2
 
 dev_dependencies:
   build_runner: any
