@@ -42,7 +42,8 @@ class HiveProvider extends DatabaseProvider<String, HiveDoc> {
   ) async {
     _initializeHive();
 
-    final box = await Hive.openLazyBox<HiveDoc>('hive_benchmark', path: directory);
+    final box =
+        await Hive.openLazyBox<HiveDoc>('hive_benchmark', path: directory);
     return _HiveDatabase(box);
   }
 }
