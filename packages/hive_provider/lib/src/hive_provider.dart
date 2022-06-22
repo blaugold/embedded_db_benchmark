@@ -6,13 +6,16 @@ import 'package:hive/hive.dart';
 import 'constants.dart';
 import 'hive_document.dart';
 
-var _typeAdaptersRegistered = false;
+const bool _isWeb = identical(0, 0.0);
 
-void _registerTypeAdapters() {
-  if (_typeAdaptersRegistered) {
+var _hiveIsInitialized = false;
+
+void _initializeHive() {
+  if (_hiveIsInitialized) {
     return;
   }
-  _typeAdaptersRegistered = true;
+  _hiveIsInitialized = true;
+  Hive.init(null, backendPreference: HiveStorageBackendPreference.webWorker);
   Hive.registerAdapter(HiveDocAdapter());
   Hive.registerAdapter(HiveNameAdapter());
   Hive.registerAdapter(HiveFriendAdapter());
@@ -37,9 +40,9 @@ class HiveProvider extends DatabaseProvider<String, HiveDoc> {
     String directory,
     ParameterArguments arguments,
   ) async {
-    _registerTypeAdapters();
+    _initializeHive();
 
-    final box = await Hive.openLazyBox<HiveDoc>('benchmark', path: directory);
+    final box = await Hive.openLazyBox<HiveDoc>('hive_benchmark', path: directory);
     return _HiveDatabase(box);
   }
 }
@@ -53,7 +56,12 @@ class _HiveDatabase extends BenchmarkDatabase<String, HiveDoc> {
   HiveDoc createBenchmarkDocImpl(BenchmarkDoc<String> doc) => doc.toHiveDoc();
 
   @override
-  FutureOr<void> close() => box.close();
+  FutureOr<void> close() async {
+    if (_isWeb) {
+      await box.clear();
+    }
+    return box.close();
+  }
 
   @override
   FutureOr<void> clear() => box.clear();

@@ -207,6 +207,9 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
     Object error,
     StackTrace stackTrace,
   ) {
+    // TODO: make errors viewable in UI
+    print(error);
+    print(stackTrace);
     _currentConfiguration = null;
     _lifecycle = null;
     progress.value = null;

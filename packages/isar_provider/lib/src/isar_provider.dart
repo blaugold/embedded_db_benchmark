@@ -6,6 +6,8 @@ import 'package:isar/isar.dart';
 import 'constants.dart';
 import 'isar_document.dart';
 
+const bool _isWeb = identical(0, 0.0);
+
 class IsarProvider extends DatabaseProvider<int, IsarDoc> {
   @override
   String get name => databaseName;
@@ -16,7 +18,10 @@ class IsarProvider extends DatabaseProvider<int, IsarDoc> {
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>
       andPredicates([
-        anyArgument(execution),
+        anyArgumentOf(execution, [
+          if (!_isWeb) Execution.sync,
+          Execution.async,
+        ]),
         anyArgument(batchSize),
       ])(arguments);
 
@@ -26,13 +31,14 @@ class IsarProvider extends DatabaseProvider<int, IsarDoc> {
     ParameterArguments arguments,
   ) async {
     final isar = await Isar.open(
+      name: 'isar_benchmark',
+      directory: directory,
+      relaxedDurability: false,
       schemas: [
         IsarDocSchema,
         IsarNameSchema,
         IsarFriendSchema,
       ],
-      directory: directory,
-      relaxedDurability: false,
     );
 
     switch (arguments.get(execution)!) {
@@ -145,7 +151,7 @@ class _AsyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   IsarDoc createBenchmarkDocImpl(BenchmarkDoc<int> doc) => doc.toIsarDoc();
 
   @override
-  FutureOr<void> close() => isar.close();
+  FutureOr<void> close() => isar.close(deleteFromDisk: _isWeb);
 
   @override
   Future<void> clear() => isar.writeTxn((isar) => isar.clear());

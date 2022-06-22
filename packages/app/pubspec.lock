@@ -365,7 +365,7 @@ packages:
       name: hive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.2"
   hive_provider:
     dependency: "direct main"
     description:
@@ -373,6 +373,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.13.4"
   http_multi_server:
     dependency: transitive
     description:
@@ -720,7 +727,7 @@ packages:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.1"
+    version: "1.7.2"
   sqlite3_flutter_libs:
     dependency: "direct main"
     description:

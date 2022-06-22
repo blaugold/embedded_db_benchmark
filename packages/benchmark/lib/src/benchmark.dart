@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:csv/csv.dart';
@@ -11,6 +10,7 @@ import 'benchmark_database.dart';
 import 'benchmark_document.dart';
 import 'benchmark_parameter.dart';
 import 'database_provider.dart';
+import 'io.dart' if (dart.library.html) 'io_web.dart';
 import 'parameter.dart';
 
 @immutable
@@ -699,7 +699,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   late final ParameterArguments _arguments;
   late final BenchmarkDuration _warmUpDuration;
   late final BenchmarkDuration _runDuration;
-  late final Directory _tempDirectory;
+  late final String _tempDirectory;
   late final _OnBenchmarkRunnerChange? _onChange;
 
   BenchmarkRunnerLifecycle get lifecycle => _lifecycle;
@@ -741,11 +741,11 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   @protected
   @mustCallSuper
   Future<void> setup() async {
-    _tempDirectory = Directory.systemTemp.createTempSync();
-    logger.fine('Opening database in ${_tempDirectory.path}');
+    _tempDirectory = createTempDir();
+    logger.fine('Opening database in ${_tempDirectory}');
 
     database = await _databaseProvider.openDatabase(
-      _tempDirectory.path,
+      _tempDirectory,
       _arguments,
     );
   }
@@ -769,7 +769,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
   FutureOr<void> teardown() async {
     await database.close();
     try {
-      await _tempDirectory.delete(recursive: true);
+      await deleteDirectory(_tempDirectory);
     } catch (e) {
       logger.warning('Failed to delete temporary directory: $e');
     }
@@ -809,49 +809,56 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
     _onChange = onChange;
     this.logger = logger;
 
-    final stopwatch = Stopwatch()..start();
+    try {
+      final stopwatch = Stopwatch()..start();
 
-    _lifecycle = BenchmarkRunnerLifecycle.setup;
-    _notifyChangeHandler();
-    await Future(setup);
-
-    _lifecycle = BenchmarkRunnerLifecycle.validateDatabase;
-    _notifyChangeHandler();
-    await Future(validateDatabase);
-    _resetMeasuredOperations();
-
-    _lifecycle = BenchmarkRunnerLifecycle.warmUp;
-    _notifyChangeHandler();
-    while (!_warmUpDuration.isDone(this)) {
-      await Future(executeOperations);
-      _progress = _warmUpDuration.progress(this);
+      _lifecycle = BenchmarkRunnerLifecycle.setup;
       _notifyChangeHandler();
-    }
-    _resetMeasuredOperations();
+      await Future(setup);
 
-    _lifecycle = BenchmarkRunnerLifecycle.run;
-    _progress = 0;
-    _notifyChangeHandler();
-    while (!_runDuration.isDone(this)) {
-      await Future(executeOperations);
-      _progress = _runDuration.progress(this);
+      _lifecycle = BenchmarkRunnerLifecycle.validateDatabase;
       _notifyChangeHandler();
+      await Future(validateDatabase);
+      _resetMeasuredOperations();
+
+      _lifecycle = BenchmarkRunnerLifecycle.warmUp;
+      _notifyChangeHandler();
+      while (!_warmUpDuration.isDone(this)) {
+        await Future(executeOperations);
+        _progress = _warmUpDuration.progress(this);
+        _notifyChangeHandler();
+      }
+      _resetMeasuredOperations();
+
+      _lifecycle = BenchmarkRunnerLifecycle.run;
+      _progress = 0;
+      _notifyChangeHandler();
+      while (!_runDuration.isDone(this)) {
+        await Future(executeOperations);
+        _progress = _runDuration.progress(this);
+        _notifyChangeHandler();
+      }
+
+      _lifecycle = BenchmarkRunnerLifecycle.teardown;
+      _notifyChangeHandler();
+      await Future(teardown);
+
+      stopwatch.stop();
+
+      _lifecycle = BenchmarkRunnerLifecycle.done;
+      _notifyChangeHandler();
+
+      return BenchmarkResult(
+        operations: executedOperations,
+        operationsRunTime: Duration(microseconds: executionTimeInMicroseconds),
+        benchmarkRunTime: Duration(microseconds: stopwatch.elapsedMicroseconds),
+      );
+    } catch (e) {
+      try {
+        await Future(teardown);
+      } catch (e) {}
+      rethrow;
     }
-
-    _lifecycle = BenchmarkRunnerLifecycle.teardown;
-    _notifyChangeHandler();
-    await Future(teardown);
-
-    stopwatch.stop();
-
-    _lifecycle = BenchmarkRunnerLifecycle.done;
-    _notifyChangeHandler();
-
-    return BenchmarkResult(
-      operations: executedOperations,
-      operationsRunTime: Duration(microseconds: executionTimeInMicroseconds),
-      benchmarkRunTime: Duration(microseconds: stopwatch.elapsedMicroseconds),
-    );
   }
 
   void _resetMeasuredOperations() {
@@ -1036,7 +1043,7 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
   LoggerBenchmarkPlanObserver(this._logger);
 
   final Logger _logger;
-  final _hasTerminal = stdout.hasTerminal;
+  final _hasTerminal = hasTerminal;
   int? _lastProgress;
 
   @override
@@ -1122,12 +1129,12 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
     _lastProgress = newProgress;
 
     if (_lastProgress != 0) {
-      stdout.write('\u001B[A\u001B[K\r');
+      stdoutWrite('\u001B[A\u001B[K\r');
     }
 
     final isWarmUp = runner.lifecycle == BenchmarkRunnerLifecycle.warmUp;
-    stdout.write(isWarmUp ? 'Warm-up' : 'Benchmark');
-    stdout.write('${newProgress.toInt()}%'.padLeft(5));
-    stdout.write('\n');
+    stdoutWrite(isWarmUp ? 'Warm-up' : 'Benchmark');
+    stdoutWrite('${newProgress.toInt()}%'.padLeft(5));
+    stdoutWrite('\n');
   }
 }
