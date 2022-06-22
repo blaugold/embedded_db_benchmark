@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:benchmark/benchmark.dart';
+import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
@@ -49,7 +50,9 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
     if (showAllRunConfigurations) {
       return allRunConfigurations;
     } else {
-      return _runnableRunConfigurations;
+      return allRunConfigurations
+          .where((config) => config.isRunnable || hasResult(config))
+          .toList();
     }
   }
 
@@ -86,11 +89,10 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
 
   void runConfigurations({bool onlyIfWithoutResult = false}) {
     assert(_status == RunControllerStatus.notRunning);
-    var configurations = _plan.runConfigurations;
+    var configurations =
+        _plan.runConfigurations.where((config) => config.isRunnable).toList();
     if (onlyIfWithoutResult) {
-      configurations = configurations
-          .where((configuration) => getResults(configuration).isEmpty)
-          .toList();
+      configurations = configurations.whereNot(hasResult).toList();
     }
 
     _runConfigurations(configurations);
@@ -98,6 +100,7 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
 
   void runConfiguration(BenchmarkRunConfiguration configuration) {
     assert(_status == RunControllerStatus.notRunning);
+    assert(configuration.isRunnable);
     assert(plan.runConfigurations.contains(configuration));
 
     _runConfigurations([configuration]);
@@ -217,6 +220,9 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
   }
 
   final _resultsByConfiguration = <BenchmarkRunConfiguration, List<Object>>{};
+
+  bool hasResult(BenchmarkRunConfiguration configuration) =>
+      (_resultsByConfiguration[configuration]?.isNotEmpty ?? false);
 
   List<Object> getResults(BenchmarkRunConfiguration configuration) {
     return List.unmodifiable(_resultsByConfiguration[configuration]!);

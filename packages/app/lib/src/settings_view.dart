@@ -47,8 +47,7 @@ class _SettingsViewState extends State<SettingsView> {
             CheckboxListTile(
               value: settingsController.databaseProviders
                   .contains(databaseProvider),
-              onChanged: editable &&
-                      availableDatabaseProviders.contains(databaseProvider)
+              onChanged: editable
                   ? (value) => settingsController.setDatabaseProviderEnabled(
                         databaseProvider,
                         isEnabled: value!,

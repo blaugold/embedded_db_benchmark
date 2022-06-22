@@ -79,6 +79,10 @@ class _RunConfigurationList extends StatelessWidget {
     final runController = context.watch<RunController>();
     final runConfigurations = runController.visibleRunConfigurations;
 
+    if (runConfigurations.isEmpty) {
+      return _NoRunConfigurationsView();
+    }
+
     return ListView.separated(
       primary: false,
       padding: fabClearancePadding,
@@ -108,6 +112,37 @@ class _RunConfigurationList extends StatelessWidget {
       },
       itemCount: runConfigurations.length,
       separatorBuilder: (context, i) => const Divider(height: 0),
+    );
+  }
+}
+
+class _NoRunConfigurationsView extends StatelessWidget {
+  const _NoRunConfigurationsView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('No run configurations.'),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () {
+                context
+                    .read<RunController>()
+                    .importResults()
+                    .onError((error, stackTrace) {
+                  showErrorAlert(context, error, stackTrace);
+                });
+              },
+              child: Text('Import results'),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
@@ -161,25 +196,20 @@ class _RunConfigurationViewState extends State<_RunConfigurationView> {
     Color iconColor;
     Widget? state;
 
-    if (widget.runConfiguration.isRunnable) {
-      if (widget.lifecycle != null) {
-        iconData = Icons.autorenew;
-        iconColor = Colors.grey;
-        state = _progress(context);
-      } else if (lastResult is BenchmarkResult) {
-        iconData = Icons.check;
-        iconColor = Colors.green;
-        state = _resultTable(context, lastResult);
-      } else if (lastResult is BenchmarkThrewException) {
-        iconData = Icons.close;
-        iconColor = Colors.red;
-        // TODO: show the exception
-      } else {
-        iconData = Icons.circle;
-        iconColor = Colors.grey;
-      }
+    if (widget.lifecycle != null) {
+      iconData = Icons.autorenew;
+      iconColor = Colors.grey;
+      state = _progress(context);
+    } else if (lastResult is BenchmarkResult) {
+      iconData = Icons.check;
+      iconColor = Colors.green;
+      state = _resultTable(context, lastResult);
+    } else if (lastResult is BenchmarkThrewException) {
+      iconData = Icons.close;
+      iconColor = Colors.red;
+      // TODO: show the exception
     } else {
-      iconData = Icons.block;
+      iconData = Icons.circle;
       iconColor = Colors.grey;
     }
 
@@ -211,7 +241,7 @@ class _RunConfigurationViewState extends State<_RunConfigurationView> {
           ),
           const SizedBox(width: 8),
           IconButton(
-            onPressed: _isRunning
+            onPressed: !widget.runConfiguration.isRunnable || _isRunning
                 ? null
                 : () {
                     final runController = context.read<RunController>();

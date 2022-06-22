@@ -470,7 +470,7 @@ double? _operationsPerSecond(
   int batchSizeValue,
 ) {
   final runConfiguration =
-      runController.runnableRunConfigurations.where((runConfiguration) {
+      runController.visibleRunConfigurations.where((runConfiguration) {
     final arguments = runConfiguration.arguments;
     return runConfiguration.benchmark == benchmark &&
         runConfiguration.databaseProvider == databaseProvider &&
