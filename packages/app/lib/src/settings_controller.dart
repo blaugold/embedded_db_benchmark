@@ -18,10 +18,6 @@ final _allDatabaseProviders = <Symbol, DatabaseProvider>{
 
 final allDatabaseProviders = _allDatabaseProviders.values.toList();
 
-final availableDatabaseProviders = _allDatabaseProviders.values
-    .where((provider) => provider.supportsCurrentPlatform)
-    .toList();
-
 final databaseProviderColors = <DatabaseProvider, Color>{
   _allDatabaseProviders[#cbl]!: Colors.blue,
   _allDatabaseProviders[#drift]!: Colors.green,
@@ -53,7 +49,7 @@ class SettingsController extends ChangeNotifier {
 
   List<DatabaseProvider> get databaseProviders => _databaseProviders;
   final List<DatabaseProvider> _databaseProviders = [
-    ...availableDatabaseProviders
+    ..._allDatabaseProviders.values
   ];
 
   void setDatabaseProviderEnabled(

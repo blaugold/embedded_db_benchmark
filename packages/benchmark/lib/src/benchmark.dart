@@ -27,6 +27,7 @@ class BenchmarkRunConfiguration {
 
   bool get isRunnable =>
       benchmark.supportsParameterArguments(arguments) &&
+      databaseProvider.supportsCurrentPlatform &&
       databaseProvider.supportsParameterArguments(arguments);
 
   @override
