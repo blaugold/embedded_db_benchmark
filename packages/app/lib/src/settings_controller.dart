@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:benchmark/benchmark.dart';
 import 'package:cbl_provider/cbl_provider.dart';
 import 'package:drift_provider/drift_provider.dart';
@@ -20,14 +18,9 @@ final _allDatabaseProviders = <Symbol, DatabaseProvider>{
 
 final allDatabaseProviders = _allDatabaseProviders.values.toList();
 
-final availableDatabaseProviders = [
-  _allDatabaseProviders[#cbl]!,
-  if (!Platform.isLinux && !Platform.isWindows) _allDatabaseProviders[#drift]!,
-  if (!Platform.isLinux) _allDatabaseProviders[#realm]!,
-  _allDatabaseProviders[#hive]!,
-  _allDatabaseProviders[#isar]!,
-  _allDatabaseProviders[#objectBox]!,
-];
+final availableDatabaseProviders = _allDatabaseProviders.values
+    .where((provider) => provider.supportsCurrentPlatform)
+    .toList();
 
 final databaseProviderColors = <DatabaseProvider, Color>{
   _allDatabaseProviders[#cbl]!: Colors.blue,
@@ -120,7 +113,7 @@ class SettingsController extends ChangeNotifier {
   }
 
   BenchmarkPlan get plan {
-    final arguments = [
+    final allArguments = [
       ListParameterRange(execution, executions),
       ListParameterRange(batchSize, enabledBatchSize),
     ].crossProduct().toList();
@@ -131,7 +124,7 @@ class SettingsController extends ChangeNotifier {
       runConfigurations: [
         for (final databaseProvider in databaseProviders)
           for (final benchmark in benchmarks)
-            for (final arguments in arguments)
+            for (final arguments in allArguments)
               BenchmarkRunConfiguration(
                 benchmark: benchmark,
                 databaseProvider: databaseProvider,

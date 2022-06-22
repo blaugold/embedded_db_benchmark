@@ -1,10 +1,9 @@
 import 'package:benchmark/benchmark.dart';
-import 'package:cbl/cbl.dart';
-import 'package:cbl_flutter/cbl_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'app_io.dart' if (dart.library.html) 'app_web.dart';
 import 'home_page.dart';
 import 'run_controller.dart';
 import 'settings_controller.dart';
@@ -83,9 +82,7 @@ class _AppState extends State<App> {
 
 Future<void> _initialize() async {
   loadDocumentsJson = _loadDocumentsFromAssets;
-
-  await CouchbaseLiteFlutter.init();
-  Database.log.custom?.level = LogLevel.error;
+  initDatabasePlugins();
 }
 
 Future<String> _loadDocumentsFromAssets() =>
