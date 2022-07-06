@@ -6,7 +6,7 @@ part of 'realm_document.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class RealmDoc extends _RealmDoc with RealmObject {
+class RealmDoc extends _RealmDoc with RealmEntity, RealmObject {
   RealmDoc(
     String id,
     int index,
@@ -35,7 +35,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
     RealmObject.set(this, 'index', index);
     RealmObject.set(this, 'guid', guid);
     RealmObject.set(this, 'isActive', isActive);
-    this.balance_ = balance_;
+    RealmObject.set(this, 'balance_', balance_);
     RealmObject.set(this, 'picture', picture);
     RealmObject.set(this, 'age', age);
     RealmObject.set(this, 'eyeColor', eyeColor);
@@ -50,9 +50,10 @@ class RealmDoc extends _RealmDoc with RealmObject {
     RealmObject.set(this, 'longitude', longitude);
     RealmObject.set(this, 'greeting', greeting);
     RealmObject.set(this, 'favoriteFruit', favoriteFruit);
-    RealmObject.set<List<String>>(this, 'tags', tags.toList());
-    RealmObject.set<List<int>>(this, 'range', range.toList());
-    RealmObject.set<List<RealmFriend>>(this, 'friends', friends.toList());
+    RealmObject.set<RealmList<String>>(this, 'tags', RealmList<String>(tags));
+    RealmObject.set<RealmList<int>>(this, 'range', RealmList<int>(range));
+    RealmObject.set<RealmList<RealmFriend>>(
+        this, 'friends', RealmList<RealmFriend>(friends));
   }
 
   RealmDoc._();
@@ -145,21 +146,23 @@ class RealmDoc extends _RealmDoc with RealmObject {
   set longitude(String value) => throw RealmUnsupportedSetError();
 
   @override
-  List<String> get tags =>
-      RealmObject.get<String>(this, 'tags') as List<String>;
+  RealmList<String> get tags =>
+      RealmObject.get<String>(this, 'tags') as RealmList<String>;
   @override
-  set tags(List<String> value) => throw RealmUnsupportedSetError();
+  set tags(covariant RealmList<String> value) =>
+      throw RealmUnsupportedSetError();
 
   @override
-  List<int> get range => RealmObject.get<int>(this, 'range') as List<int>;
+  RealmList<int> get range =>
+      RealmObject.get<int>(this, 'range') as RealmList<int>;
   @override
-  set range(List<int> value) => throw RealmUnsupportedSetError();
+  set range(covariant RealmList<int> value) => throw RealmUnsupportedSetError();
 
   @override
-  List<RealmFriend> get friends =>
-      RealmObject.get<RealmFriend>(this, 'friends') as List<RealmFriend>;
+  RealmList<RealmFriend> get friends =>
+      RealmObject.get<RealmFriend>(this, 'friends') as RealmList<RealmFriend>;
   @override
-  set friends(covariant List<RealmFriend> value) =>
+  set friends(covariant RealmList<RealmFriend> value) =>
       throw RealmUnsupportedSetError();
 
   @override
@@ -173,11 +176,15 @@ class RealmDoc extends _RealmDoc with RealmObject {
   @override
   set favoriteFruit(String value) => throw RealmUnsupportedSetError();
 
+  @override
+  Stream<RealmObjectChanges<RealmDoc>> get changes =>
+      RealmObject.getChanges<RealmDoc>(this);
+
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(RealmDoc._);
-    return const SchemaObject(RealmDoc, [
+    return const SchemaObject(RealmDoc, 'RealmDoc', [
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('index', RealmPropertyType.int),
       SchemaProperty('guid', RealmPropertyType.string),
@@ -208,7 +215,7 @@ class RealmDoc extends _RealmDoc with RealmObject {
   }
 }
 
-class RealmName extends _RealmName with RealmObject {
+class RealmName extends _RealmName with RealmEntity, RealmObject {
   RealmName(
     String first,
     String last,
@@ -229,18 +236,22 @@ class RealmName extends _RealmName with RealmObject {
   @override
   set last(String value) => throw RealmUnsupportedSetError();
 
+  @override
+  Stream<RealmObjectChanges<RealmName>> get changes =>
+      RealmObject.getChanges<RealmName>(this);
+
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(RealmName._);
-    return const SchemaObject(RealmName, [
+    return const SchemaObject(RealmName, 'RealmName', [
       SchemaProperty('first', RealmPropertyType.string),
       SchemaProperty('last', RealmPropertyType.string),
     ]);
   }
 }
 
-class RealmFriend extends _RealmFriend with RealmObject {
+class RealmFriend extends _RealmFriend with RealmEntity, RealmObject {
   RealmFriend(
     int id,
     String name,
@@ -261,11 +272,15 @@ class RealmFriend extends _RealmFriend with RealmObject {
   @override
   set name(String value) => throw RealmUnsupportedSetError();
 
+  @override
+  Stream<RealmObjectChanges<RealmFriend>> get changes =>
+      RealmObject.getChanges<RealmFriend>(this);
+
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(RealmFriend._);
-    return const SchemaObject(RealmFriend, [
+    return const SchemaObject(RealmFriend, 'RealmFriend', [
       SchemaProperty('id', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
     ]);

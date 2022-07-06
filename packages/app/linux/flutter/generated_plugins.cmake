@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   cbl_flutter_ce
   isar_flutter_libs
   objectbox_flutter_libs
+  realm
   sqlite3_flutter_libs
 )
 

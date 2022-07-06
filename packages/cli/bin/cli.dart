@@ -16,4 +16,8 @@ Future<void> main(List<String> args) async {
     print('Internal error: $e');
     print(s);
   }
+
+  // Force exit, in case some database is leaking resources that keep the
+  // isolate running.
+  exit(exitCode);
 }
