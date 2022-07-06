@@ -8,3 +8,4 @@ build/
 librealm_dart.*
 download
 bin/cli.exe
+binary/
