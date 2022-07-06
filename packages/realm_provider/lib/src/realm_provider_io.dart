@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:benchmark/benchmark.dart';
 import 'package:path/path.dart' as p;
@@ -13,9 +12,7 @@ class RealmProvider extends DatabaseProvider<String, RealmDoc> {
   String get name => databaseName;
 
   @override
-  bool get supportsCurrentPlatform =>
-      // Realm is not supported on Linux, currently.
-      !Platform.isLinux;
+  bool get supportsCurrentPlatform => true;
 
   @override
   bool supportsParameterArguments(ParameterArguments arguments) =>
@@ -29,12 +26,14 @@ class RealmProvider extends DatabaseProvider<String, RealmDoc> {
     String directory,
     ParameterArguments arguments,
   ) {
-    final config = Configuration([
-      RealmDoc.schema,
-      RealmName.schema,
-      RealmFriend.schema,
-    ]);
-    config.path = p.join(directory, 'db.realm');
+    final config = Configuration.local(
+      [
+        RealmDoc.schema,
+        RealmName.schema,
+        RealmFriend.schema,
+      ],
+      path: p.join(directory, 'db.realm'),
+    );
 
     return _RealmDatabase(Realm(config));
   }

@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "38.0.0"
+    version: "41.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.1"
+    version: "4.2.0"
   archive:
     dependency: transitive
     description:
@@ -84,7 +84,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.9"
+    version: "2.0.8"
   build_runner:
     dependency: transitive
     description:
@@ -349,7 +349,7 @@ packages:
       name: hive
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.3"
   hive_provider:
     dependency: "direct main"
     description:
@@ -357,6 +357,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.13.4"
   http_multi_server:
     dependency: transitive
     description:
@@ -481,6 +488,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  objectid:
+    dependency: transitive
+    description:
+      name: objectid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   package_config:
     dependency: transitive
     description:
@@ -599,28 +613,28 @@ packages:
       name: realm
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0+alpha"
+    version: "0.3.1+beta"
   realm_common:
     dependency: transitive
     description:
       name: realm_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+alpha"
+    version: "0.3.1+beta"
   realm_dart:
     dependency: transitive
     description:
       name: realm_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.0+alpha"
+    version: "0.3.1+beta"
   realm_generator:
     dependency: transitive
     description:
       name: realm_generator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.1+alpha"
+    version: "0.3.1+beta"
   realm_provider:
     dependency: "direct main"
     description:
@@ -628,6 +642,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  sane_uuid:
+    dependency: transitive
+    description:
+      name: sane_uuid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0-alpha.4"
   shelf:
     dependency: transitive
     description:
@@ -695,7 +716,7 @@ packages:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.1"
+    version: "1.7.2"
   sqlite3_flutter_libs:
     dependency: "direct main"
     description:
@@ -758,7 +779,7 @@ packages:
       name: tar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.0"
+    version: "0.5.5+1"
   term_glyph:
     dependency: transitive
     description:
