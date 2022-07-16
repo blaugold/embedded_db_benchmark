@@ -480,7 +480,7 @@ double? _operationsPerSecond(
 
   if (runConfiguration != null) {
     return _benchmarkResult(runController, runConfiguration)
-        ?.operationsPerSecond;
+        ?.avgOperationThroughput;
   }
 
   return null;

@@ -327,7 +327,7 @@ class _RunConfigurationViewState extends State<_RunConfigurationView> {
           children: [
             const Text('Ops/s'),
             Text(
-              result.operationsPerSecond.floor().toString(),
+              result.avgOperationThroughput.floor().toString(),
               textAlign: TextAlign.end,
             ),
             Container(),
@@ -351,7 +351,7 @@ class _RunConfigurationViewState extends State<_RunConfigurationView> {
           children: [
             const Text('Time/Op'),
             Text(
-              (result.timePerOperationInMicroseconds.ceil()).toString(),
+              (result.avgOperationRunTime.ceil()).toString(),
               textAlign: TextAlign.end,
             ),
             const Padding(
