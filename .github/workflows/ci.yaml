@@ -92,6 +92,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
           sudo apt-get install libsqlite3-dev
+      - name: Update cocoapods repos
+        if: ${{ runner.os == 'macOS' }}
+        run: pod repo update
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
       - name: Enable Flutter platforms
