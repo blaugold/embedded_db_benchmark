@@ -149,6 +149,50 @@ class BenchmarkPlan {
     ..sort((a, b) => a.name.compareTo(b.name));
 }
 
+/// Information about a measurement, including how many [operations] where
+/// executed and how many [microseconds] it took.
+///
+/// When batched execution of operations are measured a single measurement is
+/// taken for each batch. [operations] is the number of operations in the batch.
+@immutable
+class Measurement {
+  const Measurement({required this.operations, required this.microseconds});
+
+  /// The number of operations that were executed as part of this measurement.
+  final int operations;
+
+  /// The number of microseconds it took to to execute the [operations].
+  final int microseconds;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Measurement &&
+          runtimeType == other.runtimeType &&
+          operations == other.operations &&
+          microseconds == other.microseconds;
+
+  @override
+  int get hashCode =>
+      runtimeType.hashCode ^ operations.hashCode ^ microseconds.hashCode;
+
+  @override
+  String toString() => 'Measurement('
+      'operations: $operations, '
+      'microseconds: $microseconds'
+      ')';
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'operations': operations,
+        'microseconds': microseconds,
+      };
+
+  factory Measurement.fromJson(Map<String, Object?> json) => Measurement(
+        operations: json['operations']! as int,
+        microseconds: json['microseconds']! as int,
+      );
+}
+
 /// The result of a single benchmark run.
 @immutable
 class BenchmarkResult {
@@ -156,6 +200,7 @@ class BenchmarkResult {
     required this.operations,
     required this.operationsRunTime,
     required this.benchmarkRunTime,
+    required this.measurements,
   });
 
   /// The total number of operations which were executed.
@@ -173,13 +218,16 @@ class BenchmarkResult {
   final Duration benchmarkRunTime;
 
   /// The number operations that were executed per second, on average.
-  double get operationsPerSecond =>
+  double get avgOperationThroughput =>
       operations / (operationsRunTime.inMicroseconds / 10e5);
 
   /// The number of microseconds it took to execute a single operation, on
   /// average.
-  double get timePerOperationInMicroseconds =>
+  double get avgOperationRunTime =>
       operationsRunTime.inMicroseconds / operations;
+
+  /// All [Measurement]s taken during the benchmark run.
+  final List<Measurement> measurements;
 
   @override
   bool operator ==(Object other) =>
@@ -188,19 +236,26 @@ class BenchmarkResult {
           runtimeType == other.runtimeType &&
           operations == other.operations &&
           operationsRunTime == other.operationsRunTime &&
-          benchmarkRunTime == other.benchmarkRunTime;
+          benchmarkRunTime == other.benchmarkRunTime &&
+          DeepCollectionEquality().equals(
+            measurements,
+            other.measurements,
+          );
 
   @override
   int get hashCode =>
+      runtimeType.hashCode ^
       operations.hashCode ^
       operationsRunTime.hashCode ^
-      benchmarkRunTime.hashCode;
+      benchmarkRunTime.hashCode ^
+      DeepCollectionEquality().hash(measurements);
 
   @override
   String toString() => 'BenchmarkResult('
       'operations: $operations, '
       'operationsRunTime: $operationsRunTime, '
-      'benchmarkRunTime: $benchmarkRunTime'
+      'benchmarkRunTime: $benchmarkRunTime, '
+      'measurements: $measurements'
       ')';
 
   Map<String, Object?> toJson() => {
@@ -208,6 +263,8 @@ class BenchmarkResult {
         'operations': operations,
         'operationsRunTime': operationsRunTime.inMicroseconds,
         'benchmarkRunTime': benchmarkRunTime.inMicroseconds,
+        'measurements':
+            measurements.map((measurement) => measurement.toJson()).toList(),
       };
 
   factory BenchmarkResult.fromJson(Map<String, Object?> json) =>
@@ -217,6 +274,10 @@ class BenchmarkResult {
             Duration(microseconds: json['operationsRunTime']! as int),
         benchmarkRunTime:
             Duration(microseconds: json['benchmarkRunTime']! as int),
+        measurements: (json['measurements']! as List<Object?>)
+            .cast<Map<String, Object?>>()
+            .map(Measurement.fromJson)
+            .toList(),
       );
 }
 
@@ -384,9 +445,9 @@ class BenchmarkResults {
             runConfiguration.databaseProvider.name,
             if (result != null) ...[
               result.operations,
-              result.operationsPerSecond.floor(),
+              result.avgOperationThroughput.floor(),
               '${(result.operationsRunTime.inMicroseconds / 10e5).toStringAsFixed(3)}s',
-              '${result.timePerOperationInMicroseconds.ceil()}us'
+              '${result.avgOperationRunTime.ceil()}us'
             ] else ...[
               '',
               '',
@@ -456,8 +517,8 @@ class BenchmarkResults {
             ),
           run.value.operationsRunTime.inMicroseconds,
           run.value.operations,
-          run.value.operationsPerSecond,
-          run.value.timePerOperationInMicroseconds,
+          run.value.avgOperationThroughput,
+          run.value.avgOperationRunTime,
         ],
     ];
 
@@ -615,14 +676,14 @@ class FixedTimedDuration extends BenchmarkDuration {
 
   @override
   bool isDone(BenchmarkRunner runner) =>
-      runner.executionTimeInMicroseconds >= duration.inMicroseconds;
+      runner.executionTime >= duration.inMicroseconds;
 
   @override
   int? maxAdditionalOperations(BenchmarkRunner runner) => null;
 
   @override
   double progress(BenchmarkRunner runner) =>
-      runner.executionTimeInMicroseconds / duration.inMicroseconds;
+      runner.executionTime / duration.inMicroseconds;
 
   @override
   bool operator ==(Object other) =>
@@ -725,9 +786,15 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
           ? _warmUpDuration.maxAdditionalOperations(this)
           : _runDuration.maxAdditionalOperations(this);
 
-  /// The total time it took to execute all [executedOperations].
-  int get executionTimeInMicroseconds => _stopwatch.elapsedMicroseconds;
+  /// The total time it took to execute all [executedOperations] in
+  /// microseconds.
+  int get executionTime => _stopwatch.elapsedMicroseconds;
   final _stopwatch = Stopwatch();
+
+  /// The [Measurement]s that have been taken so far through
+  /// [measureOperations].
+  List<Measurement> get measurements => List.unmodifiable(_measurements);
+  final _measurements = <Measurement>[];
 
   /// Logger for this benchmark runner.
   @protected
@@ -785,9 +852,12 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
     FutureOr<void> Function() fn, {
     int operations = 1,
   }) async {
+    final start = _stopwatch.elapsedMicroseconds;
     _stopwatch.start();
     await fn();
     _stopwatch.stop();
+    final time = _stopwatch.elapsedMicroseconds - start;
+    _measurements.add(Measurement(operations: operations, microseconds: time));
     _executedOperations += operations;
   }
 
@@ -850,8 +920,9 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
       return BenchmarkResult(
         operations: executedOperations,
-        operationsRunTime: Duration(microseconds: executionTimeInMicroseconds),
+        operationsRunTime: Duration(microseconds: executionTime),
         benchmarkRunTime: Duration(microseconds: stopwatch.elapsedMicroseconds),
+        measurements: measurements,
       );
     } catch (e) {
       try {
@@ -863,6 +934,7 @@ abstract class BenchmarkRunner<ID extends Object, T extends BenchmarkDoc<ID>> {
 
   void _resetMeasuredOperations() {
     _stopwatch.reset();
+    _measurements.clear();
     _executedOperations = 0;
   }
 
@@ -1086,9 +1158,9 @@ class LoggerBenchmarkPlanObserver extends BenchmarkPlanObserver {
   ) {
     [
       'Ops:     ${result.operations}',
-      'Ops/s:   ${result.operationsPerSecond.floor()}',
+      'Ops/s:   ${result.avgOperationThroughput.floor()}',
       'Time:    ${result.operationsRunTime.inMicroseconds / 10e5}s',
-      'Time/Op: ${result.timePerOperationInMicroseconds.ceil()}us'
+      'Time/Op: ${result.avgOperationRunTime.ceil()}us'
     ].forEach(_logger.info);
     _logger.info('');
   }
