@@ -8,7 +8,7 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^2.0.0
+  cbl: ^2.0.0+0
   cbl_flutter: ^2.0.0
   cbl_flutter_ce: ^2.0.0
   cbl_provider:
@@ -24,14 +24,14 @@ dependencies:
   isar_provider:
     path: ../isar_provider
   logging: ^1.0.2
-  objectbox_flutter_libs: ^1.5.0
+  objectbox_flutter_libs: ^1.6.0
   objectbox_provider:
     path: ../objectbox_provider
   path_provider: ^2.0.11
   realm: 0.3.1+beta
   realm_provider:
     path: ../realm_provider
-  sqlite3_flutter_libs: ^0.5.7
+  sqlite3_flutter_libs: ^0.5.8
 
 dev_dependencies:
   flutter_test:

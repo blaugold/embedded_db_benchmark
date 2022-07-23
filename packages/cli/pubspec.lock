@@ -112,7 +112,7 @@ packages:
       name: cbl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.0+0"
   cbl_dart:
     dependency: "direct main"
     description:
@@ -217,7 +217,7 @@ packages:
       name: drift
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.0"
+    version: "1.7.1"
   drift_provider:
     dependency: "direct main"
     description:
@@ -385,7 +385,7 @@ packages:
       name: objectbox
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.0"
+    version: "1.6.0"
   objectbox_provider:
     dependency: "direct main"
     description:
@@ -602,21 +602,21 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.21.1"
+    version: "1.21.4"
   test_api:
     dependency: transitive
     description:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.9"
+    version: "0.4.12"
   test_core:
     dependency: transitive
     description:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.13"
+    version: "0.4.16"
   timing:
     dependency: transitive
     description:
