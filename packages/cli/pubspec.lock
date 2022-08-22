@@ -217,7 +217,7 @@ packages:
       name: drift
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.1"
+    version: "2.0.2+1"
   drift_provider:
     dependency: "direct main"
     description:
@@ -294,7 +294,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4"
+    version: "0.13.5"
   http_multi_server:
     dependency: transitive
     description:
@@ -539,7 +539,7 @@ packages:
       name: sqlite3
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.2"
+    version: "1.8.0"
   stack_trace:
     dependency: transitive
     description:

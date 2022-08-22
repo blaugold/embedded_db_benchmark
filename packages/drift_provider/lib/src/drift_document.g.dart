@@ -3,7 +3,7 @@
 part of 'drift_document.dart';
 
 // **************************************************************************
-// MoorGenerator
+// DriftDatabaseGenerator
 // **************************************************************************
 
 // ignore_for_file: type=lint
@@ -107,8 +107,8 @@ class DriftDocsCompanion extends UpdateCompanion<DriftDoc> {
     Expression<String>? registered,
     Expression<String>? latitude,
     Expression<String>? longitude,
-    Expression<List<String>>? tags,
-    Expression<List<int>>? range,
+    Expression<String>? tags,
+    Expression<String>? range,
     Expression<String>? greeting,
     Expression<String>? favoriteFruit,
   }) {
@@ -234,11 +234,11 @@ class DriftDocsCompanion extends UpdateCompanion<DriftDoc> {
     }
     if (tags.present) {
       final converter = $DriftDocsTable.$converter0;
-      map['tags'] = Variable<String>(converter.mapToSql(tags.value)!);
+      map['tags'] = Variable<String>(converter.toSql(tags.value));
     }
     if (range.present) {
       final converter = $DriftDocsTable.$converter1;
-      map['range'] = Variable<String>(converter.mapToSql(range.value)!);
+      map['range'] = Variable<String>(converter.toSql(range.value));
     }
     if (greeting.present) {
       map['greeting'] = Variable<String>(greeting.value);
@@ -285,111 +285,111 @@ class $DriftDocsTable extends DriftDocs
   $DriftDocsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _indexMeta = const VerificationMeta('index');
   @override
-  late final GeneratedColumn<int?> index = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> index = GeneratedColumn<int>(
       'index', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _guidMeta = const VerificationMeta('guid');
   @override
-  late final GeneratedColumn<String?> guid = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> guid = GeneratedColumn<String>(
       'guid', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _isActiveMeta = const VerificationMeta('isActive');
   @override
-  late final GeneratedColumn<bool?> isActive = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
       'is_active', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (is_active IN (0, 1))');
   final VerificationMeta _balanceMeta = const VerificationMeta('balance');
   @override
-  late final GeneratedColumn<String?> balance = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> balance = GeneratedColumn<String>(
       'balance', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _pictureMeta = const VerificationMeta('picture');
   @override
-  late final GeneratedColumn<String?> picture = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> picture = GeneratedColumn<String>(
       'picture', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _ageMeta = const VerificationMeta('age');
   @override
-  late final GeneratedColumn<int?> age = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> age = GeneratedColumn<int>(
       'age', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _eyeColorMeta = const VerificationMeta('eyeColor');
   @override
-  late final GeneratedColumn<String?> eyeColor = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> eyeColor = GeneratedColumn<String>(
       'eye_color', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _companyMeta = const VerificationMeta('company');
   @override
-  late final GeneratedColumn<String?> company = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> company = GeneratedColumn<String>(
       'company', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _emailMeta = const VerificationMeta('email');
   @override
-  late final GeneratedColumn<String?> email = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
       'email', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _phoneMeta = const VerificationMeta('phone');
   @override
-  late final GeneratedColumn<String?> phone = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
       'phone', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _addressMeta = const VerificationMeta('address');
   @override
-  late final GeneratedColumn<String?> address = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
       'address', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _aboutMeta = const VerificationMeta('about');
   @override
-  late final GeneratedColumn<String?> about = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> about = GeneratedColumn<String>(
       'about', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _registeredMeta = const VerificationMeta('registered');
   @override
-  late final GeneratedColumn<String?> registered = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> registered = GeneratedColumn<String>(
       'registered', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _latitudeMeta = const VerificationMeta('latitude');
   @override
-  late final GeneratedColumn<String?> latitude = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> latitude = GeneratedColumn<String>(
       'latitude', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _longitudeMeta = const VerificationMeta('longitude');
   @override
-  late final GeneratedColumn<String?> longitude = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> longitude = GeneratedColumn<String>(
       'longitude', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _tagsMeta = const VerificationMeta('tags');
   @override
-  late final GeneratedColumnWithTypeConverter<List<String>, String?> tags =
-      GeneratedColumn<String?>('tags', aliasedName, false,
-              type: const StringType(), requiredDuringInsert: true)
+  late final GeneratedColumnWithTypeConverter<List<String>, String> tags =
+      GeneratedColumn<String>('tags', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<List<String>>($DriftDocsTable.$converter0);
   final VerificationMeta _rangeMeta = const VerificationMeta('range');
   @override
-  late final GeneratedColumnWithTypeConverter<List<int>, String?> range =
-      GeneratedColumn<String?>('range', aliasedName, false,
-              type: const StringType(), requiredDuringInsert: true)
+  late final GeneratedColumnWithTypeConverter<List<int>, String> range =
+      GeneratedColumn<String>('range', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<List<int>>($DriftDocsTable.$converter1);
   final VerificationMeta _greetingMeta = const VerificationMeta('greeting');
   @override
-  late final GeneratedColumn<String?> greeting = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> greeting = GeneratedColumn<String>(
       'greeting', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _favoriteFruitMeta =
       const VerificationMeta('favoriteFruit');
   @override
-  late final GeneratedColumn<String?> favoriteFruit = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> favoriteFruit = GeneratedColumn<String>(
       'favorite_fruit', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -542,46 +542,46 @@ class $DriftDocsTable extends DriftDocs
   DriftDoc map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DriftDoc(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      index: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}index'])!,
-      guid: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}guid'])!,
-      isActive: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_active'])!,
-      balance: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}balance'])!,
-      picture: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}picture'])!,
-      age: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}age'])!,
-      eyeColor: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}eye_color'])!,
-      company: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}company'])!,
-      email: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}email'])!,
-      phone: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}phone'])!,
-      address: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}address'])!,
-      about: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}about'])!,
-      registered: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}registered'])!,
-      latitude: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}latitude'])!,
-      longitude: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}longitude'])!,
-      tags: $DriftDocsTable.$converter0.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tags']))!,
-      range: $DriftDocsTable.$converter1.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}range']))!,
-      greeting: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}greeting'])!,
-      favoriteFruit: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}favorite_fruit'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      index: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}index'])!,
+      guid: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}guid'])!,
+      isActive: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      balance: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}balance'])!,
+      picture: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}picture'])!,
+      age: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}age'])!,
+      eyeColor: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}eye_color'])!,
+      company: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}company'])!,
+      email: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
+      phone: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}phone'])!,
+      address: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+      about: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}about'])!,
+      registered: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}registered'])!,
+      latitude: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}latitude'])!,
+      longitude: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}longitude'])!,
+      tags: $DriftDocsTable.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}tags'])!),
+      range: $DriftDocsTable.$converter1.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}range'])!),
+      greeting: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}greeting'])!,
+      favoriteFruit: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}favorite_fruit'])!,
     );
   }
 
@@ -666,19 +666,19 @@ class $DriftNamesTable extends DriftNames
   $DriftNamesTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _docIdMeta = const VerificationMeta('docId');
   @override
-  late final GeneratedColumn<int?> docId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> docId = GeneratedColumn<int>(
       'doc_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _firstMeta = const VerificationMeta('first');
   @override
-  late final GeneratedColumn<String?> first = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> first = GeneratedColumn<String>(
       'first', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _lastMeta = const VerificationMeta('last');
   @override
-  late final GeneratedColumn<String?> last = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> last = GeneratedColumn<String>(
       'last', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [docId, first, last];
   @override
@@ -715,12 +715,12 @@ class $DriftNamesTable extends DriftNames
   DriftName map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DriftName(
-      docId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}doc_id'])!,
-      first: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}first'])!,
-      last: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}last'])!,
+      docId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}doc_id'])!,
+      first: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}first'])!,
+      last: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}last'])!,
     );
   }
 
@@ -801,19 +801,19 @@ class $DriftFriendsTable extends DriftFriends
   $DriftFriendsTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _docIdMeta = const VerificationMeta('docId');
   @override
-  late final GeneratedColumn<int?> docId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> docId = GeneratedColumn<int>(
       'doc_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [docId, id, name];
   @override
@@ -851,12 +851,12 @@ class $DriftFriendsTable extends DriftFriends
   DriftFriend map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DriftFriend(
-      docId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}doc_id'])!,
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+      docId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}doc_id'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
     );
   }
 
@@ -867,14 +867,14 @@ class $DriftFriendsTable extends DriftFriends
 }
 
 abstract class _$DriftBenchmarkDatabase extends GeneratedDatabase {
-  _$DriftBenchmarkDatabase(QueryExecutor e)
-      : super(SqlTypeSystem.defaultInstance, e);
+  _$DriftBenchmarkDatabase(QueryExecutor e) : super(e);
   _$DriftBenchmarkDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $DriftDocsTable driftDocs = $DriftDocsTable(this);
   late final $DriftNamesTable driftNames = $DriftNamesTable(this);
   late final $DriftFriendsTable driftFriends = $DriftFriendsTable(this);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
       [driftDocs, driftNames, driftFriends];

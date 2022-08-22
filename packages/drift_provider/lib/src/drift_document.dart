@@ -9,22 +9,11 @@ class _JsonListConverter<T> implements TypeConverter<List<T>, String> {
   const _JsonListConverter();
 
   @override
-  List<T>? mapToDart(String? fromDb) {
-    if (fromDb == null) {
-      return null;
-    }
-
-    return (jsonDecode(fromDb) as List<Object?>).cast<T>();
-  }
+  List<T> fromSql(String fromDb) =>
+      (jsonDecode(fromDb) as List<Object?>).cast<T>();
 
   @override
-  String? mapToSql(List<T>? value) {
-    if (value == null) {
-      return null;
-    }
-
-    return jsonEncode(value);
-  }
+  String toSql(List<T> value) => jsonEncode(value);
 }
 
 @UseRowClass(DriftDoc)
