@@ -8,11 +8,11 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  drift: ^1.7.0
-  http: ^0.13.4
+  drift: ^2.0.2+1
+  http: ^0.13.5
   path: ^1.8.0
-  sqlite3: ^1.7.2
+  sqlite3: ^1.8.0
 
 dev_dependencies:
   build_runner: any
-  drift_dev: ^1.7.0
+  drift_dev: ^2.0.2

@@ -64,7 +64,7 @@ Future<DriftDatabase> _createDB(
 void _startBackground(_IsolateStartRequest request) {
   final executor = NativeDatabase(File(request.targetPath));
   final driftIsolate = DriftIsolate.inCurrent(
-    () => drift.DatabaseConnection.fromExecutor(executor),
+    () => drift.DatabaseConnection(executor),
     killIsolateWhenDone: true,
   );
   request.sendDriftIsolate.send(driftIsolate);

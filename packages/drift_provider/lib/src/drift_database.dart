@@ -63,7 +63,7 @@ class DriftDatabase extends BenchmarkDatabase<int, DriftDoc> {
       _getDocuments((driftDocs) => driftDocs.id.isIn(ids));
 
   Future<List<DriftDoc>> _getDocuments([
-    Expression<bool?> Function($DriftDocsTable)? filter,
+    Expression<bool> Function($DriftDocsTable)? filter,
   ]) async {
     final select = db.select(db.driftDocs);
 
