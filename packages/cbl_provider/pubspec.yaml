@@ -8,5 +8,5 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^2.0.0+0
+  cbl: ^2.1.0
   path: ^1.8.0

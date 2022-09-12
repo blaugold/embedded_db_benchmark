@@ -10,7 +10,7 @@ PODS:
     - ObjectBox (= 1.7.0)
   - path_provider_macos (0.0.1):
     - FlutterMacOS
-  - "realm (0.3.1+beta)":
+  - "realm (0.4.0+beta)":
     - FlutterMacOS
   - sqlite3 (3.39.2):
     - sqlite3/common (= 3.39.2)
@@ -68,7 +68,7 @@ SPEC CHECKSUMS:
   ObjectBox: 6410cda891ee71682ea1b0330a9544c52b2ba988
   objectbox_flutter_libs: 52f3cbcb18604df4e4dd08fb513b9edf3f91b1af
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
-  realm: c448692eb025e358733842b8726c41d036ab57c7
+  realm: dee2176722b3438e10127edc6ab82d8efeff00a6
   sqlite3: d115522c740c457b805c018b0296b5ba003da280
   sqlite3_flutter_libs: a6cde3e3d07ea676a888099c9cd7a6bb439b7822
 
