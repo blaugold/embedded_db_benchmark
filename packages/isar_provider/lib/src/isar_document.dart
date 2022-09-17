@@ -3,13 +3,12 @@ import 'package:isar/isar.dart';
 
 part 'isar_document.g.dart';
 
-@Collection()
+@Collection(ignore: {'name', 'unsavedFriends', 'friends'})
 class IsarDoc with BenchmarkDoc<int> {
   IsarDoc();
 
   @override
-  @Id()
-  late int id = Isar.autoIncrement;
+  late Id id = Isar.autoIncrement;
   @override
   late final int index;
   @override
@@ -47,6 +46,12 @@ class IsarDoc with BenchmarkDoc<int> {
   late final List<String> tags;
   @override
   late final List<int> range;
+
+  /// We need to save the objects in a link collection before saving the link
+  /// collection itself. The link collection does not return added objects until
+  /// they are saved in the link collection. So we stash unsaved objects here
+  /// and save them before saving the link collection.
+  final unsavedFriends = <IsarFriend>[];
   final isarFriends = IsarLinks<IsarFriend>();
   @override
   List<IsarFriend> get friends =>
@@ -61,8 +66,7 @@ class IsarDoc with BenchmarkDoc<int> {
 class IsarName with BenchmarkName {
   IsarName();
 
-  @Id()
-  late int dbId = Isar.autoIncrement;
+  late Id dbId = Isar.autoIncrement;
   @override
   late final String first;
   @override
@@ -73,8 +77,7 @@ class IsarName with BenchmarkName {
 class IsarFriend with BenchmarkFriend {
   IsarFriend();
 
-  @Id()
-  late int dbId = Isar.autoIncrement;
+  late Id dbId = Isar.autoIncrement;
   @override
   late final int id;
   @override
