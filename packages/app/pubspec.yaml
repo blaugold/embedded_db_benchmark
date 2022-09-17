@@ -9,9 +9,9 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^2.0.0+0
-  cbl_flutter: ^2.0.0
-  cbl_flutter_ce: ^2.0.0
+  cbl: ^2.1.0
+  cbl_flutter: ^2.0.1
+  cbl_flutter_ce: ^2.1.1
   cbl_provider:
     path: ../cbl_provider
   collection: ^1.15.0
@@ -24,7 +24,7 @@ dependencies:
     sdk: flutter
   hive_provider:
     path: ../hive_provider
-  isar_flutter_libs: ^2.5.0
+  isar_flutter_libs: ^3.0.0-dev.14
   isar_provider:
     path: ../isar_provider
   logging: ^1.0.2
@@ -33,7 +33,7 @@ dependencies:
     path: ../objectbox_provider
   path_provider: ^2.0.11
   provider: ^6.0.3
-  realm: 0.3.1+beta
+  realm: 0.4.0+beta
   realm_provider:
     path: ../realm_provider
   sqlite3_flutter_libs: ^0.5.9
@@ -41,6 +41,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+dependency_overrides:
+  ffi: ^2.0.0
 
 flutter:
   uses-material-design: true

@@ -5,11 +5,8 @@ part 'isar_document.g.dart';
 
 @Collection()
 class IsarDoc with BenchmarkDoc<int> {
-  IsarDoc();
-
   @override
-  @Id()
-  late int id = Isar.autoIncrement;
+  late Id id = Isar.autoIncrement;
   @override
   late final int index;
   @override
@@ -24,9 +21,8 @@ class IsarDoc with BenchmarkDoc<int> {
   late final int age;
   @override
   late final String eyeColor;
-  final isarName = IsarLink<IsarName>();
   @override
-  IsarName get name => isarName.value!;
+  late final IsarName name;
   @override
   late final String company;
   @override
@@ -47,34 +43,24 @@ class IsarDoc with BenchmarkDoc<int> {
   late final List<String> tags;
   @override
   late final List<int> range;
-  final isarFriends = IsarLinks<IsarFriend>();
   @override
-  List<IsarFriend> get friends =>
-      isarFriends.toList()..sort((a, b) => a.id - b.id);
+  late final List<IsarFriend> friends;
   @override
   late final String greeting;
   @override
   late final String favoriteFruit;
 }
 
-@Collection()
+@Embedded()
 class IsarName with BenchmarkName {
-  IsarName();
-
-  @Id()
-  late int dbId = Isar.autoIncrement;
   @override
   late final String first;
   @override
   late final String last;
 }
 
-@Collection()
+@Embedded()
 class IsarFriend with BenchmarkFriend {
-  IsarFriend();
-
-  @Id()
-  late int dbId = Isar.autoIncrement;
   @override
   late final int id;
   @override

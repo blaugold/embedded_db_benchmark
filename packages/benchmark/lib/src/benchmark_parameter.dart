@@ -27,7 +27,7 @@ Future<BenchmarkResults> runParameterMatrix({
   const benchmarkDuration = FixedTimedDuration(Duration(seconds: 1));
   arguments ??= <ParameterRange<Object?>>[
     ParameterRange.all(execution),
-    ListParameterRange(batchSize, [1, 10, 100, 1000, 10000]),
+    ListParameterRange(batchSize, [1, 10, 100, 1000]),
   ].crossProduct();
 
   [

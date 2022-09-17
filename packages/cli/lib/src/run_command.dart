@@ -64,7 +64,7 @@ class RunCommand extends Command<void> {
         'batch-size',
         abbr: 's',
         help: 'The number of documents to process in a batch.',
-        defaultsTo: ['1', '10', '100', '1000', '10000'],
+        defaultsTo: ['1', '10', '100', '1000'],
         callback: (values) {
           for (final value in values) {
             final number = int.tryParse(value);

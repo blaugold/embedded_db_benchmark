@@ -10,7 +10,7 @@ import '../fixture/document.dart';
 import '../parameter.dart';
 
 /// The number of documents that are in the database when the benchmark is run.
-const _documentsInDatabase = 10000;
+const _documentsInDatabase = 1000;
 
 class ReadDocumentBenchmark extends Benchmark {
   const ReadDocumentBenchmark();
