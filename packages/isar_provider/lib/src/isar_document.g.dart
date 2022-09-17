@@ -57,58 +57,70 @@ const IsarDocSchema = CollectionSchema(
       name: r'favoriteFruit',
       type: IsarType.string,
     ),
-    r'greeting': PropertySchema(
+    r'friends': PropertySchema(
       id: 8,
+      name: r'friends',
+      type: IsarType.objectList,
+      target: r'IsarFriend',
+    ),
+    r'greeting': PropertySchema(
+      id: 9,
       name: r'greeting',
       type: IsarType.string,
     ),
     r'guid': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'guid',
       type: IsarType.string,
     ),
     r'index': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'index',
       type: IsarType.long,
     ),
     r'isActive': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'isActive',
       type: IsarType.bool,
     ),
     r'latitude': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'latitude',
       type: IsarType.string,
     ),
     r'longitude': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'longitude',
       type: IsarType.string,
     ),
+    r'name': PropertySchema(
+      id: 15,
+      name: r'name',
+      type: IsarType.object,
+      target: r'IsarName',
+    ),
     r'phone': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'phone',
       type: IsarType.string,
     ),
     r'picture': PropertySchema(
-      id: 15,
+      id: 17,
       name: r'picture',
       type: IsarType.string,
     ),
     r'range': PropertySchema(
-      id: 16,
+      id: 18,
       name: r'range',
       type: IsarType.longList,
     ),
     r'registered': PropertySchema(
-      id: 17,
+      id: 19,
       name: r'registered',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 18,
+      id: 20,
       name: r'tags',
       type: IsarType.stringList,
     )
@@ -122,21 +134,11 @@ const IsarDocSchema = CollectionSchema(
   deserializePropWeb: _isarDocDeserializePropWeb,
   idName: r'id',
   indexes: {},
-  links: {
-    r'isarName': LinkSchema(
-      id: 8068696150753075626,
-      name: r'isarName',
-      target: r'IsarName',
-      isSingle: true,
-    ),
-    r'isarFriends': LinkSchema(
-      id: -4978472072784809342,
-      name: r'isarFriends',
-      target: r'IsarFriend',
-      isSingle: false,
-    )
+  links: {},
+  embeddedSchemas: {
+    r'IsarName': IsarNameSchema,
+    r'IsarFriend': IsarFriendSchema
   },
-  embeddedSchemas: {},
   getId: _isarDocGetId,
   getLinks: _isarDocGetLinks,
   attach: _isarDocAttach,
@@ -156,10 +158,21 @@ int _isarDocEstimateSize(
   bytesCount += 3 + object.email.length * 3;
   bytesCount += 3 + object.eyeColor.length * 3;
   bytesCount += 3 + object.favoriteFruit.length * 3;
+  bytesCount += 3 + object.friends.length * 3;
+  {
+    final offsets = allOffsets[IsarFriend]!;
+    for (var i = 0; i < object.friends.length; i++) {
+      final value = object.friends[i];
+      bytesCount += IsarFriendSchema.estimateSize(value, offsets, allOffsets);
+    }
+  }
   bytesCount += 3 + object.greeting.length * 3;
   bytesCount += 3 + object.guid.length * 3;
   bytesCount += 3 + object.latitude.length * 3;
   bytesCount += 3 + object.longitude.length * 3;
+  bytesCount += 3 +
+      IsarNameSchema.estimateSize(
+          object.name, allOffsets[IsarName]!, allOffsets);
   bytesCount += 3 + object.phone.length * 3;
   bytesCount += 3 + object.picture.length * 3;
   bytesCount += 3 + object.range.length * 8;
@@ -188,17 +201,29 @@ int _isarDocSerializeNative(
   writer.writeString(offsets[5], object.email);
   writer.writeString(offsets[6], object.eyeColor);
   writer.writeString(offsets[7], object.favoriteFruit);
-  writer.writeString(offsets[8], object.greeting);
-  writer.writeString(offsets[9], object.guid);
-  writer.writeLong(offsets[10], object.index);
-  writer.writeBool(offsets[11], object.isActive);
-  writer.writeString(offsets[12], object.latitude);
-  writer.writeString(offsets[13], object.longitude);
-  writer.writeString(offsets[14], object.phone);
-  writer.writeString(offsets[15], object.picture);
-  writer.writeLongList(offsets[16], object.range);
-  writer.writeString(offsets[17], object.registered);
-  writer.writeStringList(offsets[18], object.tags);
+  writer.writeObjectList<IsarFriend>(
+    offsets[8],
+    allOffsets,
+    IsarFriendSchema.serializeNative,
+    object.friends,
+  );
+  writer.writeString(offsets[9], object.greeting);
+  writer.writeString(offsets[10], object.guid);
+  writer.writeLong(offsets[11], object.index);
+  writer.writeBool(offsets[12], object.isActive);
+  writer.writeString(offsets[13], object.latitude);
+  writer.writeString(offsets[14], object.longitude);
+  writer.writeObject<IsarName>(
+    offsets[15],
+    allOffsets,
+    IsarNameSchema.serializeNative,
+    object.name,
+  );
+  writer.writeString(offsets[16], object.phone);
+  writer.writeString(offsets[17], object.picture);
+  writer.writeLongList(offsets[18], object.range);
+  writer.writeString(offsets[19], object.registered);
+  writer.writeStringList(offsets[20], object.tags);
   return writer.usedBytes;
 }
 
@@ -217,18 +242,31 @@ IsarDoc _isarDocDeserializeNative(
   object.email = reader.readString(offsets[5]);
   object.eyeColor = reader.readString(offsets[6]);
   object.favoriteFruit = reader.readString(offsets[7]);
-  object.greeting = reader.readString(offsets[8]);
-  object.guid = reader.readString(offsets[9]);
+  object.friends = reader.readObjectList<IsarFriend>(
+        offsets[8],
+        IsarFriendSchema.deserializeNative,
+        allOffsets,
+        IsarFriend(),
+      ) ??
+      [];
+  object.greeting = reader.readString(offsets[9]);
+  object.guid = reader.readString(offsets[10]);
   object.id = id;
-  object.index = reader.readLong(offsets[10]);
-  object.isActive = reader.readBool(offsets[11]);
-  object.latitude = reader.readString(offsets[12]);
-  object.longitude = reader.readString(offsets[13]);
-  object.phone = reader.readString(offsets[14]);
-  object.picture = reader.readString(offsets[15]);
-  object.range = reader.readLongList(offsets[16]) ?? [];
-  object.registered = reader.readString(offsets[17]);
-  object.tags = reader.readStringList(offsets[18]) ?? [];
+  object.index = reader.readLong(offsets[11]);
+  object.isActive = reader.readBool(offsets[12]);
+  object.latitude = reader.readString(offsets[13]);
+  object.longitude = reader.readString(offsets[14]);
+  object.name = reader.readObjectOrNull<IsarName>(
+        offsets[15],
+        IsarNameSchema.deserializeNative,
+        allOffsets,
+      ) ??
+      IsarName();
+  object.phone = reader.readString(offsets[16]);
+  object.picture = reader.readString(offsets[17]);
+  object.range = reader.readLongList(offsets[18]) ?? [];
+  object.registered = reader.readString(offsets[19]);
+  object.tags = reader.readStringList(offsets[20]) ?? [];
   return object;
 }
 
@@ -256,26 +294,41 @@ P _isarDocDeserializePropNative<P>(
     case 7:
       return (reader.readString(offset)) as P;
     case 8:
-      return (reader.readString(offset)) as P;
+      return (reader.readObjectList<IsarFriend>(
+            offset,
+            IsarFriendSchema.deserializeNative,
+            allOffsets,
+            IsarFriend(),
+          ) ??
+          []) as P;
     case 9:
       return (reader.readString(offset)) as P;
     case 10:
-      return (reader.readLong(offset)) as P;
-    case 11:
-      return (reader.readBool(offset)) as P;
-    case 12:
       return (reader.readString(offset)) as P;
+    case 11:
+      return (reader.readLong(offset)) as P;
+    case 12:
+      return (reader.readBool(offset)) as P;
     case 13:
       return (reader.readString(offset)) as P;
     case 14:
       return (reader.readString(offset)) as P;
     case 15:
-      return (reader.readString(offset)) as P;
+      return (reader.readObjectOrNull<IsarName>(
+            offset,
+            IsarNameSchema.deserializeNative,
+            allOffsets,
+          ) ??
+          IsarName()) as P;
     case 16:
-      return (reader.readLongList(offset) ?? []) as P;
+      return (reader.readString(offset)) as P;
     case 17:
       return (reader.readString(offset)) as P;
     case 18:
+      return (reader.readLongList(offset) ?? []) as P;
+    case 19:
+      return (reader.readString(offset)) as P;
+    case 20:
       return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -289,7 +342,7 @@ Object _isarDocSerializeWeb(
 
 IsarDoc _isarDocDeserializeWeb(
     IsarCollection<IsarDoc> collection, Object jsObj) {
-  /*final object = IsarDoc();object.about = IsarNative.jsObjectGet(jsObj, r'about') ?? '';object.address = IsarNative.jsObjectGet(jsObj, r'address') ?? '';object.age = IsarNative.jsObjectGet(jsObj, r'age') ?? (double.negativeInfinity as int);object.balance = IsarNative.jsObjectGet(jsObj, r'balance') ?? '';object.company = IsarNative.jsObjectGet(jsObj, r'company') ?? '';object.email = IsarNative.jsObjectGet(jsObj, r'email') ?? '';object.eyeColor = IsarNative.jsObjectGet(jsObj, r'eyeColor') ?? '';object.favoriteFruit = IsarNative.jsObjectGet(jsObj, r'favoriteFruit') ?? '';object.greeting = IsarNative.jsObjectGet(jsObj, r'greeting') ?? '';object.guid = IsarNative.jsObjectGet(jsObj, r'guid') ?? '';object.id = IsarNative.jsObjectGet(jsObj, r'id') ?? (double.negativeInfinity as int);object.index = IsarNative.jsObjectGet(jsObj, r'index') ?? (double.negativeInfinity as int);object.isActive = IsarNative.jsObjectGet(jsObj, r'isActive') ?? false;object.latitude = IsarNative.jsObjectGet(jsObj, r'latitude') ?? '';object.longitude = IsarNative.jsObjectGet(jsObj, r'longitude') ?? '';object.phone = IsarNative.jsObjectGet(jsObj, r'phone') ?? '';object.picture = IsarNative.jsObjectGet(jsObj, r'picture') ?? '';object.range = (IsarNative.jsObjectGet(jsObj, r'range') as List?)?.map((e) => e ?? (double.negativeInfinity as int)).toList().cast<int>() ?? [];object.registered = IsarNative.jsObjectGet(jsObj, r'registered') ?? '';object.tags = (IsarNative.jsObjectGet(jsObj, r'tags') as List?)?.map((e) => e ?? '').toList().cast<String>() ?? [];*/
+  /*final object = IsarDoc();object.about = IsarNative.jsObjectGet(jsObj, r'about') ?? '';object.address = IsarNative.jsObjectGet(jsObj, r'address') ?? '';object.age = IsarNative.jsObjectGet(jsObj, r'age') ?? (double.negativeInfinity as int);object.balance = IsarNative.jsObjectGet(jsObj, r'balance') ?? '';object.company = IsarNative.jsObjectGet(jsObj, r'company') ?? '';object.email = IsarNative.jsObjectGet(jsObj, r'email') ?? '';object.eyeColor = IsarNative.jsObjectGet(jsObj, r'eyeColor') ?? '';object.favoriteFruit = IsarNative.jsObjectGet(jsObj, r'favoriteFruit') ?? '';object.friends = (IsarNative.jsObjectGet(jsObj, r'friends') as List?)?.map((e) => e ?? IsarFriend()).toList().cast<IsarFriend>() ?? [];object.greeting = IsarNative.jsObjectGet(jsObj, r'greeting') ?? '';object.guid = IsarNative.jsObjectGet(jsObj, r'guid') ?? '';object.id = IsarNative.jsObjectGet(jsObj, r'id') ?? (double.negativeInfinity as int);object.index = IsarNative.jsObjectGet(jsObj, r'index') ?? (double.negativeInfinity as int);object.isActive = IsarNative.jsObjectGet(jsObj, r'isActive') ?? false;object.latitude = IsarNative.jsObjectGet(jsObj, r'latitude') ?? '';object.longitude = IsarNative.jsObjectGet(jsObj, r'longitude') ?? '';object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? IsarName();object.phone = IsarNative.jsObjectGet(jsObj, r'phone') ?? '';object.picture = IsarNative.jsObjectGet(jsObj, r'picture') ?? '';object.range = (IsarNative.jsObjectGet(jsObj, r'range') as List?)?.map((e) => e ?? (double.negativeInfinity as int)).toList().cast<int>() ?? [];object.registered = IsarNative.jsObjectGet(jsObj, r'registered') ?? '';object.tags = (IsarNative.jsObjectGet(jsObj, r'tags') as List?)?.map((e) => e ?? '').toList().cast<String>() ?? [];*/
   //return object;
   throw UnimplementedError();
 }
@@ -306,14 +359,11 @@ Id _isarDocGetId(IsarDoc object) {
 }
 
 List<IsarLinkBase<dynamic>> _isarDocGetLinks(IsarDoc object) {
-  return [object.isarName, object.isarFriends];
+  return [];
 }
 
 void _isarDocAttach(IsarCollection<dynamic> col, Id id, IsarDoc object) {
   object.id = id;
-  object.isarName.attach(col, col.isar.collection<IsarName>(), r'isarName', id);
-  object.isarFriends
-      .attach(col, col.isar.collection<IsarFriend>(), r'isarFriends', id);
 }
 
 extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
@@ -1354,6 +1404,91 @@ extension IsarDocQueryFilter
         property: r'favoriteFruit',
         value: '',
       ));
+    });
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friendsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'friends',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friendsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'friends',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friendsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'friends',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friendsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'friends',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition>
+      friendsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'friends',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friendsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'friends',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 
@@ -2736,83 +2871,24 @@ extension IsarDocQueryFilter
 }
 
 extension IsarDocQueryObject
-    on QueryBuilder<IsarDoc, IsarDoc, QFilterCondition> {}
-
-extension IsarDocQueryLinks
     on QueryBuilder<IsarDoc, IsarDoc, QFilterCondition> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> isarName(
-      FilterQuery<IsarName> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'isarName');
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> isarNameIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'isarName', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> isarFriends(
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> friendsElement(
       FilterQuery<IsarFriend> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'isarFriends');
+      return query.object(q, r'friends');
     });
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition>
-      isarFriendsLengthEqualTo(int length) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> name(
+      FilterQuery<IsarName> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'isarFriends', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> isarFriendsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'isarFriends', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition>
-      isarFriendsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'isarFriends', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition>
-      isarFriendsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'isarFriends', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition>
-      isarFriendsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'isarFriends', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition>
-      isarFriendsLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'isarFriends', lower, includeLower, upper, includeUpper);
+      return query.object(q, r'name');
     });
   }
 }
+
+extension IsarDocQueryLinks
+    on QueryBuilder<IsarDoc, IsarDoc, QFilterCondition> {}
 
 extension IsarDocQuerySortBy on QueryBuilder<IsarDoc, IsarDoc, QSortBy> {
   QueryBuilder<IsarDoc, IsarDoc, QAfterSortBy> sortByAbout() {
@@ -3427,6 +3503,12 @@ extension IsarDocQueryProperty
     });
   }
 
+  QueryBuilder<IsarDoc, List<IsarFriend>, QQueryOperations> friendsProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'friends');
+    });
+  }
+
   QueryBuilder<IsarDoc, String, QQueryOperations> greetingProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'greeting');
@@ -3463,6 +3545,12 @@ extension IsarDocQueryProperty
     });
   }
 
+  QueryBuilder<IsarDoc, IsarName, QQueryOperations> nameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'name');
+    });
+  }
+
   QueryBuilder<IsarDoc, String, QQueryOperations> phoneProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'phone');
@@ -3494,14 +3582,14 @@ extension IsarDocQueryProperty
   }
 }
 
+// **************************************************************************
+// IsarEmbeddedGenerator
+// **************************************************************************
+
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_locals
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_localså
 
-extension GetIsarNameCollection on Isar {
-  IsarCollection<IsarName> get isarNames => this.collection();
-}
-
-const IsarNameSchema = CollectionSchema(
+const IsarNameSchema = Schema(
   name: r'IsarName',
   id: -3158353759953718354,
   properties: {
@@ -3523,14 +3611,6 @@ const IsarNameSchema = CollectionSchema(
   serializeWeb: _isarNameSerializeWeb,
   deserializeWeb: _isarNameDeserializeWeb,
   deserializePropWeb: _isarNameDeserializePropWeb,
-  idName: r'dbId',
-  indexes: {},
-  links: {},
-  embeddedSchemas: {},
-  getId: _isarNameGetId,
-  getLinks: _isarNameGetLinks,
-  attach: _isarNameAttach,
-  version: '3.0.0-dev.14',
 );
 
 int _isarNameEstimateSize(
@@ -3562,7 +3642,6 @@ IsarName _isarNameDeserializeNative(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarName();
-  object.dbId = id;
   object.first = reader.readString(offsets[0]);
   object.last = reader.readString(offsets[1]);
   return object;
@@ -3591,7 +3670,7 @@ Object _isarNameSerializeWeb(
 
 IsarName _isarNameDeserializeWeb(
     IsarCollection<IsarName> collection, Object jsObj) {
-  /*final object = IsarName();object.dbId = IsarNative.jsObjectGet(jsObj, r'dbId') ?? (double.negativeInfinity as int);object.first = IsarNative.jsObjectGet(jsObj, r'first') ?? '';object.last = IsarNative.jsObjectGet(jsObj, r'last') ?? '';*/
+  /*final object = IsarName();object.first = IsarNative.jsObjectGet(jsObj, r'first') ?? '';object.last = IsarNative.jsObjectGet(jsObj, r'last') ?? '';*/
   //return object;
   throw UnimplementedError();
 }
@@ -3603,148 +3682,8 @@ P _isarNameDeserializePropWeb<P>(Object jsObj, String propertyName) {
   }
 }
 
-Id _isarNameGetId(IsarName object) {
-  return object.dbId;
-}
-
-List<IsarLinkBase<dynamic>> _isarNameGetLinks(IsarName object) {
-  return [];
-}
-
-void _isarNameAttach(IsarCollection<dynamic> col, Id id, IsarName object) {
-  object.dbId = id;
-}
-
-extension IsarNameQueryWhereSort on QueryBuilder<IsarName, IsarName, QWhere> {
-  QueryBuilder<IsarName, IsarName, QAfterWhere> anyDbId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
-  }
-}
-
-extension IsarNameQueryWhere on QueryBuilder<IsarName, IsarName, QWhereClause> {
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdEqualTo(int dbId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: dbId,
-        upper: dbId,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdNotEqualTo(int dbId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: dbId, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: dbId, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: dbId, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: dbId, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdGreaterThan(int dbId,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: dbId, includeLower: include),
-      );
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdLessThan(int dbId,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: dbId, includeUpper: include),
-      );
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterWhereClause> dbIdBetween(
-    int lowerDbId,
-    int upperDbId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerDbId,
-        includeLower: includeLower,
-        upper: upperDbId,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
 extension IsarNameQueryFilter
     on QueryBuilder<IsarName, IsarName, QFilterCondition> {
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dbId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dbId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dbId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterFilterCondition> dbIdBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dbId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<IsarName, IsarName, QAfterFilterCondition> firstEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -4009,120 +3948,10 @@ extension IsarNameQueryFilter
 extension IsarNameQueryObject
     on QueryBuilder<IsarName, IsarName, QFilterCondition> {}
 
-extension IsarNameQueryLinks
-    on QueryBuilder<IsarName, IsarName, QFilterCondition> {}
-
-extension IsarNameQuerySortBy on QueryBuilder<IsarName, IsarName, QSortBy> {
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByFirst() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'first', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByFirstDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'first', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByLast() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'last', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> sortByLastDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'last', Sort.desc);
-    });
-  }
-}
-
-extension IsarNameQuerySortThenBy
-    on QueryBuilder<IsarName, IsarName, QSortThenBy> {
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByDbId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dbId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByDbIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dbId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByFirst() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'first', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByFirstDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'first', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByLast() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'last', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QAfterSortBy> thenByLastDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'last', Sort.desc);
-    });
-  }
-}
-
-extension IsarNameQueryWhereDistinct
-    on QueryBuilder<IsarName, IsarName, QDistinct> {
-  QueryBuilder<IsarName, IsarName, QDistinct> distinctByFirst(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'first', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<IsarName, IsarName, QDistinct> distinctByLast(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'last', caseSensitive: caseSensitive);
-    });
-  }
-}
-
-extension IsarNameQueryProperty
-    on QueryBuilder<IsarName, IsarName, QQueryProperty> {
-  QueryBuilder<IsarName, int, QQueryOperations> dbIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dbId');
-    });
-  }
-
-  QueryBuilder<IsarName, String, QQueryOperations> firstProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'first');
-    });
-  }
-
-  QueryBuilder<IsarName, String, QQueryOperations> lastProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'last');
-    });
-  }
-}
-
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_locals
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_localså
 
-extension GetIsarFriendCollection on Isar {
-  IsarCollection<IsarFriend> get isarFriends => this.collection();
-}
-
-const IsarFriendSchema = CollectionSchema(
+const IsarFriendSchema = Schema(
   name: r'IsarFriend',
   id: -1561522556683421342,
   properties: {
@@ -4144,14 +3973,6 @@ const IsarFriendSchema = CollectionSchema(
   serializeWeb: _isarFriendSerializeWeb,
   deserializeWeb: _isarFriendDeserializeWeb,
   deserializePropWeb: _isarFriendDeserializePropWeb,
-  idName: r'dbId',
-  indexes: {},
-  links: {},
-  embeddedSchemas: {},
-  getId: _isarFriendGetId,
-  getLinks: _isarFriendGetLinks,
-  attach: _isarFriendAttach,
-  version: '3.0.0-dev.14',
 );
 
 int _isarFriendEstimateSize(
@@ -4182,7 +4003,6 @@ IsarFriend _isarFriendDeserializeNative(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = IsarFriend();
-  object.dbId = id;
   object.id = reader.readLong(offsets[0]);
   object.name = reader.readString(offsets[1]);
   return object;
@@ -4211,7 +4031,7 @@ Object _isarFriendSerializeWeb(
 
 IsarFriend _isarFriendDeserializeWeb(
     IsarCollection<IsarFriend> collection, Object jsObj) {
-  /*final object = IsarFriend();object.dbId = IsarNative.jsObjectGet(jsObj, r'dbId') ?? (double.negativeInfinity as int);object.id = IsarNative.jsObjectGet(jsObj, r'id') ?? (double.negativeInfinity as int);object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? '';*/
+  /*final object = IsarFriend();object.id = IsarNative.jsObjectGet(jsObj, r'id') ?? (double.negativeInfinity as int);object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? '';*/
   //return object;
   throw UnimplementedError();
 }
@@ -4223,153 +4043,8 @@ P _isarFriendDeserializePropWeb<P>(Object jsObj, String propertyName) {
   }
 }
 
-Id _isarFriendGetId(IsarFriend object) {
-  return object.dbId;
-}
-
-List<IsarLinkBase<dynamic>> _isarFriendGetLinks(IsarFriend object) {
-  return [];
-}
-
-void _isarFriendAttach(IsarCollection<dynamic> col, Id id, IsarFriend object) {
-  object.dbId = id;
-}
-
-extension IsarFriendQueryWhereSort
-    on QueryBuilder<IsarFriend, IsarFriend, QWhere> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhere> anyDbId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
-  }
-}
-
-extension IsarFriendQueryWhere
-    on QueryBuilder<IsarFriend, IsarFriend, QWhereClause> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdEqualTo(
-      int dbId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: dbId,
-        upper: dbId,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdNotEqualTo(
-      int dbId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: dbId, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: dbId, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: dbId, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: dbId, includeUpper: false),
-            );
-      }
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdGreaterThan(
-      int dbId,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: dbId, includeLower: include),
-      );
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdLessThan(int dbId,
-      {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: dbId, includeUpper: include),
-      );
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterWhereClause> dbIdBetween(
-    int lowerDbId,
-    int upperDbId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerDbId,
-        includeLower: includeLower,
-        upper: upperDbId,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
 extension IsarFriendQueryFilter
     on QueryBuilder<IsarFriend, IsarFriend, QFilterCondition> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'dbId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'dbId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'dbId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> dbIdBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'dbId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
   QueryBuilder<IsarFriend, IsarFriend, QAfterFilterCondition> idEqualTo(
       int value) {
     return QueryBuilder.apply(this, (query) {
@@ -4556,109 +4231,3 @@ extension IsarFriendQueryFilter
 
 extension IsarFriendQueryObject
     on QueryBuilder<IsarFriend, IsarFriend, QFilterCondition> {}
-
-extension IsarFriendQueryLinks
-    on QueryBuilder<IsarFriend, IsarFriend, QFilterCondition> {}
-
-extension IsarFriendQuerySortBy
-    on QueryBuilder<IsarFriend, IsarFriend, QSortBy> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> sortByNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-}
-
-extension IsarFriendQuerySortThenBy
-    on QueryBuilder<IsarFriend, IsarFriend, QSortThenBy> {
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByDbId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dbId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByDbIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'dbId', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByName() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.asc);
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QAfterSortBy> thenByNameDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-}
-
-extension IsarFriendQueryWhereDistinct
-    on QueryBuilder<IsarFriend, IsarFriend, QDistinct> {
-  QueryBuilder<IsarFriend, IsarFriend, QDistinct> distinctById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'id');
-    });
-  }
-
-  QueryBuilder<IsarFriend, IsarFriend, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
-    });
-  }
-}
-
-extension IsarFriendQueryProperty
-    on QueryBuilder<IsarFriend, IsarFriend, QQueryProperty> {
-  QueryBuilder<IsarFriend, int, QQueryOperations> dbIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'dbId');
-    });
-  }
-
-  QueryBuilder<IsarFriend, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-
-  QueryBuilder<IsarFriend, String, QQueryOperations> nameProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'name');
-    });
-  }
-}

@@ -27,8 +27,8 @@ final databaseProviderColors = <DatabaseProvider, Color>{
   _allDatabaseProviders[#realm]!: Colors.yellow,
 };
 
-const _defaultBatchSizes = [1, 10, 100, 1000, 10000];
-const _defaultEnabledBatchSizes = [1, 10, 100, 1000, 10000];
+const _defaultBatchSizes = [1, 10, 100, 1000];
+const _defaultEnabledBatchSizes = [1, 10, 100, 1000];
 
 class SettingsController extends ChangeNotifier {
   final warmUpDuration = const FixedTimedDuration(Duration(milliseconds: 100));

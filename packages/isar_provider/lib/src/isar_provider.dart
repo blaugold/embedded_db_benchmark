@@ -36,8 +36,6 @@ class IsarProvider extends DatabaseProvider<int, IsarDoc> {
       relaxedDurability: false,
       [
         IsarDocSchema,
-        IsarNameSchema,
-        IsarFriendSchema,
       ],
     );
 
@@ -66,24 +64,14 @@ class _SyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
 
   @override
   IsarDoc createDocument(IsarDoc doc) => isar.writeTxnSync(() {
-        isar.isarNames.putSync(doc.isarName.value!);
-        isar.isarFriends.putAllSync(doc.unsavedFriends);
-        doc.unsavedFriends.clear();
         isar.isarDocs.putSync(doc);
-        doc.isarName.saveSync();
-        doc.isarFriends.saveSync();
         return doc;
       });
 
   @override
   List<IsarDoc> createDocuments(List<IsarDoc> docs) =>
       isar.writeTxnSync(() => docs.map((doc) {
-            isar.isarNames.putSync(doc.isarName.value!);
-            isar.isarFriends.putAllSync(doc.unsavedFriends);
-            doc.unsavedFriends.clear();
             isar.isarDocs.putSync(doc);
-            doc.isarName.saveSync();
-            doc.isarFriends.saveSync();
             return doc;
           }).toList());
 
@@ -95,14 +83,7 @@ class _SyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   @override
   List<IsarDoc> getDocumentsById(List<int> ids) =>
       // For some reason a write transaction is necessary here.
-      isar.writeTxnSync(() {
-        final docs = isar.isarDocs.getAllSync(ids).cast<IsarDoc>();
-        for (final doc in docs) {
-          doc.isarName.loadSync();
-          doc.isarFriends.loadSync();
-        }
-        return docs;
-      });
+      isar.writeTxnSync(() => isar.isarDocs.getAllSync(ids).cast<IsarDoc>());
 
   @override
   List<IsarDoc> getAllDocuments() =>
@@ -110,8 +91,6 @@ class _SyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
 
   @override
   IsarDoc updateDocument(IsarDoc doc) => isar.writeTxnSync(() {
-        isar.isarNames.putSync(doc.isarName.value!);
-        isar.isarFriends.putAllSync(doc.friends.toList());
         isar.isarDocs.putSync(doc);
         return doc;
       });
@@ -119,8 +98,6 @@ class _SyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   @override
   List<IsarDoc> updateDocuments(List<IsarDoc> docs) =>
       isar.writeTxnSync(() => docs.map((doc) {
-            isar.isarNames.putSync(doc.isarName.value!);
-            isar.isarFriends.putAllSync(doc.friends.toList());
             isar.isarDocs.putSync(doc);
             return doc;
           }).toList());
@@ -133,13 +110,7 @@ class _SyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   @override
   void deleteDocuments(List<IsarDoc> docs) {
     isar.writeTxnSync(() {
-      isar.isarDocs.deleteAllSync([
-        for (final doc in docs) ...[
-          doc.id,
-          doc.name.dbId,
-          ...doc.friends.map((friend) => friend.dbId)
-        ]
-      ]);
+      isar.isarDocs.deleteAllSync(docs.map((doc) => doc.id).toList());
     });
   }
 }
@@ -160,32 +131,14 @@ class _AsyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
 
   @override
   Future<IsarDoc> createDocument(IsarDoc doc) => isar.writeTxn(() async {
-        await Future.wait([
-          isar.isarNames.put(doc.isarName.value!),
-          isar.isarFriends.putAll(doc.unsavedFriends),
-        ]);
-        doc.unsavedFriends.clear();
         await isar.isarDocs.put(doc);
-        await Future.wait([
-          doc.isarName.save(),
-          doc.isarFriends.save(),
-        ]);
         return doc;
       });
 
   @override
   Future<List<IsarDoc>> createDocuments(List<IsarDoc> docs) =>
       isar.writeTxn(() => Future.wait(docs.map((doc) async {
-            await Future.wait([
-              isar.isarNames.put(doc.isarName.value!),
-              isar.isarFriends.putAll(doc.unsavedFriends),
-            ]);
-            doc.unsavedFriends.clear();
             await isar.isarDocs.put(doc);
-            await Future.wait([
-              doc.isarName.save(),
-              doc.isarFriends.save(),
-            ]);
             return doc;
           })));
 
@@ -195,18 +148,8 @@ class _AsyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
   }
 
   @override
-  Future<List<IsarDoc>> getDocumentsById(List<int> ids) =>
-      // TODO: For some reason a write transaction is necessary here.
-      isar.writeTxn(() async {
-        final docs = await isar.isarDocs
-            .getAll(ids)
-            .then((docs) => docs.cast<IsarDoc>());
-
-        await Future.wait(docs.map(
-          (doc) => Future.wait([doc.isarName.load(), doc.isarFriends.load()]),
-        ));
-
-        return docs;
+  Future<List<IsarDoc>> getDocumentsById(List<int> ids) => isar.txn(() async {
+        return isar.isarDocs.getAll(ids).then((docs) => docs.cast<IsarDoc>());
       });
 
   @override
@@ -215,22 +158,14 @@ class _AsyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
 
   @override
   Future<IsarDoc> updateDocument(IsarDoc doc) => isar.writeTxn(() async {
-        await Future.wait([
-          isar.isarNames.put(doc.isarName.value!),
-          isar.isarFriends.putAll(doc.friends.toList()),
-          isar.isarDocs.put(doc)
-        ]);
+        await isar.isarDocs.put(doc);
         return doc;
       });
 
   @override
   Future<List<IsarDoc>> updateDocuments(List<IsarDoc> docs) =>
       isar.writeTxn(() => Future.wait(docs.map((doc) async {
-            await Future.wait([
-              isar.isarNames.put(doc.isarName.value!),
-              isar.isarFriends.putAll(doc.friends.toList()),
-              isar.isarDocs.put(doc)
-            ]);
+            await isar.isarDocs.put(doc);
             return doc;
           })));
 
@@ -241,19 +176,12 @@ class _AsyncIsarDatabase extends BenchmarkDatabase<int, IsarDoc> {
 
   @override
   Future<void> deleteDocuments(List<IsarDoc> docs) => isar.writeTxn(() async {
-        await isar.isarDocs.deleteAll([
-          for (final doc in docs) ...[
-            doc.id,
-            doc.name.dbId,
-            ...doc.friends.map((friend) => friend.dbId)
-          ]
-        ]);
+        await isar.isarDocs.deleteAll(docs.map((doc) => doc.id).toList());
       });
 }
 
 extension on BenchmarkDoc<int> {
   IsarDoc toIsarDoc() {
-    final isarFriends = friends.map((friend) => friend.toIsarFriend()).toList();
     return IsarDoc()
       ..index = index
       ..guid = guid
@@ -262,7 +190,7 @@ extension on BenchmarkDoc<int> {
       ..picture = picture
       ..age = age
       ..eyeColor = eyeColor
-      ..isarName.value = name.toIsarName()
+      ..name = name.toIsarName()
       ..company = company
       ..email = email
       ..phone = phone
@@ -273,8 +201,7 @@ extension on BenchmarkDoc<int> {
       ..longitude = longitude
       ..tags = tags
       ..range = range
-      ..unsavedFriends.addAll(isarFriends)
-      ..isarFriends.addAll(isarFriends)
+      ..friends = friends.map((friend) => friend.toIsarFriend()).toList()
       ..greeting = greeting
       ..favoriteFruit = favoriteFruit;
   }
