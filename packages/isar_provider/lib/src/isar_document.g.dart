@@ -7,7 +7,7 @@ part of 'isar_document.dart';
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_locals
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 extension GetIsarDocCollection on Isar {
   IsarCollection<IsarDoc> get isarDocs => this.collection();
@@ -126,12 +126,9 @@ const IsarDocSchema = CollectionSchema(
     )
   },
   estimateSize: _isarDocEstimateSize,
-  serializeNative: _isarDocSerializeNative,
-  deserializeNative: _isarDocDeserializeNative,
-  deserializePropNative: _isarDocDeserializePropNative,
-  serializeWeb: _isarDocSerializeWeb,
-  deserializeWeb: _isarDocDeserializeWeb,
-  deserializePropWeb: _isarDocDeserializePropWeb,
+  serialize: _isarDocSerialize,
+  deserialize: _isarDocDeserialize,
+  deserializeProp: _isarDocDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
@@ -142,7 +139,7 @@ const IsarDocSchema = CollectionSchema(
   getId: _isarDocGetId,
   getLinks: _isarDocGetLinks,
   attach: _isarDocAttach,
-  version: '3.0.0-dev.14',
+  version: '3.0.0',
 );
 
 int _isarDocEstimateSize(
@@ -187,9 +184,9 @@ int _isarDocEstimateSize(
   return bytesCount;
 }
 
-int _isarDocSerializeNative(
+void _isarDocSerialize(
   IsarDoc object,
-  IsarBinaryWriter writer,
+  IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -204,7 +201,7 @@ int _isarDocSerializeNative(
   writer.writeObjectList<IsarFriend>(
     offsets[8],
     allOffsets,
-    IsarFriendSchema.serializeNative,
+    IsarFriendSchema.serialize,
     object.friends,
   );
   writer.writeString(offsets[9], object.greeting);
@@ -216,7 +213,7 @@ int _isarDocSerializeNative(
   writer.writeObject<IsarName>(
     offsets[15],
     allOffsets,
-    IsarNameSchema.serializeNative,
+    IsarNameSchema.serialize,
     object.name,
   );
   writer.writeString(offsets[16], object.phone);
@@ -224,12 +221,11 @@ int _isarDocSerializeNative(
   writer.writeLongList(offsets[18], object.range);
   writer.writeString(offsets[19], object.registered);
   writer.writeStringList(offsets[20], object.tags);
-  return writer.usedBytes;
 }
 
-IsarDoc _isarDocDeserializeNative(
+IsarDoc _isarDocDeserialize(
   Id id,
-  IsarBinaryReader reader,
+  IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -244,7 +240,7 @@ IsarDoc _isarDocDeserializeNative(
   object.favoriteFruit = reader.readString(offsets[7]);
   object.friends = reader.readObjectList<IsarFriend>(
         offsets[8],
-        IsarFriendSchema.deserializeNative,
+        IsarFriendSchema.deserialize,
         allOffsets,
         IsarFriend(),
       ) ??
@@ -258,7 +254,7 @@ IsarDoc _isarDocDeserializeNative(
   object.longitude = reader.readString(offsets[14]);
   object.name = reader.readObjectOrNull<IsarName>(
         offsets[15],
-        IsarNameSchema.deserializeNative,
+        IsarNameSchema.deserialize,
         allOffsets,
       ) ??
       IsarName();
@@ -270,8 +266,8 @@ IsarDoc _isarDocDeserializeNative(
   return object;
 }
 
-P _isarDocDeserializePropNative<P>(
-  IsarBinaryReader reader,
+P _isarDocDeserializeProp<P>(
+  IsarReader reader,
   int propertyId,
   int offset,
   Map<Type, List<int>> allOffsets,
@@ -296,7 +292,7 @@ P _isarDocDeserializePropNative<P>(
     case 8:
       return (reader.readObjectList<IsarFriend>(
             offset,
-            IsarFriendSchema.deserializeNative,
+            IsarFriendSchema.deserialize,
             allOffsets,
             IsarFriend(),
           ) ??
@@ -316,7 +312,7 @@ P _isarDocDeserializePropNative<P>(
     case 15:
       return (reader.readObjectOrNull<IsarName>(
             offset,
-            IsarNameSchema.deserializeNative,
+            IsarNameSchema.deserialize,
             allOffsets,
           ) ??
           IsarName()) as P;
@@ -332,25 +328,6 @@ P _isarDocDeserializePropNative<P>(
       return (reader.readStringList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-Object _isarDocSerializeWeb(
-    IsarCollection<IsarDoc> collection, IsarDoc object) {
-  /*final jsObj = IsarNative.newJsObject();*/ throw UnimplementedError();
-}
-
-IsarDoc _isarDocDeserializeWeb(
-    IsarCollection<IsarDoc> collection, Object jsObj) {
-  /*final object = IsarDoc();object.about = IsarNative.jsObjectGet(jsObj, r'about') ?? '';object.address = IsarNative.jsObjectGet(jsObj, r'address') ?? '';object.age = IsarNative.jsObjectGet(jsObj, r'age') ?? (double.negativeInfinity as int);object.balance = IsarNative.jsObjectGet(jsObj, r'balance') ?? '';object.company = IsarNative.jsObjectGet(jsObj, r'company') ?? '';object.email = IsarNative.jsObjectGet(jsObj, r'email') ?? '';object.eyeColor = IsarNative.jsObjectGet(jsObj, r'eyeColor') ?? '';object.favoriteFruit = IsarNative.jsObjectGet(jsObj, r'favoriteFruit') ?? '';object.friends = (IsarNative.jsObjectGet(jsObj, r'friends') as List?)?.map((e) => e ?? IsarFriend()).toList().cast<IsarFriend>() ?? [];object.greeting = IsarNative.jsObjectGet(jsObj, r'greeting') ?? '';object.guid = IsarNative.jsObjectGet(jsObj, r'guid') ?? '';object.id = IsarNative.jsObjectGet(jsObj, r'id') ?? (double.negativeInfinity as int);object.index = IsarNative.jsObjectGet(jsObj, r'index') ?? (double.negativeInfinity as int);object.isActive = IsarNative.jsObjectGet(jsObj, r'isActive') ?? false;object.latitude = IsarNative.jsObjectGet(jsObj, r'latitude') ?? '';object.longitude = IsarNative.jsObjectGet(jsObj, r'longitude') ?? '';object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? IsarName();object.phone = IsarNative.jsObjectGet(jsObj, r'phone') ?? '';object.picture = IsarNative.jsObjectGet(jsObj, r'picture') ?? '';object.range = (IsarNative.jsObjectGet(jsObj, r'range') as List?)?.map((e) => e ?? (double.negativeInfinity as int)).toList().cast<int>() ?? [];object.registered = IsarNative.jsObjectGet(jsObj, r'registered') ?? '';object.tags = (IsarNative.jsObjectGet(jsObj, r'tags') as List?)?.map((e) => e ?? '').toList().cast<String>() ?? [];*/
-  //return object;
-  throw UnimplementedError();
-}
-
-P _isarDocDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    default:
-      throw IsarError('Illegal propertyName');
   }
 }
 
@@ -375,7 +352,7 @@ extension IsarDocQueryWhereSort on QueryBuilder<IsarDoc, IsarDoc, QWhere> {
 }
 
 extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idEqualTo(int id) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: id,
@@ -384,7 +361,7 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
     });
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idNotEqualTo(int id) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idNotEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -406,7 +383,7 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
     });
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idGreaterThan(int id,
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idGreaterThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -415,7 +392,7 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
     });
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idLessThan(int id,
+  QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idLessThan(Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
@@ -425,8 +402,8 @@ extension IsarDocQueryWhere on QueryBuilder<IsarDoc, IsarDoc, QWhereClause> {
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterWhereClause> idBetween(
-    int lowerId,
-    int upperId, {
+    Id lowerId,
+    Id upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -1752,7 +1729,7 @@ extension IsarDocQueryFilter
     });
   }
 
-  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idEqualTo(int value) {
+  QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -1762,7 +1739,7 @@ extension IsarDocQueryFilter
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idGreaterThan(
-    int value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1775,7 +1752,7 @@ extension IsarDocQueryFilter
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idLessThan(
-    int value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -1788,8 +1765,8 @@ extension IsarDocQueryFilter
   }
 
   QueryBuilder<IsarDoc, IsarDoc, QAfterFilterCondition> idBetween(
-    int lower,
-    int upper, {
+    Id lower,
+    Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -3587,7 +3564,7 @@ extension IsarDocQueryProperty
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_localså
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 const IsarNameSchema = Schema(
   name: r'IsarName',
@@ -3605,12 +3582,9 @@ const IsarNameSchema = Schema(
     )
   },
   estimateSize: _isarNameEstimateSize,
-  serializeNative: _isarNameSerializeNative,
-  deserializeNative: _isarNameDeserializeNative,
-  deserializePropNative: _isarNameDeserializePropNative,
-  serializeWeb: _isarNameSerializeWeb,
-  deserializeWeb: _isarNameDeserializeWeb,
-  deserializePropWeb: _isarNameDeserializePropWeb,
+  serialize: _isarNameSerialize,
+  deserialize: _isarNameDeserialize,
+  deserializeProp: _isarNameDeserializeProp,
 );
 
 int _isarNameEstimateSize(
@@ -3624,20 +3598,19 @@ int _isarNameEstimateSize(
   return bytesCount;
 }
 
-int _isarNameSerializeNative(
+void _isarNameSerialize(
   IsarName object,
-  IsarBinaryWriter writer,
+  IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.first);
   writer.writeString(offsets[1], object.last);
-  return writer.usedBytes;
 }
 
-IsarName _isarNameDeserializeNative(
+IsarName _isarNameDeserialize(
   Id id,
-  IsarBinaryReader reader,
+  IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -3647,8 +3620,8 @@ IsarName _isarNameDeserializeNative(
   return object;
 }
 
-P _isarNameDeserializePropNative<P>(
-  IsarBinaryReader reader,
+P _isarNameDeserializeProp<P>(
+  IsarReader reader,
   int propertyId,
   int offset,
   Map<Type, List<int>> allOffsets,
@@ -3660,25 +3633,6 @@ P _isarNameDeserializePropNative<P>(
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-Object _isarNameSerializeWeb(
-    IsarCollection<IsarName> collection, IsarName object) {
-  /*final jsObj = IsarNative.newJsObject();*/ throw UnimplementedError();
-}
-
-IsarName _isarNameDeserializeWeb(
-    IsarCollection<IsarName> collection, Object jsObj) {
-  /*final object = IsarName();object.first = IsarNative.jsObjectGet(jsObj, r'first') ?? '';object.last = IsarNative.jsObjectGet(jsObj, r'last') ?? '';*/
-  //return object;
-  throw UnimplementedError();
-}
-
-P _isarNameDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    default:
-      throw IsarError('Illegal propertyName');
   }
 }
 
@@ -3949,7 +3903,7 @@ extension IsarNameQueryObject
     on QueryBuilder<IsarName, IsarName, QFilterCondition> {}
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, avoid_js_rounded_ints, prefer_final_localså
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
 
 const IsarFriendSchema = Schema(
   name: r'IsarFriend',
@@ -3967,12 +3921,9 @@ const IsarFriendSchema = Schema(
     )
   },
   estimateSize: _isarFriendEstimateSize,
-  serializeNative: _isarFriendSerializeNative,
-  deserializeNative: _isarFriendDeserializeNative,
-  deserializePropNative: _isarFriendDeserializePropNative,
-  serializeWeb: _isarFriendSerializeWeb,
-  deserializeWeb: _isarFriendDeserializeWeb,
-  deserializePropWeb: _isarFriendDeserializePropWeb,
+  serialize: _isarFriendSerialize,
+  deserialize: _isarFriendDeserialize,
+  deserializeProp: _isarFriendDeserializeProp,
 );
 
 int _isarFriendEstimateSize(
@@ -3985,20 +3936,19 @@ int _isarFriendEstimateSize(
   return bytesCount;
 }
 
-int _isarFriendSerializeNative(
+void _isarFriendSerialize(
   IsarFriend object,
-  IsarBinaryWriter writer,
+  IsarWriter writer,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeLong(offsets[0], object.id);
   writer.writeString(offsets[1], object.name);
-  return writer.usedBytes;
 }
 
-IsarFriend _isarFriendDeserializeNative(
+IsarFriend _isarFriendDeserialize(
   Id id,
-  IsarBinaryReader reader,
+  IsarReader reader,
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
@@ -4008,8 +3958,8 @@ IsarFriend _isarFriendDeserializeNative(
   return object;
 }
 
-P _isarFriendDeserializePropNative<P>(
-  IsarBinaryReader reader,
+P _isarFriendDeserializeProp<P>(
+  IsarReader reader,
   int propertyId,
   int offset,
   Map<Type, List<int>> allOffsets,
@@ -4021,25 +3971,6 @@ P _isarFriendDeserializePropNative<P>(
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-Object _isarFriendSerializeWeb(
-    IsarCollection<IsarFriend> collection, IsarFriend object) {
-  /*final jsObj = IsarNative.newJsObject();*/ throw UnimplementedError();
-}
-
-IsarFriend _isarFriendDeserializeWeb(
-    IsarCollection<IsarFriend> collection, Object jsObj) {
-  /*final object = IsarFriend();object.id = IsarNative.jsObjectGet(jsObj, r'id') ?? (double.negativeInfinity as int);object.name = IsarNative.jsObjectGet(jsObj, r'name') ?? '';*/
-  //return object;
-  throw UnimplementedError();
-}
-
-P _isarFriendDeserializePropWeb<P>(Object jsObj, String propertyName) {
-  switch (propertyName) {
-    default:
-      throw IsarError('Illegal propertyName');
   }
 }
 

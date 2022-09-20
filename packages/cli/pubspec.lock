@@ -77,7 +77,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   build_runner:
     dependency: transitive
     description:
@@ -112,35 +112,35 @@ packages:
       name: cbl
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0+0"
+    version: "2.1.0"
   cbl_dart:
     dependency: "direct main"
     description:
       name: cbl_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.2"
   cbl_ffi:
     dependency: transitive
     description:
       name: cbl_ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.0"
+    version: "0.8.0+1"
   cbl_libcblite_api:
     dependency: transitive
     description:
       name: cbl_libcblite_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   cbl_libcblitedart_api:
     dependency: transitive
     description:
       name: cbl_libcblitedart_api
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "3.0.0"
   cbl_provider:
     dependency: "direct main"
     description:
@@ -231,7 +231,7 @@ packages:
       name: ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.1"
+    version: "2.0.1"
   file:
     dependency: transitive
     description:
@@ -322,7 +322,7 @@ packages:
       name: isar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.0"
+    version: "3.0.0"
   isar_provider:
     dependency: "direct main"
     description:
@@ -343,7 +343,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.5.0"
+    version: "4.6.0"
   logging:
     dependency: "direct main"
     description:
@@ -448,21 +448,21 @@ packages:
       name: realm_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.1+beta"
+    version: "0.4.0+beta"
   realm_dart:
     dependency: "direct main"
     description:
       name: realm_dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.1+beta"
+    version: "0.4.0+beta"
   realm_generator:
     dependency: transitive
     description:
       name: realm_generator
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.1+beta"
+    version: "0.4.0+beta"
   realm_provider:
     dependency: "direct main"
     description:
@@ -667,4 +667,4 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.17.0 <3.0.0"
+  dart: ">=2.17.4 <3.0.0"
