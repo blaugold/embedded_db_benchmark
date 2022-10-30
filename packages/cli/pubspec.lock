@@ -48,6 +48,22 @@ packages:
       relative: true
     source: path
     version: "1.0.0"
+  beto_client:
+    dependency: "direct main"
+    description:
+      name: beto_client
+      sha256: "459e091230fa3d9a83efec546c25228557f2d6c5ffcb965ddf20e9570a0d0e4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
+  beto_common:
+    dependency: "direct main"
+    description:
+      name: beto_common
+      sha256: "53851b59027924fdd53b08b010fbe33e4331de30a3c3bbdc07d5c63ea23d9dca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -642,6 +658,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
+  stats:
+    dependency: transitive
+    description:
+      name: stats
+      sha256: "530629a7344145568448a582f52ef9c88ec8f202ae630747526bada15bdcc59b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   stream_channel:
     dependency: transitive
     description:
@@ -738,6 +762,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.7"
   vm_service:
     dependency: transitive
     description:

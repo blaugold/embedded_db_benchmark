@@ -1,1 +1,1 @@
-const databaseName = 'Drift';
+const databaseName = 'drift';

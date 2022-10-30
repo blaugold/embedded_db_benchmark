@@ -1,1 +1,1 @@
-const databaseName = 'Couchbase Lite';
+const databaseName = 'couchbase_lite';

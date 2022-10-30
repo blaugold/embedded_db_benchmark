@@ -1,1 +1,1 @@
-const databaseName = 'ObjectBox';
+const databaseName = 'object_box';

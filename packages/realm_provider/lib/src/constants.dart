@@ -1,1 +1,1 @@
-const databaseName = 'Realm';
+const databaseName = 'realm';

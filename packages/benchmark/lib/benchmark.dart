@@ -28,6 +28,7 @@ export 'src/benchmark_document.dart'
     show BenchmarkDoc, BenchmarkFriend, BenchmarkName;
 export 'src/benchmark_parameter.dart'
     show Execution, batchSize, execution, runParameterMatrix;
+export 'src/beto_utils.dart' show submitBenchmarkResultsToBetoServer;
 export 'src/database_provider.dart' show DatabaseProvider, UnsupportedProvider;
 export 'src/fixture/document.dart' show loadDocumentsJson;
 export 'src/parameter.dart'

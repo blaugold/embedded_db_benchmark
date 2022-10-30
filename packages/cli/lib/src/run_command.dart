@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:benchmark/benchmark.dart';
+import 'package:beto_client/beto_client.dart';
+import 'package:beto_common/beto_common.dart' as beto;
 import 'package:cbl_provider/cbl_provider.dart';
 import 'package:drift_provider/drift_provider.dart';
 import 'package:hive_provider/hive_provider.dart';
@@ -11,6 +13,7 @@ import 'package:objectbox_provider/objectbox_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:realm_provider/realm_provider.dart';
 
+import 'git.dart';
 import 'setup.dart';
 
 const _allBenchmarksByName = {
@@ -94,6 +97,18 @@ class RunCommand extends Command<void> {
         help: 'Use local cbl-dart libraries.',
         hide: true,
         defaultsTo: false,
+      )
+      ..addOption(
+        'beto-server-url',
+        help: 'The url of the Beto server to submit results to.',
+      )
+      ..addOption(
+        'beto-api-secret',
+        help: 'The API secret to use to authenticate with the Beto server.',
+      )
+      ..addOption(
+        'beto-device',
+        help: 'The device to use when submitting results to the Beto server.',
       );
   }
 
@@ -128,8 +143,22 @@ class RunCommand extends Command<void> {
 
   bool get localCblLibs => argResults!['local-cbl-libs'] as bool;
 
+  String? get betoServerUrl => argResults!['beto-server-url'] as String?;
+
+  String? get betoApiSecret => argResults!['beto-api-secret'] as String?;
+
+  String? get betoDevice => argResults!['beto-device'] as String?;
+
   @override
   Future<void> run() async {
+    if ((betoServerUrl != null) &&
+        (betoApiSecret == null || betoDevice == null)) {
+      usageException(
+        'The beto-api-secret and beto-device options must be set if the '
+        'beto-server-url option is set.',
+      );
+    }
+
     await setup(localCblLibs: localCblLibs);
 
     Logger.root
@@ -138,6 +167,9 @@ class RunCommand extends Command<void> {
         print(rec.message);
       })
       ..level = Level.INFO;
+
+    final startTime = DateTime.now();
+    final commit = currentCommit();
 
     final results = await runParameterMatrix(
       benchmarks: _benchmarks,
@@ -152,6 +184,18 @@ class RunCommand extends Command<void> {
     Logger.root.info(results.toAsciiTable());
 
     await _writeCsvResultsTable(results);
+
+    if (betoServerUrl != null) {
+      Logger.root.info('Submitting results to Beto server...');
+      await submitBenchmarkResultsToBetoServer(
+        serverUrl: betoServerUrl!,
+        credentials: ApiSecret(betoApiSecret!),
+        commit: commit,
+        startTime: startTime,
+        environment: beto.Environment.current(device: betoDevice!),
+        results: results,
+      );
+    }
   }
 
   Future<void> _writeCsvResultsTable(BenchmarkResults results) async {

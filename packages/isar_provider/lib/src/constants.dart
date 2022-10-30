@@ -1,1 +1,1 @@
-const databaseName = 'Isar';
+const databaseName = 'isar';
