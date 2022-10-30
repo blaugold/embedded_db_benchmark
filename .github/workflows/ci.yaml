@@ -66,6 +66,7 @@ jobs:
         working-directory: packages/cli
         env:
           BETO_SUBMISSION_API_SECRET: ${{ secrets.BETO_SUBMISSION_API_SECRET }}
+        shell: bash
         run: |
           dart bin/cli.dart run \
             --abort-on-exception \
