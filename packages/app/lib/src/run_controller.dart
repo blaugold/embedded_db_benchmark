@@ -4,10 +4,12 @@ import 'dart:io';
 import 'package:benchmark/benchmark.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
+import 'save_file.dart';
 import 'settings_controller.dart';
 
 enum RunControllerStatus {
@@ -258,21 +260,37 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
   }
 
   Future<void> exportResults() async {
-    final directory = await FilePicker.platform.getDirectoryPath();
-    if (directory == null) {
-      return;
-    }
-
     final now = DateTime.now().toUtc();
-    final file = File(
-      path.join(directory, 'DB_Bench-${now.millisecondsSinceEpoch}.json'),
-    );
-    final resultsJson = MultiBenchmarkResults(
+    final fileName = 'DB_Bench-${now.millisecondsSinceEpoch}.json';
+    late final jsonResults = JsonUtf8Encoder().convert(MultiBenchmarkResults(
       plan: plan,
       resultsByConfiguration: _resultsByConfiguration,
-    ).toJson();
+    ).toJson()) as Uint8List;
 
-    await file.writeAsBytes(JsonUtf8Encoder('  ').convert(resultsJson));
+    String? filePath;
+    if (Platform.isIOS) {
+      filePath =
+          path.join((await getApplicationDocumentsDirectory()).path, fileName);
+    } else if (Platform.isAndroid) {
+      return await FileSelectorPlugin.instance.saveFile(
+        title: fileName,
+        contentType: 'application/json',
+        data: jsonResults,
+      );
+    } else if (kIsWeb) {
+      throw UnimplementedError('Exporting results is not supported on web.');
+    } else {
+      filePath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Export results',
+        fileName: fileName,
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+    }
+
+    if (filePath != null) {
+      await File(filePath).writeAsBytes(jsonResults);
+    }
   }
 
   Future<void> importResults() async {
@@ -280,7 +298,7 @@ class RunController extends ChangeNotifier with BenchmarkPlanObserver {
       type: FileType.custom,
       allowedExtensions: ['json'],
       withData: true,
-      dialogTitle: 'Select benchmark results file',
+      dialogTitle: 'Import results',
     );
     final pickedFile = pickedFiles?.files.first;
 

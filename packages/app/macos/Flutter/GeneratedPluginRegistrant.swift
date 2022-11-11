@@ -5,7 +5,7 @@
 import FlutterMacOS
 import Foundation
 
-import cbl_flutter_ce
+import cbl_flutter_ee
 import isar_flutter_libs
 import objectbox_flutter_libs
 import path_provider_macos
@@ -13,7 +13,7 @@ import realm
 import sqlite3_flutter_libs
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
-  CblFlutterCe.register(with: registry.registrar(forPlugin: "CblFlutterCe"))
+  CblFlutterEe.register(with: registry.registrar(forPlugin: "CblFlutterEe"))
   IsarFlutterLibsPlugin.register(with: registry.registrar(forPlugin: "IsarFlutterLibsPlugin"))
   ObjectboxFlutterLibsPlugin.register(with: registry.registrar(forPlugin: "ObjectboxFlutterLibsPlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
