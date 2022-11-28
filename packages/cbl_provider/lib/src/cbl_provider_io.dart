@@ -207,7 +207,7 @@ class _AsyncCblDatabase extends BenchmarkDatabase<String, CblDoc>
     late final List<CblDoc> docs;
     await database.inBatch(() async {
       docs = await Future.wait(ids.map((id) async {
-        var doc = (await database.document(id))!.toMutable();
+        final doc = (await database.document(id))!.toMutable();
         return CblDoc.fromDoc(doc);
       }));
     });

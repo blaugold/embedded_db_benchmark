@@ -7,7 +7,7 @@ class FileSelectorPlugin {
 
   static final instance = FileSelectorPlugin._();
 
-   Future<void> saveFile({
+  Future<void> saveFile({
     required String title,
     required String contentType,
     required Uint8List data,

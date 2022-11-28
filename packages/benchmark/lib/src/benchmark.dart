@@ -590,7 +590,7 @@ class MultiBenchmarkResults {
   }
 
   static Object _resultFromJson(Map<String, Object?> json) {
-    var type = json['type'] as String;
+    final type = json['type'] as String;
     switch (type) {
       case 'BenchmarkResult':
         return BenchmarkResult.fromJson(json);
