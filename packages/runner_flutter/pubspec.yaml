@@ -8,9 +8,9 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^2.1.0
-  cbl_flutter: ^2.0.1
-  cbl_flutter_ce: ^2.1.1
+  cbl: ^2.1.2
+  cbl_flutter: ^2.0.2
+  cbl_flutter_ee: ^2.1.2
   cbl_provider:
     path: ../cbl_provider
   cupertino_icons: ^1.0.5
@@ -20,18 +20,18 @@ dependencies:
     sdk: flutter
   hive_provider:
     path: ../hive_provider
-  isar_flutter_libs: ^3.0.0
+  isar_flutter_libs: ^3.0.5
   isar_provider:
     path: ../isar_provider
-  logging: ^1.0.2
-  objectbox_flutter_libs: ^1.6.0
+  logging: ^1.1.0
+  objectbox_flutter_libs: ^1.6.2
   objectbox_provider:
     path: ../objectbox_provider
   path_provider: ^2.0.11
-  realm: 0.4.0+beta
+  realm: 0.8.0+rc
   realm_provider:
     path: ../realm_provider
-  sqlite3_flutter_libs: ^0.5.9
+  sqlite3_flutter_libs: ^0.5.12
 
 dev_dependencies:
   flutter_test:

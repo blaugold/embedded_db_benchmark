@@ -6,7 +6,8 @@ part of 'realm_document.dart';
 // RealmObjectGenerator
 // **************************************************************************
 
-class RealmDoc extends _RealmDoc with RealmEntity, RealmObject {
+class RealmDoc extends _RealmDoc
+    with RealmEntity, RealmObjectBase, RealmObject {
   RealmDoc(
     String id,
     int index,
@@ -31,160 +32,170 @@ class RealmDoc extends _RealmDoc with RealmEntity, RealmObject {
     Iterable<int> range = const [],
     Iterable<RealmFriend> friends = const [],
   }) {
-    RealmObject.set(this, 'id', id);
-    RealmObject.set(this, 'index', index);
-    RealmObject.set(this, 'guid', guid);
-    RealmObject.set(this, 'isActive', isActive);
-    RealmObject.set(this, 'balance_', balance_);
-    RealmObject.set(this, 'picture', picture);
-    RealmObject.set(this, 'age', age);
-    RealmObject.set(this, 'eyeColor', eyeColor);
-    RealmObject.set(this, 'nameRel', nameRel);
-    RealmObject.set(this, 'company', company);
-    RealmObject.set(this, 'email', email);
-    RealmObject.set(this, 'phone', phone);
-    RealmObject.set(this, 'address', address);
-    RealmObject.set(this, 'about', about);
-    RealmObject.set(this, 'registered', registered);
-    RealmObject.set(this, 'latitude', latitude);
-    RealmObject.set(this, 'longitude', longitude);
-    RealmObject.set(this, 'greeting', greeting);
-    RealmObject.set(this, 'favoriteFruit', favoriteFruit);
-    RealmObject.set<RealmList<String>>(this, 'tags', RealmList<String>(tags));
-    RealmObject.set<RealmList<int>>(this, 'range', RealmList<int>(range));
-    RealmObject.set<RealmList<RealmFriend>>(
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'index', index);
+    RealmObjectBase.set(this, 'guid', guid);
+    RealmObjectBase.set(this, 'isActive', isActive);
+    RealmObjectBase.set(this, 'balance_', balance_);
+    RealmObjectBase.set(this, 'picture', picture);
+    RealmObjectBase.set(this, 'age', age);
+    RealmObjectBase.set(this, 'eyeColor', eyeColor);
+    RealmObjectBase.set(this, 'nameRel', nameRel);
+    RealmObjectBase.set(this, 'company', company);
+    RealmObjectBase.set(this, 'email', email);
+    RealmObjectBase.set(this, 'phone', phone);
+    RealmObjectBase.set(this, 'address', address);
+    RealmObjectBase.set(this, 'about', about);
+    RealmObjectBase.set(this, 'registered', registered);
+    RealmObjectBase.set(this, 'latitude', latitude);
+    RealmObjectBase.set(this, 'longitude', longitude);
+    RealmObjectBase.set(this, 'greeting', greeting);
+    RealmObjectBase.set(this, 'favoriteFruit', favoriteFruit);
+    RealmObjectBase.set<RealmList<String>>(
+        this, 'tags', RealmList<String>(tags));
+    RealmObjectBase.set<RealmList<int>>(this, 'range', RealmList<int>(range));
+    RealmObjectBase.set<RealmList<RealmFriend>>(
         this, 'friends', RealmList<RealmFriend>(friends));
   }
 
   RealmDoc._();
 
   @override
-  String get id => RealmObject.get<String>(this, 'id') as String;
+  String get id => RealmObjectBase.get<String>(this, 'id') as String;
   @override
   set id(String value) => throw RealmUnsupportedSetError();
 
   @override
-  int get index => RealmObject.get<int>(this, 'index') as int;
+  int get index => RealmObjectBase.get<int>(this, 'index') as int;
   @override
   set index(int value) => throw RealmUnsupportedSetError();
 
   @override
-  String get guid => RealmObject.get<String>(this, 'guid') as String;
+  String get guid => RealmObjectBase.get<String>(this, 'guid') as String;
   @override
   set guid(String value) => throw RealmUnsupportedSetError();
 
   @override
-  bool get isActive => RealmObject.get<bool>(this, 'isActive') as bool;
+  bool get isActive => RealmObjectBase.get<bool>(this, 'isActive') as bool;
   @override
   set isActive(bool value) => throw RealmUnsupportedSetError();
 
   @override
-  String get balance_ => RealmObject.get<String>(this, 'balance_') as String;
+  String get balance_ =>
+      RealmObjectBase.get<String>(this, 'balance_') as String;
   @override
-  set balance_(String value) => RealmObject.set(this, 'balance_', value);
+  set balance_(String value) => RealmObjectBase.set(this, 'balance_', value);
 
   @override
-  String get picture => RealmObject.get<String>(this, 'picture') as String;
+  String get picture => RealmObjectBase.get<String>(this, 'picture') as String;
   @override
   set picture(String value) => throw RealmUnsupportedSetError();
 
   @override
-  int get age => RealmObject.get<int>(this, 'age') as int;
+  int get age => RealmObjectBase.get<int>(this, 'age') as int;
   @override
   set age(int value) => throw RealmUnsupportedSetError();
 
   @override
-  String get eyeColor => RealmObject.get<String>(this, 'eyeColor') as String;
+  String get eyeColor =>
+      RealmObjectBase.get<String>(this, 'eyeColor') as String;
   @override
   set eyeColor(String value) => throw RealmUnsupportedSetError();
 
   @override
   RealmName? get nameRel =>
-      RealmObject.get<RealmName>(this, 'nameRel') as RealmName?;
+      RealmObjectBase.get<RealmName>(this, 'nameRel') as RealmName?;
   @override
   set nameRel(covariant RealmName? value) => throw RealmUnsupportedSetError();
 
   @override
-  String get company => RealmObject.get<String>(this, 'company') as String;
+  String get company => RealmObjectBase.get<String>(this, 'company') as String;
   @override
   set company(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get email => RealmObject.get<String>(this, 'email') as String;
+  String get email => RealmObjectBase.get<String>(this, 'email') as String;
   @override
   set email(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get phone => RealmObject.get<String>(this, 'phone') as String;
+  String get phone => RealmObjectBase.get<String>(this, 'phone') as String;
   @override
   set phone(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get address => RealmObject.get<String>(this, 'address') as String;
+  String get address => RealmObjectBase.get<String>(this, 'address') as String;
   @override
   set address(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get about => RealmObject.get<String>(this, 'about') as String;
+  String get about => RealmObjectBase.get<String>(this, 'about') as String;
   @override
   set about(String value) => throw RealmUnsupportedSetError();
 
   @override
   String get registered =>
-      RealmObject.get<String>(this, 'registered') as String;
+      RealmObjectBase.get<String>(this, 'registered') as String;
   @override
   set registered(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get latitude => RealmObject.get<String>(this, 'latitude') as String;
+  String get latitude =>
+      RealmObjectBase.get<String>(this, 'latitude') as String;
   @override
   set latitude(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get longitude => RealmObject.get<String>(this, 'longitude') as String;
+  String get longitude =>
+      RealmObjectBase.get<String>(this, 'longitude') as String;
   @override
   set longitude(String value) => throw RealmUnsupportedSetError();
 
   @override
   RealmList<String> get tags =>
-      RealmObject.get<String>(this, 'tags') as RealmList<String>;
+      RealmObjectBase.get<String>(this, 'tags') as RealmList<String>;
   @override
   set tags(covariant RealmList<String> value) =>
       throw RealmUnsupportedSetError();
 
   @override
   RealmList<int> get range =>
-      RealmObject.get<int>(this, 'range') as RealmList<int>;
+      RealmObjectBase.get<int>(this, 'range') as RealmList<int>;
   @override
   set range(covariant RealmList<int> value) => throw RealmUnsupportedSetError();
 
   @override
   RealmList<RealmFriend> get friends =>
-      RealmObject.get<RealmFriend>(this, 'friends') as RealmList<RealmFriend>;
+      RealmObjectBase.get<RealmFriend>(this, 'friends')
+          as RealmList<RealmFriend>;
   @override
   set friends(covariant RealmList<RealmFriend> value) =>
       throw RealmUnsupportedSetError();
 
   @override
-  String get greeting => RealmObject.get<String>(this, 'greeting') as String;
+  String get greeting =>
+      RealmObjectBase.get<String>(this, 'greeting') as String;
   @override
   set greeting(String value) => throw RealmUnsupportedSetError();
 
   @override
   String get favoriteFruit =>
-      RealmObject.get<String>(this, 'favoriteFruit') as String;
+      RealmObjectBase.get<String>(this, 'favoriteFruit') as String;
   @override
   set favoriteFruit(String value) => throw RealmUnsupportedSetError();
 
   @override
   Stream<RealmObjectChanges<RealmDoc>> get changes =>
-      RealmObject.getChanges<RealmDoc>(this);
+      RealmObjectBase.getChanges<RealmDoc>(this);
+
+  @override
+  RealmDoc freeze() => RealmObjectBase.freezeObject<RealmDoc>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObject.registerFactory(RealmDoc._);
-    return const SchemaObject(RealmDoc, 'RealmDoc', [
+    RealmObjectBase.registerFactory(RealmDoc._);
+    return const SchemaObject(ObjectType.realmObject, RealmDoc, 'RealmDoc', [
       SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('index', RealmPropertyType.int),
       SchemaProperty('guid', RealmPropertyType.string),
@@ -215,72 +226,81 @@ class RealmDoc extends _RealmDoc with RealmEntity, RealmObject {
   }
 }
 
-class RealmName extends _RealmName with RealmEntity, RealmObject {
+class RealmName extends _RealmName
+    with RealmEntity, RealmObjectBase, RealmObject {
   RealmName(
     String first,
     String last,
   ) {
-    RealmObject.set(this, 'first', first);
-    RealmObject.set(this, 'last', last);
+    RealmObjectBase.set(this, 'first', first);
+    RealmObjectBase.set(this, 'last', last);
   }
 
   RealmName._();
 
   @override
-  String get first => RealmObject.get<String>(this, 'first') as String;
+  String get first => RealmObjectBase.get<String>(this, 'first') as String;
   @override
   set first(String value) => throw RealmUnsupportedSetError();
 
   @override
-  String get last => RealmObject.get<String>(this, 'last') as String;
+  String get last => RealmObjectBase.get<String>(this, 'last') as String;
   @override
   set last(String value) => throw RealmUnsupportedSetError();
 
   @override
   Stream<RealmObjectChanges<RealmName>> get changes =>
-      RealmObject.getChanges<RealmName>(this);
+      RealmObjectBase.getChanges<RealmName>(this);
+
+  @override
+  RealmName freeze() => RealmObjectBase.freezeObject<RealmName>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObject.registerFactory(RealmName._);
-    return const SchemaObject(RealmName, 'RealmName', [
+    RealmObjectBase.registerFactory(RealmName._);
+    return const SchemaObject(ObjectType.realmObject, RealmName, 'RealmName', [
       SchemaProperty('first', RealmPropertyType.string),
       SchemaProperty('last', RealmPropertyType.string),
     ]);
   }
 }
 
-class RealmFriend extends _RealmFriend with RealmEntity, RealmObject {
+class RealmFriend extends _RealmFriend
+    with RealmEntity, RealmObjectBase, RealmObject {
   RealmFriend(
     int id,
     String name,
   ) {
-    RealmObject.set(this, 'id', id);
-    RealmObject.set(this, 'name', name);
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'name', name);
   }
 
   RealmFriend._();
 
   @override
-  int get id => RealmObject.get<int>(this, 'id') as int;
+  int get id => RealmObjectBase.get<int>(this, 'id') as int;
   @override
   set id(int value) => throw RealmUnsupportedSetError();
 
   @override
-  String get name => RealmObject.get<String>(this, 'name') as String;
+  String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => throw RealmUnsupportedSetError();
 
   @override
   Stream<RealmObjectChanges<RealmFriend>> get changes =>
-      RealmObject.getChanges<RealmFriend>(this);
+      RealmObjectBase.getChanges<RealmFriend>(this);
+
+  @override
+  RealmFriend freeze() => RealmObjectBase.freezeObject<RealmFriend>(this);
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
   static SchemaObject _initSchema() {
-    RealmObject.registerFactory(RealmFriend._);
-    return const SchemaObject(RealmFriend, 'RealmFriend', [
+    RealmObjectBase.registerFactory(RealmFriend._);
+    return const SchemaObject(
+        ObjectType.realmObject, RealmFriend, 'RealmFriend', [
       SchemaProperty('id', RealmPropertyType.int),
       SchemaProperty('name', RealmPropertyType.string),
     ]);

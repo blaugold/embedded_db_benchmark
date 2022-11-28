@@ -6,15 +6,15 @@
 
 #include "generated_plugin_registrant.h"
 
-#include <cbl_flutter_ce/cbl_flutter_ce.h>
+#include <cbl_flutter_ee/cbl_flutter_ee.h>
 #include <isar_flutter_libs/isar_flutter_libs_plugin.h>
 #include <objectbox_flutter_libs/objectbox_flutter_libs_plugin.h>
 #include <realm/realm_plugin.h>
 #include <sqlite3_flutter_libs/sqlite3_flutter_libs_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
-  CblFlutterCeRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("CblFlutterCe"));
+  CblFlutterEeRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("CblFlutterEe"));
   IsarFlutterLibsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("IsarFlutterLibsPlugin"));
   ObjectboxFlutterLibsPluginRegisterWithRegistrar(
