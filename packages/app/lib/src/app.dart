@@ -54,14 +54,11 @@ class _AppState extends State<App> {
       ),
     );
 
-    var darkTheme = ThemeData.from(
+    final darkTheme = ThemeData.from(
       colorScheme: ColorScheme.fromSeed(
         seedColor: seedColor,
         brightness: Brightness.dark,
       ),
-    );
-    darkTheme = darkTheme.copyWith(
-      toggleableActiveColor: darkTheme.colorScheme.secondaryContainer,
     );
 
     return MultiProvider(

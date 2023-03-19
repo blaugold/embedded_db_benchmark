@@ -60,15 +60,15 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   cbl_flutter_ee: 18286942e8322a4b0c64ced6d9788025b9c6ae92
-  FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   isar_flutter_libs: 43385c99864c168fadba7c9adeddc5d38838ca6a
   ObjectBox: 6410cda891ee71682ea1b0330a9544c52b2ba988
   objectbox_flutter_libs: 52f3cbcb18604df4e4dd08fb513b9edf3f91b1af
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
-  realm: 83c2da309134e24880061980217dc4a5c2aefc42
+  realm: e5b90683f8586f76fcc21399f0e9fffd8d595d72
   sqlite3: 88dd99ef4ac3945f5a15facdd752933c52fd93bf
   sqlite3_flutter_libs: 7523e007b12584944a26feaa9975ea741eab136f
 
 PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0
