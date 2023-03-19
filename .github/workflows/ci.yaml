@@ -44,6 +44,7 @@ jobs:
         os: [ubuntu-20.04, macos-11, windows-2022]
         compilation: [jit, aot]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -83,6 +84,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, macos-11, windows-2022]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
