@@ -5,18 +5,18 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: "4897882604d919befd350648c7f91926a9d5de99e67b455bf0917cc2362f4bb8"
+      sha256: "503361166f4a100e0d7eb7fb5a62c6f0322512f2bcb48d6922caf98f24b0ab90"
       url: "https://pub.dev"
     source: hosted
-    version: "47.0.0"
+    version: "56.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "690e335554a8385bc9d787117d9eb52c0c03ee207a607e593de3c9d71b1cfe80"
+      sha256: "93fcd81a6716e69864516750590cf1e699420615046bda19100238aa7b429785"
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.0"
+    version: "5.8.0"
   args:
     dependency: transitive
     description:
@@ -132,42 +132,42 @@ packages:
     dependency: "direct main"
     description:
       name: cbl
-      sha256: a8c81624e59c2cf4e42a9f6da38d3b437c29e86866f991a14f4c658a0c6205d2
+      sha256: a050486b653e4d220f4a1f9441501d2568d6609f4fdc59b9f86e9810e7b2dad1
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.6"
   cbl_ffi:
     dependency: transitive
     description:
       name: cbl_ffi
-      sha256: "1abf4a2d6e1a846d61261e59005c9e9421a6877417d3d72303487f133ac59496"
+      sha256: d0f03ba7cf6424e033b652f2b584db146ca6f6053d24ebb45c806a4e189a19e6
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.0+1"
+    version: "0.8.1+1"
   cbl_flutter:
     dependency: "direct main"
     description:
       name: cbl_flutter
-      sha256: ca1decb865abd6e6606f5ec0a292700e84946f7d879ec83fe544cd2705e09e4d
+      sha256: "2143bce83763dee630762859937f614cb0345a351feddcb75a39c7e912479061"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.4"
   cbl_flutter_ee:
     dependency: "direct main"
     description:
       name: cbl_flutter_ee
-      sha256: "8b18053f495327f0f77dee47f6e5c39ea028e2d5fe1676f3a9dc535a2f20d9d8"
+      sha256: "633b86024f5f05250c570d07ba5c3f0a5e16fec9876275aaa70fa882722733bf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.4"
   cbl_flutter_platform_interface:
     dependency: transitive
     description:
       name: cbl_flutter_platform_interface
-      sha256: "1d16e03228ea973517c1bb3078f57598099ea834ab997d6ac4ab0a9bc5f8a44c"
+      sha256: "26936ff4e95361bb65cbcba6855deff09225162784761f92af9a9dffe90fa345"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.4"
   cbl_libcblite_api:
     dependency: transitive
     description:
@@ -180,10 +180,10 @@ packages:
     dependency: transitive
     description:
       name: cbl_libcblitedart_api
-      sha256: de1d97d93f00fec8a90900f9a7874f32eab2af5582cbcb987027823310a35670
+      sha256: "7f7e3441e3347b70536db7c703f217fda5bda41e1630261b2d23f89f332d6bf6"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.0"
+    version: "4.0.0"
   cbl_provider:
     dependency: "direct main"
     description:
@@ -283,10 +283,10 @@ packages:
     dependency: transitive
     description:
       name: drift
-      sha256: "77aeabca20951ec29c5801bde26b769d450fc38624d0be73f6615d5aa5e81608"
+      sha256: "2a16754641485ca4eaf31bb7961f3ec26bcddad1ce4869a37f238791e164c073"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.5.0"
   drift_provider:
     dependency: "direct main"
     description:
@@ -330,10 +330,10 @@ packages:
     dependency: "direct main"
     description:
       name: file_picker
-      sha256: c24465c112b1a31a37ac450afc2e1f927b7c11599beab93233d7ffb449373fe3
+      sha256: d8e9ca7e5d1983365c277f12c21b4362df6cf659c99af146ad4d04eb33033013
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.2"
+    version: "5.2.6"
   fixnum:
     dependency: transitive
     description:
@@ -346,10 +346,10 @@ packages:
     dependency: "direct main"
     description:
       name: fl_chart
-      sha256: "749b3342ea3e95cbf61a0fec31a62606e837377b8b6d0caa7367a7ef80f38b7d"
+      sha256: e97c5b850ad056e9b3a85d3afeb44c239a83aa994a90723940dac82234f2efaf
       url: "https://pub.dev"
     source: hosted
-    version: "0.55.2"
+    version: "0.61.0"
   flat_buffers:
     dependency: transitive
     description:
@@ -495,10 +495,10 @@ packages:
     dependency: "direct main"
     description:
       name: logging
-      sha256: c0bbfe94d46aedf9b8b3e695cf3bd48c8e14b35e3b2c639e0aa7755d589ba946
+      sha256: "04094f2eb032cbb06c6f6e8d3607edcfcb0455e2bb6cbc010cb01171dcb64e6d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.1.1"
   matcher:
     dependency: transitive
     description:
@@ -551,18 +551,18 @@ packages:
     dependency: transitive
     description:
       name: objectbox
-      sha256: "753c86b181caf53f71204e4b8e49def1c0e40527115bd278b77da3a7db9efdda"
+      sha256: c18d41f4e81e5a30fc0e2200e9e8306f5ccc8a9b61fe3746426359690c33dc7b
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.2"
+    version: "1.7.2"
   objectbox_flutter_libs:
     dependency: "direct main"
     description:
       name: objectbox_flutter_libs
-      sha256: "17d9e520f177f327a9c86d3d3254ce7efa862420fac16e72180d4ef750ce9107"
+      sha256: "179a2edfca5eb80abee6e829ebff69872ad20c9f07c2527fe9d098f4bf5a5b83"
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.2"
+    version: "1.7.2"
   objectbox_provider:
     dependency: "direct main"
     description:
@@ -686,10 +686,10 @@ packages:
     dependency: "direct main"
     description:
       name: provider
-      sha256: e1e7413d70444ea3096815a60fe5da1b11bda8a9dc4769252cc82c53536f8bcc
+      sha256: cdbe7530b12ecd9eb455bdaa2fcb8d4dad22e80b8afb4798b41479d5ce26847f
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.4"
+    version: "6.0.5"
   pub_semver:
     dependency: transitive
     description:
@@ -718,34 +718,34 @@ packages:
     dependency: "direct main"
     description:
       name: realm
-      sha256: c6cedd2a31b46f1e0a4e90ea5d237e9b5f56562fd1aa7fc7ecde3d52f9f2685b
+      sha256: ba8e23b1577450c20c9b11fd1fd7a4f94eb35ca1bbd6c154f731bf43bc3f5dbc
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.0+rc"
+    version: "1.0.2"
   realm_common:
     dependency: transitive
     description:
       name: realm_common
-      sha256: eafef694ce2997e016bfe1d25e6317d685b5d09b1b118679b8bd4c8fcf7b1545
+      sha256: "5e6bc3771fe16151f175ab7ae5134715488056a6ab81638074f856d6bb28cc02"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.0+rc"
+    version: "1.0.2"
   realm_dart:
     dependency: transitive
     description:
       name: realm_dart
-      sha256: "7e434418906dae0170f37d0e0e4f0b80e01e980b0bdb4b9bb0db2fe2135a54e9"
+      sha256: c953386447169db9ef33db024dbc9905d849f9a3310ccb5564b47cc34bbc3e29
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.0+rc"
+    version: "1.0.2"
   realm_generator:
     dependency: transitive
     description:
       name: realm_generator
-      sha256: "1bc514a692a43cce08c9fc4f1bec321cec130d64a59d36ca5d8f1fc940167f20"
+      sha256: "9e11fc2736a8af9c4da9f7e2ff1409e7772d1a928d1e3d4aa3ab8e0df15ed75e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.0+rc"
+    version: "1.0.2"
   realm_provider:
     dependency: "direct main"
     description:
@@ -834,18 +834,18 @@ packages:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: db6350456720a4088a364bbe02052d43056a5ffbd4816fe9d28310dcfbe0dc05
+      sha256: "0a9f8fe561aad15b94549c98d55dee6825a401efec83bf92956e337e35e68ae5"
       url: "https://pub.dev"
     source: hosted
-    version: "1.9.1"
+    version: "1.9.3"
   sqlite3_flutter_libs:
     dependency: "direct main"
     description:
       name: sqlite3_flutter_libs
-      sha256: ebfdab73610bbd2ec01d8f367b7a1b49ad3a01f398df436f283e4063173ceb7b
+      sha256: "02f80aea54a19a36b347dedf6d4181ecd9107f5831ea6139cfd0376a3de197ba"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.12"
+    version: "0.5.13"
   stack_trace:
     dependency: transitive
     description:
@@ -1015,5 +1015,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
-  flutter: ">=3.0.0"
+  dart: ">=2.19.0 <3.0.0"
+  flutter: ">=3.0.3"

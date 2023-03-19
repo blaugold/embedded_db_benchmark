@@ -3,276 +3,6 @@
 part of 'drift_document.dart';
 
 // ignore_for_file: type=lint
-class DriftDocsCompanion extends UpdateCompanion<DriftDoc> {
-  final Value<int> id;
-  final Value<int> index;
-  final Value<String> guid;
-  final Value<bool> isActive;
-  final Value<String> balance;
-  final Value<String> picture;
-  final Value<int> age;
-  final Value<String> eyeColor;
-  final Value<String> company;
-  final Value<String> email;
-  final Value<String> phone;
-  final Value<String> address;
-  final Value<String> about;
-  final Value<String> registered;
-  final Value<String> latitude;
-  final Value<String> longitude;
-  final Value<List<String>> tags;
-  final Value<List<int>> range;
-  final Value<String> greeting;
-  final Value<String> favoriteFruit;
-  const DriftDocsCompanion({
-    this.id = const Value.absent(),
-    this.index = const Value.absent(),
-    this.guid = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.balance = const Value.absent(),
-    this.picture = const Value.absent(),
-    this.age = const Value.absent(),
-    this.eyeColor = const Value.absent(),
-    this.company = const Value.absent(),
-    this.email = const Value.absent(),
-    this.phone = const Value.absent(),
-    this.address = const Value.absent(),
-    this.about = const Value.absent(),
-    this.registered = const Value.absent(),
-    this.latitude = const Value.absent(),
-    this.longitude = const Value.absent(),
-    this.tags = const Value.absent(),
-    this.range = const Value.absent(),
-    this.greeting = const Value.absent(),
-    this.favoriteFruit = const Value.absent(),
-  });
-  DriftDocsCompanion.insert({
-    this.id = const Value.absent(),
-    required int index,
-    required String guid,
-    required bool isActive,
-    required String balance,
-    required String picture,
-    required int age,
-    required String eyeColor,
-    required String company,
-    required String email,
-    required String phone,
-    required String address,
-    required String about,
-    required String registered,
-    required String latitude,
-    required String longitude,
-    required List<String> tags,
-    required List<int> range,
-    required String greeting,
-    required String favoriteFruit,
-  })  : index = Value(index),
-        guid = Value(guid),
-        isActive = Value(isActive),
-        balance = Value(balance),
-        picture = Value(picture),
-        age = Value(age),
-        eyeColor = Value(eyeColor),
-        company = Value(company),
-        email = Value(email),
-        phone = Value(phone),
-        address = Value(address),
-        about = Value(about),
-        registered = Value(registered),
-        latitude = Value(latitude),
-        longitude = Value(longitude),
-        tags = Value(tags),
-        range = Value(range),
-        greeting = Value(greeting),
-        favoriteFruit = Value(favoriteFruit);
-  static Insertable<DriftDoc> custom({
-    Expression<int>? id,
-    Expression<int>? index,
-    Expression<String>? guid,
-    Expression<bool>? isActive,
-    Expression<String>? balance,
-    Expression<String>? picture,
-    Expression<int>? age,
-    Expression<String>? eyeColor,
-    Expression<String>? company,
-    Expression<String>? email,
-    Expression<String>? phone,
-    Expression<String>? address,
-    Expression<String>? about,
-    Expression<String>? registered,
-    Expression<String>? latitude,
-    Expression<String>? longitude,
-    Expression<String>? tags,
-    Expression<String>? range,
-    Expression<String>? greeting,
-    Expression<String>? favoriteFruit,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (index != null) 'index': index,
-      if (guid != null) 'guid': guid,
-      if (isActive != null) 'is_active': isActive,
-      if (balance != null) 'balance': balance,
-      if (picture != null) 'picture': picture,
-      if (age != null) 'age': age,
-      if (eyeColor != null) 'eye_color': eyeColor,
-      if (company != null) 'company': company,
-      if (email != null) 'email': email,
-      if (phone != null) 'phone': phone,
-      if (address != null) 'address': address,
-      if (about != null) 'about': about,
-      if (registered != null) 'registered': registered,
-      if (latitude != null) 'latitude': latitude,
-      if (longitude != null) 'longitude': longitude,
-      if (tags != null) 'tags': tags,
-      if (range != null) 'range': range,
-      if (greeting != null) 'greeting': greeting,
-      if (favoriteFruit != null) 'favorite_fruit': favoriteFruit,
-    });
-  }
-
-  DriftDocsCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? index,
-      Value<String>? guid,
-      Value<bool>? isActive,
-      Value<String>? balance,
-      Value<String>? picture,
-      Value<int>? age,
-      Value<String>? eyeColor,
-      Value<String>? company,
-      Value<String>? email,
-      Value<String>? phone,
-      Value<String>? address,
-      Value<String>? about,
-      Value<String>? registered,
-      Value<String>? latitude,
-      Value<String>? longitude,
-      Value<List<String>>? tags,
-      Value<List<int>>? range,
-      Value<String>? greeting,
-      Value<String>? favoriteFruit}) {
-    return DriftDocsCompanion(
-      id: id ?? this.id,
-      index: index ?? this.index,
-      guid: guid ?? this.guid,
-      isActive: isActive ?? this.isActive,
-      balance: balance ?? this.balance,
-      picture: picture ?? this.picture,
-      age: age ?? this.age,
-      eyeColor: eyeColor ?? this.eyeColor,
-      company: company ?? this.company,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      address: address ?? this.address,
-      about: about ?? this.about,
-      registered: registered ?? this.registered,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      tags: tags ?? this.tags,
-      range: range ?? this.range,
-      greeting: greeting ?? this.greeting,
-      favoriteFruit: favoriteFruit ?? this.favoriteFruit,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (index.present) {
-      map['index'] = Variable<int>(index.value);
-    }
-    if (guid.present) {
-      map['guid'] = Variable<String>(guid.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
-    }
-    if (balance.present) {
-      map['balance'] = Variable<String>(balance.value);
-    }
-    if (picture.present) {
-      map['picture'] = Variable<String>(picture.value);
-    }
-    if (age.present) {
-      map['age'] = Variable<int>(age.value);
-    }
-    if (eyeColor.present) {
-      map['eye_color'] = Variable<String>(eyeColor.value);
-    }
-    if (company.present) {
-      map['company'] = Variable<String>(company.value);
-    }
-    if (email.present) {
-      map['email'] = Variable<String>(email.value);
-    }
-    if (phone.present) {
-      map['phone'] = Variable<String>(phone.value);
-    }
-    if (address.present) {
-      map['address'] = Variable<String>(address.value);
-    }
-    if (about.present) {
-      map['about'] = Variable<String>(about.value);
-    }
-    if (registered.present) {
-      map['registered'] = Variable<String>(registered.value);
-    }
-    if (latitude.present) {
-      map['latitude'] = Variable<String>(latitude.value);
-    }
-    if (longitude.present) {
-      map['longitude'] = Variable<String>(longitude.value);
-    }
-    if (tags.present) {
-      final converter = $DriftDocsTable.$convertertags;
-      map['tags'] = Variable<String>(converter.toSql(tags.value));
-    }
-    if (range.present) {
-      final converter = $DriftDocsTable.$converterrange;
-      map['range'] = Variable<String>(converter.toSql(range.value));
-    }
-    if (greeting.present) {
-      map['greeting'] = Variable<String>(greeting.value);
-    }
-    if (favoriteFruit.present) {
-      map['favorite_fruit'] = Variable<String>(favoriteFruit.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DriftDocsCompanion(')
-          ..write('id: $id, ')
-          ..write('index: $index, ')
-          ..write('guid: $guid, ')
-          ..write('isActive: $isActive, ')
-          ..write('balance: $balance, ')
-          ..write('picture: $picture, ')
-          ..write('age: $age, ')
-          ..write('eyeColor: $eyeColor, ')
-          ..write('company: $company, ')
-          ..write('email: $email, ')
-          ..write('phone: $phone, ')
-          ..write('address: $address, ')
-          ..write('about: $about, ')
-          ..write('registered: $registered, ')
-          ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude, ')
-          ..write('tags: $tags, ')
-          ..write('range: $range, ')
-          ..write('greeting: $greeting, ')
-          ..write('favoriteFruit: $favoriteFruit')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $DriftDocsTable extends DriftDocs
     with TableInfo<$DriftDocsTable, DriftDoc> {
   @override
@@ -609,63 +339,271 @@ class $DriftDocsTable extends DriftDocs
       const _JsonListConverter<int>();
 }
 
-class DriftNamesCompanion extends UpdateCompanion<DriftName> {
-  final Value<int> docId;
-  final Value<String> first;
-  final Value<String> last;
-  const DriftNamesCompanion({
-    this.docId = const Value.absent(),
-    this.first = const Value.absent(),
-    this.last = const Value.absent(),
+class DriftDocsCompanion extends UpdateCompanion<DriftDoc> {
+  final Value<int> id;
+  final Value<int> index;
+  final Value<String> guid;
+  final Value<bool> isActive;
+  final Value<String> balance;
+  final Value<String> picture;
+  final Value<int> age;
+  final Value<String> eyeColor;
+  final Value<String> company;
+  final Value<String> email;
+  final Value<String> phone;
+  final Value<String> address;
+  final Value<String> about;
+  final Value<String> registered;
+  final Value<String> latitude;
+  final Value<String> longitude;
+  final Value<List<String>> tags;
+  final Value<List<int>> range;
+  final Value<String> greeting;
+  final Value<String> favoriteFruit;
+  const DriftDocsCompanion({
+    this.id = const Value.absent(),
+    this.index = const Value.absent(),
+    this.guid = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.balance = const Value.absent(),
+    this.picture = const Value.absent(),
+    this.age = const Value.absent(),
+    this.eyeColor = const Value.absent(),
+    this.company = const Value.absent(),
+    this.email = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.address = const Value.absent(),
+    this.about = const Value.absent(),
+    this.registered = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.range = const Value.absent(),
+    this.greeting = const Value.absent(),
+    this.favoriteFruit = const Value.absent(),
   });
-  DriftNamesCompanion.insert({
-    this.docId = const Value.absent(),
-    required String first,
-    required String last,
-  })  : first = Value(first),
-        last = Value(last);
-  static Insertable<DriftName> custom({
-    Expression<int>? docId,
-    Expression<String>? first,
-    Expression<String>? last,
+  DriftDocsCompanion.insert({
+    this.id = const Value.absent(),
+    required int index,
+    required String guid,
+    required bool isActive,
+    required String balance,
+    required String picture,
+    required int age,
+    required String eyeColor,
+    required String company,
+    required String email,
+    required String phone,
+    required String address,
+    required String about,
+    required String registered,
+    required String latitude,
+    required String longitude,
+    required List<String> tags,
+    required List<int> range,
+    required String greeting,
+    required String favoriteFruit,
+  })  : index = Value(index),
+        guid = Value(guid),
+        isActive = Value(isActive),
+        balance = Value(balance),
+        picture = Value(picture),
+        age = Value(age),
+        eyeColor = Value(eyeColor),
+        company = Value(company),
+        email = Value(email),
+        phone = Value(phone),
+        address = Value(address),
+        about = Value(about),
+        registered = Value(registered),
+        latitude = Value(latitude),
+        longitude = Value(longitude),
+        tags = Value(tags),
+        range = Value(range),
+        greeting = Value(greeting),
+        favoriteFruit = Value(favoriteFruit);
+  static Insertable<DriftDoc> custom({
+    Expression<int>? id,
+    Expression<int>? index,
+    Expression<String>? guid,
+    Expression<bool>? isActive,
+    Expression<String>? balance,
+    Expression<String>? picture,
+    Expression<int>? age,
+    Expression<String>? eyeColor,
+    Expression<String>? company,
+    Expression<String>? email,
+    Expression<String>? phone,
+    Expression<String>? address,
+    Expression<String>? about,
+    Expression<String>? registered,
+    Expression<String>? latitude,
+    Expression<String>? longitude,
+    Expression<String>? tags,
+    Expression<String>? range,
+    Expression<String>? greeting,
+    Expression<String>? favoriteFruit,
   }) {
     return RawValuesInsertable({
-      if (docId != null) 'doc_id': docId,
-      if (first != null) 'first': first,
-      if (last != null) 'last': last,
+      if (id != null) 'id': id,
+      if (index != null) 'index': index,
+      if (guid != null) 'guid': guid,
+      if (isActive != null) 'is_active': isActive,
+      if (balance != null) 'balance': balance,
+      if (picture != null) 'picture': picture,
+      if (age != null) 'age': age,
+      if (eyeColor != null) 'eye_color': eyeColor,
+      if (company != null) 'company': company,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+      if (address != null) 'address': address,
+      if (about != null) 'about': about,
+      if (registered != null) 'registered': registered,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (tags != null) 'tags': tags,
+      if (range != null) 'range': range,
+      if (greeting != null) 'greeting': greeting,
+      if (favoriteFruit != null) 'favorite_fruit': favoriteFruit,
     });
   }
 
-  DriftNamesCompanion copyWith(
-      {Value<int>? docId, Value<String>? first, Value<String>? last}) {
-    return DriftNamesCompanion(
-      docId: docId ?? this.docId,
-      first: first ?? this.first,
-      last: last ?? this.last,
+  DriftDocsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? index,
+      Value<String>? guid,
+      Value<bool>? isActive,
+      Value<String>? balance,
+      Value<String>? picture,
+      Value<int>? age,
+      Value<String>? eyeColor,
+      Value<String>? company,
+      Value<String>? email,
+      Value<String>? phone,
+      Value<String>? address,
+      Value<String>? about,
+      Value<String>? registered,
+      Value<String>? latitude,
+      Value<String>? longitude,
+      Value<List<String>>? tags,
+      Value<List<int>>? range,
+      Value<String>? greeting,
+      Value<String>? favoriteFruit}) {
+    return DriftDocsCompanion(
+      id: id ?? this.id,
+      index: index ?? this.index,
+      guid: guid ?? this.guid,
+      isActive: isActive ?? this.isActive,
+      balance: balance ?? this.balance,
+      picture: picture ?? this.picture,
+      age: age ?? this.age,
+      eyeColor: eyeColor ?? this.eyeColor,
+      company: company ?? this.company,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      address: address ?? this.address,
+      about: about ?? this.about,
+      registered: registered ?? this.registered,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      tags: tags ?? this.tags,
+      range: range ?? this.range,
+      greeting: greeting ?? this.greeting,
+      favoriteFruit: favoriteFruit ?? this.favoriteFruit,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (docId.present) {
-      map['doc_id'] = Variable<int>(docId.value);
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
     }
-    if (first.present) {
-      map['first'] = Variable<String>(first.value);
+    if (index.present) {
+      map['index'] = Variable<int>(index.value);
     }
-    if (last.present) {
-      map['last'] = Variable<String>(last.value);
+    if (guid.present) {
+      map['guid'] = Variable<String>(guid.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (balance.present) {
+      map['balance'] = Variable<String>(balance.value);
+    }
+    if (picture.present) {
+      map['picture'] = Variable<String>(picture.value);
+    }
+    if (age.present) {
+      map['age'] = Variable<int>(age.value);
+    }
+    if (eyeColor.present) {
+      map['eye_color'] = Variable<String>(eyeColor.value);
+    }
+    if (company.present) {
+      map['company'] = Variable<String>(company.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (about.present) {
+      map['about'] = Variable<String>(about.value);
+    }
+    if (registered.present) {
+      map['registered'] = Variable<String>(registered.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<String>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<String>(longitude.value);
+    }
+    if (tags.present) {
+      final converter = $DriftDocsTable.$convertertags;
+      map['tags'] = Variable<String>(converter.toSql(tags.value));
+    }
+    if (range.present) {
+      final converter = $DriftDocsTable.$converterrange;
+      map['range'] = Variable<String>(converter.toSql(range.value));
+    }
+    if (greeting.present) {
+      map['greeting'] = Variable<String>(greeting.value);
+    }
+    if (favoriteFruit.present) {
+      map['favorite_fruit'] = Variable<String>(favoriteFruit.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('DriftNamesCompanion(')
-          ..write('docId: $docId, ')
-          ..write('first: $first, ')
-          ..write('last: $last')
+    return (StringBuffer('DriftDocsCompanion(')
+          ..write('id: $id, ')
+          ..write('index: $index, ')
+          ..write('guid: $guid, ')
+          ..write('isActive: $isActive, ')
+          ..write('balance: $balance, ')
+          ..write('picture: $picture, ')
+          ..write('age: $age, ')
+          ..write('eyeColor: $eyeColor, ')
+          ..write('company: $company, ')
+          ..write('email: $email, ')
+          ..write('phone: $phone, ')
+          ..write('address: $address, ')
+          ..write('about: $about, ')
+          ..write('registered: $registered, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('tags: $tags, ')
+          ..write('range: $range, ')
+          ..write('greeting: $greeting, ')
+          ..write('favoriteFruit: $favoriteFruit')
           ..write(')'))
         .toString();
   }
@@ -743,40 +681,39 @@ class $DriftNamesTable extends DriftNames
   }
 }
 
-class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
+class DriftNamesCompanion extends UpdateCompanion<DriftName> {
   final Value<int> docId;
-  final Value<int> id;
-  final Value<String> name;
-  const DriftFriendsCompanion({
+  final Value<String> first;
+  final Value<String> last;
+  const DriftNamesCompanion({
     this.docId = const Value.absent(),
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
+    this.first = const Value.absent(),
+    this.last = const Value.absent(),
   });
-  DriftFriendsCompanion.insert({
-    required int docId,
-    required int id,
-    required String name,
-  })  : docId = Value(docId),
-        id = Value(id),
-        name = Value(name);
-  static Insertable<DriftFriend> custom({
+  DriftNamesCompanion.insert({
+    this.docId = const Value.absent(),
+    required String first,
+    required String last,
+  })  : first = Value(first),
+        last = Value(last);
+  static Insertable<DriftName> custom({
     Expression<int>? docId,
-    Expression<int>? id,
-    Expression<String>? name,
+    Expression<String>? first,
+    Expression<String>? last,
   }) {
     return RawValuesInsertable({
       if (docId != null) 'doc_id': docId,
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
+      if (first != null) 'first': first,
+      if (last != null) 'last': last,
     });
   }
 
-  DriftFriendsCompanion copyWith(
-      {Value<int>? docId, Value<int>? id, Value<String>? name}) {
-    return DriftFriendsCompanion(
+  DriftNamesCompanion copyWith(
+      {Value<int>? docId, Value<String>? first, Value<String>? last}) {
+    return DriftNamesCompanion(
       docId: docId ?? this.docId,
-      id: id ?? this.id,
-      name: name ?? this.name,
+      first: first ?? this.first,
+      last: last ?? this.last,
     );
   }
 
@@ -786,21 +723,21 @@ class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
     if (docId.present) {
       map['doc_id'] = Variable<int>(docId.value);
     }
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
+    if (first.present) {
+      map['first'] = Variable<String>(first.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
+    if (last.present) {
+      map['last'] = Variable<String>(last.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('DriftFriendsCompanion(')
+    return (StringBuffer('DriftNamesCompanion(')
           ..write('docId: $docId, ')
-          ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('first: $first, ')
+          ..write('last: $last')
           ..write(')'))
         .toString();
   }
@@ -876,6 +813,69 @@ class $DriftFriendsTable extends DriftFriends
   @override
   $DriftFriendsTable createAlias(String alias) {
     return $DriftFriendsTable(attachedDatabase, alias);
+  }
+}
+
+class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
+  final Value<int> docId;
+  final Value<int> id;
+  final Value<String> name;
+  const DriftFriendsCompanion({
+    this.docId = const Value.absent(),
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  DriftFriendsCompanion.insert({
+    required int docId,
+    required int id,
+    required String name,
+  })  : docId = Value(docId),
+        id = Value(id),
+        name = Value(name);
+  static Insertable<DriftFriend> custom({
+    Expression<int>? docId,
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (docId != null) 'doc_id': docId,
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  DriftFriendsCompanion copyWith(
+      {Value<int>? docId, Value<int>? id, Value<String>? name}) {
+    return DriftFriendsCompanion(
+      docId: docId ?? this.docId,
+      id: id ?? this.id,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (docId.present) {
+      map['doc_id'] = Variable<int>(docId.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DriftFriendsCompanion(')
+          ..write('docId: $docId, ')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
   }
 }
 
