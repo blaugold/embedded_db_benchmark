@@ -38,29 +38,29 @@ PODS:
   - Flutter (1.0.0)
   - isar_flutter_libs (1.0.0):
     - Flutter
-  - ObjectBox (1.7.0)
+  - ObjectBox (1.8.1)
   - objectbox_flutter_libs (0.0.1):
     - Flutter
-    - ObjectBox (= 1.7.0)
+    - ObjectBox (= 1.8.1)
   - path_provider_ios (0.0.1):
     - Flutter
-  - "realm (0.8.0+rc)":
+  - realm (1.0.2):
     - Flutter
   - SDWebImage (5.15.5):
     - SDWebImage/Core (= 5.15.5)
   - SDWebImage/Core (5.15.5)
-  - sqlite3 (3.40.0):
-    - sqlite3/common (= 3.40.0)
-  - sqlite3/common (3.40.0)
-  - sqlite3/fts5 (3.40.0):
+  - sqlite3 (3.41.0):
+    - sqlite3/common (= 3.41.0)
+  - sqlite3/common (3.41.0)
+  - sqlite3/fts5 (3.41.0):
     - sqlite3/common
-  - sqlite3/perf-threadsafe (3.40.0):
+  - sqlite3/perf-threadsafe (3.41.0):
     - sqlite3/common
-  - sqlite3/rtree (3.40.0):
+  - sqlite3/rtree (3.41.0):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - Flutter
-    - sqlite3 (~> 3.40.0)
+    - sqlite3 (~> 3.41.0)
     - sqlite3/fts5
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
@@ -107,16 +107,16 @@ SPEC CHECKSUMS:
   cbl_flutter_ee: 7a7cb56df2568b913cdf7924c048ffd6426292e8
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
-  file_picker: 817ab1d8cd2da9d2da412a417162deee3500fc95
+  file_picker: ce3938a0df3cc1ef404671531facef740d03f920
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   isar_flutter_libs: b69f437aeab9c521821c3f376198c4371fa21073
-  ObjectBox: 6410cda891ee71682ea1b0330a9544c52b2ba988
-  objectbox_flutter_libs: e414a78ffda0a6418a7b41359dda7b7cfc6cd8fe
+  ObjectBox: a7900d5335218cd437cbc080b7ccc38a5211f7b4
+  objectbox_flutter_libs: 61d74196d924fbc773da5f5757d1e9fab7b3cc78
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
-  realm: 7b8b6cd9116839c292fc6ecf9198a407bb1d5709
+  realm: c9610dd0e3858edfb5cea2a3550b3d8378778126
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
-  sqlite3: 88dd99ef4ac3945f5a15facdd752933c52fd93bf
-  sqlite3_flutter_libs: c00751e981228acb63595236703da79d31282b63
+  sqlite3: d31b2b69d59bd1b4ab30e5c92eb18fd8e82fa392
+  sqlite3_flutter_libs: 78f93cb854d4680595bc2c63c57209a104b2efb1
   SwiftyGif: 93a1cc87bf3a51916001cf8f3d63835fb64c819f
 
 PODFILE CHECKSUM: 089142defdba9f4cb997cf3764f48f2351f84f9d

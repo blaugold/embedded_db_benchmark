@@ -4,26 +4,27 @@ PODS:
   - FlutterMacOS (1.0.0)
   - isar_flutter_libs (1.0.0):
     - FlutterMacOS
-  - ObjectBox (1.7.0)
+  - ObjectBox (1.8.1)
   - objectbox_flutter_libs (0.0.1):
     - FlutterMacOS
-    - ObjectBox (= 1.7.0)
-  - path_provider_macos (0.0.1):
+    - ObjectBox (= 1.8.1)
+  - path_provider_foundation (0.0.1):
+    - Flutter
     - FlutterMacOS
-  - "realm (0.8.0+rc)":
+  - realm (1.0.2):
     - FlutterMacOS
-  - sqlite3 (3.40.0):
-    - sqlite3/common (= 3.40.0)
-  - sqlite3/common (3.40.0)
-  - sqlite3/fts5 (3.40.0):
+  - sqlite3 (3.41.0):
+    - sqlite3/common (= 3.41.0)
+  - sqlite3/common (3.41.0)
+  - sqlite3/fts5 (3.41.0):
     - sqlite3/common
-  - sqlite3/perf-threadsafe (3.40.0):
+  - sqlite3/perf-threadsafe (3.41.0):
     - sqlite3/common
-  - sqlite3/rtree (3.40.0):
+  - sqlite3/rtree (3.41.0):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - FlutterMacOS
-    - sqlite3 (~> 3.40.0)
+    - sqlite3 (~> 3.41.0)
     - sqlite3/fts5
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
@@ -33,7 +34,7 @@ DEPENDENCIES:
   - FlutterMacOS (from `Flutter/ephemeral`)
   - isar_flutter_libs (from `Flutter/ephemeral/.symlinks/plugins/isar_flutter_libs/macos`)
   - objectbox_flutter_libs (from `Flutter/ephemeral/.symlinks/plugins/objectbox_flutter_libs/macos`)
-  - path_provider_macos (from `Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos`)
+  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/macos`)
   - realm (from `Flutter/ephemeral/.symlinks/plugins/realm/macos`)
   - sqlite3_flutter_libs (from `Flutter/ephemeral/.symlinks/plugins/sqlite3_flutter_libs/macos`)
 
@@ -51,8 +52,8 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/isar_flutter_libs/macos
   objectbox_flutter_libs:
     :path: Flutter/ephemeral/.symlinks/plugins/objectbox_flutter_libs/macos
-  path_provider_macos:
-    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_macos/macos
+  path_provider_foundation:
+    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/macos
   realm:
     :path: Flutter/ephemeral/.symlinks/plugins/realm/macos
   sqlite3_flutter_libs:
@@ -62,12 +63,12 @@ SPEC CHECKSUMS:
   cbl_flutter_ee: 18286942e8322a4b0c64ced6d9788025b9c6ae92
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   isar_flutter_libs: 43385c99864c168fadba7c9adeddc5d38838ca6a
-  ObjectBox: 6410cda891ee71682ea1b0330a9544c52b2ba988
-  objectbox_flutter_libs: 52f3cbcb18604df4e4dd08fb513b9edf3f91b1af
-  path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
-  realm: b3a1ba388a52f35e3939961c8b4a2e9974b85d95
-  sqlite3: 88dd99ef4ac3945f5a15facdd752933c52fd93bf
-  sqlite3_flutter_libs: 7523e007b12584944a26feaa9975ea741eab136f
+  ObjectBox: a7900d5335218cd437cbc080b7ccc38a5211f7b4
+  objectbox_flutter_libs: f89ab4878f0f764a49077cfaa59030be69ae1d7e
+  path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  realm: e4a64305c9a019ddacfbe537fc56002dd55cd8c2
+  sqlite3: d31b2b69d59bd1b4ab30e5c92eb18fd8e82fa392
+  sqlite3_flutter_libs: f20746e4a0245afbee4f20d9afc0072ebff7cc26
 
 PODFILE CHECKSUM: 353c8bcc5d5b0994e508d035b5431cfe18c1dea7
 
