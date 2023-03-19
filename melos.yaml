@@ -7,10 +7,6 @@ packages:
 ide:
   intellij: false
 
-command:
-  bootstrap:
-    usePubspecOverrides: true
-
 scripts:
   format: dart format .
   format:check: dart format --set-exit-if-changed .
@@ -18,7 +14,7 @@ scripts:
     run: melos exec -c 1 -- dart analyze --fatal-infos
   code_gen:build_runner:
     run: melos exec -c 1 -- dart pub run build_runner build --delete-conflicting-outputs
-    select-package:
+    packageFilters:
       scope:
         - drift_provider
         - hive_provider
@@ -26,6 +22,6 @@ scripts:
         - objectbox_provider
   code_gen:realm:
     run: melos exec -c 1 -- dart pub run realm_dart generate
-    select-package:
+    packageFilters:
       scope:
         - realm_provider
