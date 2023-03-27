@@ -8,8 +8,8 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  objectbox: ^1.7.2
+  objectbox: ^2.0.0
 
 dev_dependencies:
   build_runner: any
-  objectbox_generator: 1.7.2
+  objectbox_generator: 2.0.0

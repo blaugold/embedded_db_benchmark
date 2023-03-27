@@ -8,4 +8,4 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  realm_dart: 1.0.2
+  realm_dart: 1.0.3

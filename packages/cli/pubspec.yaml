@@ -9,8 +9,8 @@ dependencies:
   args: ^2.4.0
   benchmark:
     path: ../benchmark
-  cbl: ^2.1.6
-  cbl_dart: ^2.1.7
+  cbl: ^2.1.8
+  cbl_dart: ^2.1.9
   cbl_provider:
     path: ../cbl_provider
   drift_provider:
@@ -23,6 +23,6 @@ dependencies:
   objectbox_provider:
     path: ../objectbox_provider
   path: ^1.8.2
-  realm_dart: 1.0.2
+  realm_dart: 1.0.3
   realm_provider:
     path: ../realm_provider

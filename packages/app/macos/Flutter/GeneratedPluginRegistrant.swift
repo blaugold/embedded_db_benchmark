@@ -8,7 +8,7 @@ import Foundation
 import cbl_flutter_ee
 import isar_flutter_libs
 import objectbox_flutter_libs
-import path_provider_macos
+import path_provider_foundation
 import realm
 import sqlite3_flutter_libs
 
