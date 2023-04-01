@@ -8,9 +8,9 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^2.1.6
-  cbl_flutter: ^2.0.4
-  cbl_flutter_ee: ^2.1.4
+  cbl: ^2.1.8
+  cbl_flutter: ^2.0.6
+  cbl_flutter_ee: ^2.1.6
   cbl_provider:
     path: ../cbl_provider
   cupertino_icons: ^1.0.5
