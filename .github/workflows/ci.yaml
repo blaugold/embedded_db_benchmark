@@ -123,7 +123,7 @@ jobs:
               device=windows
               ;;
           esac
-          flutter drive --profile -d $device integration_test/benchmark_test.dart
+          flutter drive -v --profile -d $device integration_test/benchmark_test.dart
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
