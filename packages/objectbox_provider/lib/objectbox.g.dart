@@ -4,7 +4,7 @@
 // With a Dart package, run `dart run build_runner build`.
 // See also https://docs.objectbox.io/getting-started#generate-objectbox-code
 
-// ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types, depend_on_referenced_packages
 // coverage:ignore-file
 
 import 'dart:typed_data';
@@ -312,11 +312,8 @@ ModelDefinition getObjectBoxModel() {
           object.obxName.targetId =
               const fb.Int64Reader().vTableGet(buffer, rootOffset, 20, 0);
           object.obxName.attach(store);
-          InternalToManyAccess.setRelInfo(
-              object.obxFriends,
-              store,
-              RelInfo<ObjectboxDoc>.toMany(1, object.id),
-              store.box<ObjectboxDoc>());
+          InternalToManyAccess.setRelInfo<ObjectboxDoc>(object.obxFriends,
+              store, RelInfo<ObjectboxDoc>.toMany(1, object.id));
           return object;
         }),
     ObjectboxFriend: EntityDefinition<ObjectboxFriend>(
