@@ -41,7 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-11, windows-2022]
+        os: [ubuntu-20.04, macos-12, windows-2022]
         compilation: [jit, aot]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
@@ -82,7 +82,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-11, windows-2022]
+        os:
+          - ubuntu-20.04
+          # TODO(#41): Fix and enable running on macOS
+          # - macos-12
+          - windows-2022
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
@@ -123,7 +127,7 @@ jobs:
               device=windows
               ;;
           esac
-          flutter drive --profile -d $device integration_test/benchmark_test.dart
+          flutter drive -v --profile -d $device integration_test/benchmark_test.dart
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
