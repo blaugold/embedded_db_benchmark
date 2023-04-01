@@ -11,7 +11,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - realm (1.0.2):
+  - realm (1.0.3):
     - FlutterMacOS
   - sqlite3 (3.41.0):
     - sqlite3/common (= 3.41.0)
@@ -66,7 +66,7 @@ SPEC CHECKSUMS:
   ObjectBox: a7900d5335218cd437cbc080b7ccc38a5211f7b4
   objectbox_flutter_libs: f89ab4878f0f764a49077cfaa59030be69ae1d7e
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
-  realm: e4a64305c9a019ddacfbe537fc56002dd55cd8c2
+  realm: d77b8f94f9e1ef5dc5aa67f218000a17dbbff709
   sqlite3: d31b2b69d59bd1b4ab30e5c92eb18fd8e82fa392
   sqlite3_flutter_libs: f20746e4a0245afbee4f20d9afc0072ebff7cc26
 

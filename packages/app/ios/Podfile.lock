@@ -45,7 +45,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - realm (1.0.2):
+  - realm (1.0.3):
     - Flutter
   - SDWebImage (5.15.5):
     - SDWebImage/Core (= 5.15.5)
@@ -114,7 +114,7 @@ SPEC CHECKSUMS:
   ObjectBox: a7900d5335218cd437cbc080b7ccc38a5211f7b4
   objectbox_flutter_libs: 61d74196d924fbc773da5f5757d1e9fab7b3cc78
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
-  realm: c9610dd0e3858edfb5cea2a3550b3d8378778126
+  realm: 384ca8352e81b18d4e318b22a3e8b1879cfc5d4c
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
   sqlite3: d31b2b69d59bd1b4ab30e5c92eb18fd8e82fa392
   sqlite3_flutter_libs: 78f93cb854d4680595bc2c63c57209a104b2efb1

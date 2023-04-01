@@ -527,26 +527,26 @@ packages:
     dependency: transitive
     description:
       name: realm_common
-      sha256: "5e6bc3771fe16151f175ab7ae5134715488056a6ab81638074f856d6bb28cc02"
+      sha256: e31f72feddb77e7dcfb9a8a0d19c25c79d71ecf6d873de8801b9d58cc29b5a5e
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   realm_dart:
     dependency: "direct main"
     description:
       name: realm_dart
-      sha256: c953386447169db9ef33db024dbc9905d849f9a3310ccb5564b47cc34bbc3e29
+      sha256: "6d10aff68f6e78127ee19187cb37fe679c9e08567de04e2585fd7f19491049e5"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   realm_generator:
     dependency: transitive
     description:
       name: realm_generator
-      sha256: "9e11fc2736a8af9c4da9f7e2ff1409e7772d1a928d1e3d4aa3ab8e0df15ed75e"
+      sha256: "9af5252323e19ba4cd63e984b5aad20a3f809d79a6fee7779ef959456b2bb78e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   realm_provider:
     dependency: "direct main"
     description:
