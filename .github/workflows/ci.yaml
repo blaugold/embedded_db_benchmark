@@ -64,7 +64,15 @@ jobs:
       - name: Run benchmark (JIT)
         if: ${{ matrix.compilation == 'jit' }}
         working-directory: packages/cli
-        run: dart bin/cli.dart run --abort-on-exception
+        env:
+          BETO_SUBMISSION_API_SECRET: ${{ secrets.BETO_SUBMISSION_API_SECRET }}
+        shell: bash
+        run: |
+          dart bin/cli.dart run \
+            --abort-on-exception \
+            --beto-server-url https://beto-server-zknxt5jbma-uc.a.run.app \
+            --beto-api-secret "$BETO_SUBMISSION_API_SECRET" \
+            --beto-device "GitHub Actions Runner - ${{ runner.os }}"
       - name: Run benchmark (AOT)
         if: ${{ matrix.compilation == 'aot' }}
         shell: bash

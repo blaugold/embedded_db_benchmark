@@ -1,1 +1,1 @@
-const databaseName = 'Hive';
+const databaseName = 'hive';
