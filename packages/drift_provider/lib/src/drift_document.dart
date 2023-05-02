@@ -207,7 +207,7 @@ class DriftBenchmarkDatabase extends _$DriftBenchmarkDatabase {
   DriftBenchmarkDatabase(QueryExecutor queryExecutor) : super(queryExecutor);
 
   DriftBenchmarkDatabase.connect(DatabaseConnection connection)
-      : super.connect(connection);
+      : super(connection);
 
   @override
   int get schemaVersion => 1;

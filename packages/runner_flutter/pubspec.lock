@@ -156,58 +156,58 @@ packages:
     dependency: "direct main"
     description:
       name: cbl
-      sha256: "1350c5084d58b638537c901d1c55ddb900de2a8525cf680bfb4f0096a0a918f2"
+      sha256: ff8d7b5088a20fbe6dccab29307b0bc86f1ce0552ab2e584e401db23df8ba7b9
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.8"
+    version: "2.1.9"
   cbl_ffi:
     dependency: transitive
     description:
       name: cbl_ffi
-      sha256: "07cd7015d243e6390c28eda5a771637297101c00743d7fe8a26cd98d65f89d07"
+      sha256: "653544d1df1dfe5f4619b06efa69708a9538dcf6b456e629f1c80dc2abaf6aae"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.1+3"
+    version: "0.8.2"
   cbl_flutter:
     dependency: "direct main"
     description:
       name: cbl_flutter
-      sha256: "1badbbc06599ce19473767ccc354417b28d267532e9dcc873c44ab91d5b34dc3"
+      sha256: "4ce829e6d0d69c65e25fd9b3dcebb3eabf3e42351cf6dbb0200a1d51dccd0fec"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.7"
   cbl_flutter_ee:
     dependency: "direct main"
     description:
       name: cbl_flutter_ee
-      sha256: "18a57686a981662dc2c5b868e33e74fbfa5c0fecf6b6cfb4d773f4127e4c5183"
+      sha256: "807d5eb76668eea171a7b44af97c71a6f2a828fe6334fabc3918e66a3f2a473c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.6"
+    version: "2.2.0"
   cbl_flutter_platform_interface:
     dependency: transitive
     description:
       name: cbl_flutter_platform_interface
-      sha256: fca025786ba8803e6cb0148d1514470a4625a68eaa5304a39248fcddc5cddf7a
+      sha256: "37617c61ff53226b159ed2fa8f29a5cf38b8146067b364da5e4e5a18528cc249"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.7"
   cbl_libcblite_api:
     dependency: transitive
     description:
       name: cbl_libcblite_api
-      sha256: ec999c0e610ec847b105b983d7c1fa9ccfebcd52bb48e163a08857773ec763fd
+      sha256: "1581a6e331ceabb0d2b32bcffb8af363078b547ccbe60b08731dd08b6d00fa0b"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.11"
+    version: "3.1.0"
   cbl_libcblitedart_api:
     dependency: transitive
     description:
       name: cbl_libcblitedart_api
-      sha256: de1977038c1706a793e21ad4e262e5fb260309615a9088a75effefc36f331196
+      sha256: "0259268c0a86cf618cac258251780ae41f9d041f40cdd6a1e0431a0cf4e572a2"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.0"
+    version: "6.0.0"
   cbl_provider:
     dependency: "direct main"
     description:
@@ -283,10 +283,10 @@ packages:
     dependency: transitive
     description:
       name: csv
-      sha256: "18aef53ab72181a0b5384562d18c8cbd57e941e24cb8e54eb41409d3d8abdc6d"
+      sha256: "016b31a51a913744a0a1655c74ff13c9379e1200e246a03d96c81c5d9ed297b5"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.1"
+    version: "5.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -307,10 +307,10 @@ packages:
     dependency: transitive
     description:
       name: drift
-      sha256: a843a73ccb6703b7dec59c0b3ebf9404a1e534d22289ce6399e7a440c604b9b4
+      sha256: "1eaef0a152f1b3dc2e3ad3b04f900794bbe5a2833c26a85794ed1f7e5b7320ce"
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.0"
+    version: "2.7.0"
   drift_provider:
     dependency: "direct main"
     description:
@@ -421,10 +421,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: "6aa2946395183537c8b880962d935877325d6a09a2867c3970c05c0fed6ac482"
+      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.5"
+    version: "0.13.6"
   http_multi_server:
     dependency: transitive
     description:
@@ -458,18 +458,18 @@ packages:
     dependency: transitive
     description:
       name: isar
-      sha256: "5be35dbc489880fccc535da3d1c4b3f5fdeee6ebfcacd4b149e39e803c4029cd"
+      sha256: "99165dadb2cf2329d3140198363a7e7bff9bbd441871898a87e26914d25cf1ea"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.5"
+    version: "3.1.0+1"
   isar_flutter_libs:
     dependency: "direct main"
     description:
       name: isar_flutter_libs
-      sha256: "9794524734856a8a3629652f9f359b66e3fea3cebeec4dbdeb3e3a8fb253073e"
+      sha256: bc6768cc4b9c61aabff77152e7f33b4b17d2fc93134f7af1c3dd51500fe8d5e8
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.5"
+    version: "3.1.0+1"
   isar_provider:
     dependency: "direct main"
     description:
@@ -812,10 +812,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3
-      sha256: "822d321a008e194d7929357e5b58d2e4a04ab670d137182f9759152aa33180ff"
+      sha256: a3ba4b66a7ab170ce7aa3f5ac43c19ee8d6637afbe7b7c95c94112b4f4d91566
       url: "https://pub.dev"
     source: hosted
-    version: "1.10.1"
+    version: "1.11.0"
   sqlite3_flutter_libs:
     dependency: "direct main"
     description:

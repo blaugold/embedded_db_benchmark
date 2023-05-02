@@ -11,8 +11,8 @@ dependencies:
     path: ../benchmark
   beto_client: ^0.1.0
   beto_common: ^0.1.0
-  cbl: ^2.1.8
-  cbl_dart: ^2.1.9
+  cbl: ^2.1.9
+  cbl_dart: ^2.2.0
   cbl_provider:
     path: ../cbl_provider
   drift_provider:

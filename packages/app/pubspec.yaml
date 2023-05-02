@@ -9,29 +9,29 @@ environment:
 dependencies:
   benchmark:
     path: ../benchmark
-  cbl: ^2.1.8
-  cbl_flutter: ^2.0.6
-  cbl_flutter_ee: ^2.1.6
+  cbl: ^2.1.9
+  cbl_flutter: ^2.0.7
+  cbl_flutter_ee: ^2.2.0
   cbl_provider:
     path: ../cbl_provider
   collection: ^1.16.0
   cupertino_icons: ^1.0.5
   drift_provider:
     path: ../drift_provider
-  file_picker: ^5.2.6
-  fl_chart: ^0.61.0
+  file_picker: ^5.2.11
+  fl_chart: ^0.62.0
   flutter:
     sdk: flutter
   hive_provider:
     path: ../hive_provider
-  isar_flutter_libs: ^3.0.5
+  isar_flutter_libs: ^3.1.0+1
   isar_provider:
     path: ../isar_provider
   logging: ^1.1.1
   objectbox_flutter_libs: ^2.0.0
   objectbox_provider:
     path: ../objectbox_provider
-  path_provider: ^2.0.11
+  path_provider: ^2.0.14
   provider: ^6.0.5
   realm: ^1.0.3
   realm_provider:
