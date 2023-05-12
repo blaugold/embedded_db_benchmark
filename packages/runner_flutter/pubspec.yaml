@@ -27,11 +27,11 @@ dependencies:
   objectbox_flutter_libs: ^2.0.0
   objectbox_provider:
     path: ../objectbox_provider
-  path_provider: ^2.0.14
+  path_provider: ^2.0.15
   realm: ^1.0.3
   realm_provider:
     path: ../realm_provider
-  sqlite3_flutter_libs: ^0.5.13
+  sqlite3_flutter_libs: ^0.5.14
 
 dev_dependencies:
   flutter_test:
