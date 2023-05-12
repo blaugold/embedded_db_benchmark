@@ -8,9 +8,9 @@ environment:
 dependencies:
   beto_client: ^0.1.0
   beto_common: ^0.1.0
-  collection: ^1.16.0
-  csv: ^5.0.1
-  logging: ^1.1.0
+  collection: ^1.17.0
+  csv: ^5.0.2
+  logging: ^1.1.1
   meta: ^1.8.0
   path: ^1.8.2
   stats: ^2.0.0

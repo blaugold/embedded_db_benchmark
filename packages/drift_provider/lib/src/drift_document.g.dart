@@ -820,15 +820,18 @@ class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
   final Value<int> docId;
   final Value<int> id;
   final Value<String> name;
+  final Value<int> rowid;
   const DriftFriendsCompanion({
     this.docId = const Value.absent(),
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   DriftFriendsCompanion.insert({
     required int docId,
     required int id,
     required String name,
+    this.rowid = const Value.absent(),
   })  : docId = Value(docId),
         id = Value(id),
         name = Value(name);
@@ -836,20 +839,26 @@ class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
     Expression<int>? docId,
     Expression<int>? id,
     Expression<String>? name,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (docId != null) 'doc_id': docId,
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   DriftFriendsCompanion copyWith(
-      {Value<int>? docId, Value<int>? id, Value<String>? name}) {
+      {Value<int>? docId,
+      Value<int>? id,
+      Value<String>? name,
+      Value<int>? rowid}) {
     return DriftFriendsCompanion(
       docId: docId ?? this.docId,
       id: id ?? this.id,
       name: name ?? this.name,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -865,6 +874,9 @@ class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -873,7 +885,8 @@ class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
     return (StringBuffer('DriftFriendsCompanion(')
           ..write('docId: $docId, ')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -881,7 +894,6 @@ class DriftFriendsCompanion extends UpdateCompanion<DriftFriend> {
 
 abstract class _$DriftBenchmarkDatabase extends GeneratedDatabase {
   _$DriftBenchmarkDatabase(QueryExecutor e) : super(e);
-  _$DriftBenchmarkDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $DriftDocsTable driftDocs = $DriftDocsTable(this);
   late final $DriftNamesTable driftNames = $DriftNamesTable(this);
   late final $DriftFriendsTable driftFriends = $DriftFriendsTable(this);

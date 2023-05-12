@@ -24,8 +24,7 @@ abstract class DatabaseProvider<ID extends Object, T extends BenchmarkDoc<ID>> {
   R runWith<R>(
     R Function<ID extends Object, T extends BenchmarkDoc<ID>>(
       DatabaseProvider<ID, T>,
-    )
-        fn,
+    ) fn,
   ) =>
       fn<ID, T>(this);
 
